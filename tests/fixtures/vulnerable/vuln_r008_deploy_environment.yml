@@ -1,0 +1,13 @@
+name: Vulnerable Deploy Environment
+on:
+  release:
+    types: [published]
+
+jobs:
+  deploy_prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Production Without Environment Protection
+        run: |
+          kubectl apply -f k8s/production/
+

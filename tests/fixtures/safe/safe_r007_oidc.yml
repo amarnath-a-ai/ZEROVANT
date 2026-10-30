@@ -1,0 +1,21 @@
+name: Safe Cloud Deployment with OIDC
+on:
+  push:
+    branches: [main]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy_oidc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Configure AWS Credentials with OIDC Role
+        uses: aws-actions/configure-aws-credentials@e3dd11377788c604f177130f26e9ea3701305a93 # v4.0.2
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/github-actions-role
+          aws-region: us-east-1
+

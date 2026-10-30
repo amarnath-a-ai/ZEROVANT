@@ -1,0 +1,9 @@
+name: Malformed YAML Fixture
+on: [push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: broken syntax
+        run: echo "unclosed bracket above"
+

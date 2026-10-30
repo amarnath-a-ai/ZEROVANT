@@ -1,0 +1,274 @@
+{
+  "version": "1.0",
+  "description": "Hand-curated benchmark ground truth for CI/CD Pipeline Security Auditor",
+  "fixtures": {
+    "tests/fixtures/vulnerable/vuln_r001_unpinned.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R001", "job": "build", "step": "Checkout Code", "line": 9},
+        {"rule_id": "R001", "job": "build", "step": "Run Linter", "line": 11},
+        {"rule_id": "R002", "job": "build", "step": null, "line": 5}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r002_excessive_perms.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R002", "job": "test", "step": null, "line": 9}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r003_pr_target_checkout.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R003", "job": "pwn_me", "step": "Checkout Untrusted PR Head", "line": 9},
+        {"rule_id": "R002", "job": "pwn_me", "step": null, "line": 7}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r004_script_injection.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R004", "job": "echo_title", "step": "Print Issue Title", "line": 9},
+        {"rule_id": "R002", "job": "echo_title", "step": null, "line": 7}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r005_plaintext_secret.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R005", "job": "notify", "step": "Send Notification with Static Token", "line": 9},
+        {"rule_id": "R005", "job": "notify", "step": "Send Notification with Static Token", "line": 10},
+        {"rule_id": "R002", "job": "notify", "step": null, "line": 5}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r006_secret_in_log.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R006", "job": "debug_job", "step": "Debug Output Token", "line": 9},
+        {"rule_id": "R002", "job": "debug_job", "step": null, "line": 5}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r007_long_lived_credentials.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R007", "job": "deploy_aws", "step": "Configure AWS with Static Keys", "line": 12},
+        {"rule_id": "R002", "job": "deploy_aws", "step": null, "line": 7}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r008_deploy_environment.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R008", "job": "deploy_prod", "step": null, "line": 7},
+        {"rule_id": "R002", "job": "deploy_prod", "step": null, "line": 7}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r009_self_hosted_runner.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R009", "job": "run_on_prem", "step": null, "line": 8},
+        {"rule_id": "R002", "job": "run_on_prem", "step": null, "line": 7}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/vuln_r010_third_party_action.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R010", "job": "third_party_step", "step": "Use Unvetted Third Party Action", "line": 9},
+        {"rule_id": "R001", "job": "third_party_step", "step": "Use Unvetted Third Party Action", "line": 9},
+        {"rule_id": "R002", "job": "third_party_step", "step": null, "line": 5}
+      ],
+      "expected_chains": []
+    },
+    "tests/fixtures/vulnerable/chain_pwn_request.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R003", "job": "pwn_target_job", "step": "Checkout Attacker Code", "line": 9},
+        {"rule_id": "R004", "job": "pwn_target_job", "step": "Insecure Execution of PR Script", "line": 15},
+        {"rule_id": "R002", "job": "pwn_target_job", "step": null, "line": 7}
+      ],
+      "expected_chains": ["pwn-request"]
+    },
+    "tests/fixtures/vulnerable/chain_injection_to_exfil.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R004", "job": "triage", "step": "Process Issue", "line": 16},
+        {"rule_id": "R002", "job": "triage", "step": null, "line": 10}
+      ],
+      "expected_chains": ["injection-to-exfil"]
+    },
+    "tests/fixtures/vulnerable/chain_supply_chain_takeover.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R001", "job": "publish_job", "step": "Untrusted Third Party Action With Mutable Tag", "line": 15},
+        {"rule_id": "R010", "job": "publish_job", "step": "Untrusted Third Party Action With Mutable Tag", "line": 15},
+        {"rule_id": "R002", "job": "publish_job", "step": null, "line": 10}
+      ],
+      "expected_chains": ["supply-chain-takeover"]
+    },
+    "tests/fixtures/vulnerable/chain_deploy_blast_radius.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R001", "job": "production_deploy", "step": "Checkout Code", "line": 10},
+        {"rule_id": "R008", "job": "production_deploy", "step": null, "line": 7},
+        {"rule_id": "R007", "job": "production_deploy", "step": "Deploy Without Environment Protection", "line": 13},
+        {"rule_id": "R002", "job": "production_deploy", "step": null, "line": 7}
+      ],
+      "expected_chains": ["deploy-blast-radius"]
+    },
+    "tests/fixtures/vulnerable/chain_runner_persistence.yml": {
+      "type": "synthetic_vulnerable",
+      "expected_findings": [
+        {"rule_id": "R009", "job": "host_execution", "step": null, "line": 8},
+        {"rule_id": "R002", "job": "host_execution", "step": null, "line": 7}
+      ],
+      "expected_chains": ["runner-persistence"]
+    },
+    "tests/fixtures/vulnerable/edge_malformed.yml": {
+      "type": "edge_malformed",
+      "expected_findings": [],
+      "expected_chains": [],
+      "expected_parse_error": true
+    },
+    "tests/fixtures/vulnerable/edge_empty.yml": {
+      "type": "edge_empty",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r001_pinned.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r002_least_privilege.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r003_pr_target.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r004_script_injection.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r005_secrets_token.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r007_oidc.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_r008_deploy_environment.yml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/safe/safe_edge_triggers.yaml": {
+      "type": "synthetic_safe",
+      "expected_findings": [],
+      "expected_chains": []
+    },
+    "tests/fixtures/real_world/actions_checkout_check_dist.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Unpinned action tags used in steps"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/pallets_flask_tests.yaml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4 and actions/setup-python@v5"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/pydantic_pydantic_ci.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Unpinned mutable tags on official actions"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/fastapi_fastapi_test.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/pytest_dev_pytest_test.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/urllib3_urllib3_ci.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/cli_cli_deployment.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Uses tag refs on actions"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/expressjs_express_ci.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Uses actions/checkout@v4 and setup-node@v4"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/psf_black_test.yml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Uses actions/checkout@v4"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    },
+    "tests/fixtures/real_world/pallets_click_tests.yaml": {
+      "type": "real_world",
+      "review_status": "manually reviewed",
+      "expected_findings": [
+        {"rule_id": "R001", "note": "Uses unpinned actions/checkout@v4"}
+      ],
+      "expected_chains": [],
+      "uncertainties": []
+    }
+  }
+}
+

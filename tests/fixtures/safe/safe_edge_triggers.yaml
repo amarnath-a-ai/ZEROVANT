@@ -1,0 +1,21 @@
+name: Safe Edge Triggers And Reusable Call
+on: push
+
+permissions:
+  contents: read
+
+jobs:
+  override_job:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - name: Safe Action
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Check Status
+        run: echo "Job overriding permissions properly"
+
+  call_workflow:
+    needs: [override_job]
+    uses: ./.github/workflows/reusable.yml
+

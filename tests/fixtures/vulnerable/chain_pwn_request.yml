@@ -1,0 +1,19 @@
+name: Attack Chain Pwn Request
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  pwn_target_job:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Attacker Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Insecure Execution of PR Script
+        run: |
+          echo "Building PR ${{ github.event.pull_request.title }}"
+          npm install
+          npm run test
+

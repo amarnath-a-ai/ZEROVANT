@@ -1,0 +1,19 @@
+name: Attack Chain Supply Chain Takeover
+on:
+  push:
+    branches: [main]
+
+jobs:
+  publish_job:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Untrusted Third Party Action With Mutable Tag
+        uses: dubious-org/unpinned-uploader@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+

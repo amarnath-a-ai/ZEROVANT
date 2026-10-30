@@ -1,0 +1,18 @@
+name: Safe Script Injection Prevention
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: read
+
+jobs:
+  safe_process:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Safe Echo via Environment Variable
+        env:
+          ISSUE_TITLE: ${{ github.event.issue.title }}
+        run: |
+          echo "Processing issue: $ISSUE_TITLE"
+

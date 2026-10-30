@@ -1,0 +1,16 @@
+name: Vulnerable PR Target Checkout
+on:
+  pull_request_target:
+    types: [opened, synchronize]
+
+jobs:
+  pwn_me:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Untrusted PR Head
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Run Build Script
+        run: npm test
+

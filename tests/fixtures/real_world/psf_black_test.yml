@@ -1,0 +1,125 @@
+name: test
+
+on:
+  push:
+    paths:
+      - .github/workflows/test.yml
+      - src/**
+      - tests/**
+      - tox.ini
+      - pyproject.toml
+
+  pull_request:
+    paths:
+      - .github/workflows/test.yml
+      - src/**
+      - tests/**
+      - tox.ini
+      - pyproject.toml
+      - docs/integrations/pre-commit.md # Run on "Prepare Release" PRs
+
+permissions:
+  contents: read
+
+env:
+  PIP_UPLOADED_PRIOR_TO: P2D
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          ["3.10", "3.11", "3.12.10", "3.13", "3.14", "3.15", "pypy3.11-v7.3.22"]
+        os: [ubuntu-latest, macOS-latest, windows-latest, windows-11-arm]
+        exclude:
+          # setup-python only supports CPython 3.11+ on arm64 windows
+          - os: windows-11-arm
+            python-version: "3.10"
+          - os: windows-11-arm
+            python-version: "pypy3.11-v7.3.22"
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          allow-prereleases: true
+          pip-version: "26.1"
+
+      - name: Install dependencies
+        run: python -m pip install --group tox
+
+      - name: Unit tests
+        if: "!startsWith(matrix.python-version, 'pypy')"
+        run:
+          tox -e ci-py$(echo ${{ matrix.python-version }} | tr -d '.') -- -v --color=yes
+
+      - name: Unit tests (pypy)
+        if: "startsWith(matrix.python-version, 'pypy')"
+        run: tox -e ci-pypy3 -- -v --color=yes
+
+      - name: Upload coverage to Coveralls
+        # Upload coverage if we are on the main repository and
+        # we're running on Linux (this action only supports Linux)
+        if:
+          github.repository == 'psf/black' && matrix.os == 'ubuntu-latest' &&
+          !startsWith(matrix.python-version, 'pypy')
+        uses: AndreMiras/coveralls-python-action@ac868b9540fad490f7ca82b8ca00480fd751ed19
+        with:
+          github-token: ${{ github.token }}
+          parallel: true
+          flag-name: py${{ matrix.python-version }}-${{ matrix.os }}
+          debug: true
+
+  coveralls-finish:
+    needs: test
+    if: github.repository == 'psf/black'
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Send finished signal to Coveralls
+        uses: AndreMiras/coveralls-python-action@ac868b9540fad490f7ca82b8ca00480fd751ed19
+        with:
+          parallel-finished: true
+          debug: true
+
+  uvloop:
+    if:
+      github.event_name == 'push' || github.event.pull_request.head.repo.full_name !=
+      github.repository
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macOS-latest, windows-latest, windows-11-arm]
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.15"
+          allow-prereleases: true
+
+      - name: Install dependencies
+        run: python -m pip install -e ".[uvloop]"
+
+      - name: Format ourselves
+        run: python -m black --check .

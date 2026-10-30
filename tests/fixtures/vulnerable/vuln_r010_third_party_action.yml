@@ -1,0 +1,10 @@
+name: Vulnerable Third Party Action
+on: [push]
+
+jobs:
+  third_party_step:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Use Unvetted Third Party Action
+        uses: random-unverified-org/malicious-helper@v1.0.0
+

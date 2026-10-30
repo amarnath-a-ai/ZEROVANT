@@ -1,0 +1,21 @@
+name: Safe Deploy with Protected Environment
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  production_deployment:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://api.example.com
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - name: Deploy to Protected Production
+        run: |
+          ./scripts/deploy.sh
+

@@ -1,0 +1,13 @@
+name: Vulnerable Self Hosted Runner
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  run_on_prem:
+    runs-on: self-hosted
+    steps:
+      - name: Run Build On Internal Host
+        run: |
+          ./gradlew build
+
