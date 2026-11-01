@@ -79,6 +79,55 @@ class BaseRule(ABC):
         """Alias for evaluate() to adhere to check(workflow) contract."""
         return self.evaluate(workflow)
 
+    def build_finding(
+        self,
+        workflow: Workflow,
+        line: int,
+        message: str,
+        job: Any = None,
+        step: Any = None,
+        severity: Severity | None = None,
+        context: dict[str, Any] | None = None,
+    ) -> Finding:
+        """Helper to build a standardized Finding object."""
+        job_id = job.id if hasattr(job, "id") else (str(job) if job else None)
+        step_display = ""
+        if step is not None:
+            if hasattr(step, "name") and step.name:
+                step_display = step.name
+            elif hasattr(step, "uses") and step.uses:
+                step_display = step.uses
+            elif hasattr(step, "run") and step.run:
+                step_display = step.run.splitlines()[0][:40]
+            else:
+                step_display = str(step)
+
+        sev = severity or self.default_severity
+        scores = {
+            Severity.CRITICAL: 9.0,
+            Severity.HIGH: 7.5,
+            Severity.MEDIUM: 5.5,
+            Severity.LOW: 3.0,
+            Severity.INFO: 1.0,
+        }
+        score = scores.get(sev, 5.0)
+
+        title = self.description.split(".")[0] if self.description else self.name
+
+        return Finding(
+            id=f"f-{self.id}-{line}",
+            rule_id=self.id,
+            title=title,
+            severity=sev,
+            file=workflow.file_path,
+            job=job_id,
+            step=step_display or None,
+            line=line,
+            evidence=message,
+            tags=list(self.tags),
+            base_score=score,
+        )
+
 
 # Convenient alias
 Rule = BaseRule

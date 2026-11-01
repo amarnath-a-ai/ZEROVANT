@@ -54,6 +54,10 @@ class Step:
     step_index: int = 0
     uses_line: int | None = None
     run_line: int | None = None
+    if_condition: str = ""
+    if_line: int | None = None
+    continue_on_error: Any = None
+    continue_on_error_line: int | None = None
 
 
 @dataclass
@@ -78,6 +82,12 @@ class Job:
     secrets_line: int | None = None
     timeout_minutes: int | None = None
     timeout_minutes_line: int | None = None
+    if_condition: str = ""
+    if_line: int | None = None
+    container: Any = None
+    container_line: int | None = None
+    services: Any = None
+    services_line: int | None = None
 
 
 @dataclass

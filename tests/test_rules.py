@@ -6,11 +6,16 @@ from pathlib import Path
 from app.parser import WorkflowLoader, load_workflows
 from app.rules import (
     BATCH_A_RULES,
+    BATCH_B_RULES,
     CORE_RULES,
     ArtifactLeakRule,
+    BotActorSpoofingRule,
+    CommentTriggerNoAuthRule,
     DeployEnvironmentRule,
+    DispatchInputInjectionRule,
     ExcessivePermissionsRule,
     Finding,
+    GitHubEnvInjectionRule,
     LongLivedCredentialsRule,
     OverprovisionedSecretsRule,
     PersistCredentialsRule,
@@ -24,6 +29,7 @@ from app.rules import (
     Severity,
     ThirdPartyActionRule,
     UnpinnedActionRule,
+    WorkflowRunUntrustedArtifactRule,
     default_registry,
 )
 from cli import main as cli_main
@@ -40,9 +46,10 @@ BENCHMARK_GROUND_TRUTH = Path(__file__).resolve().parent.parent / "benchmark" / 
 def test_all_ten_rules_registered():
     """Verify all 10 core security rules and extension rules are registered."""
     registered = default_registry.list_rules()
-    assert len(registered) >= 15
+    assert len(registered) >= 20
     assert len(CORE_RULES) == 10
     assert len(BATCH_A_RULES) == 5
+    assert len(BATCH_B_RULES) == 5
 
     core_expected_ids = {
         "R001", "R002", "R003", "R004", "R005",
@@ -687,6 +694,232 @@ def test_extension_batch_a_fixtures_ground_truth():
 
     base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
     for i in range(11, 16):
+        vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
+        matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
+        assert len(matching_v) == 1
+        v_path = matching_v[0]
+
+        wf_res = load_workflows(base_dir / v_path)[0]
+        detected = default_registry.run_all(wf_res.workflow)
+        detected_rule_ids = {d.rule_id for d in detected}
+
+        must_include = ground_truth["fixtures"][v_path].get("must_include", [])
+        for expected in must_include:
+            assert expected["rule_id"] in detected_rule_ids, (
+                f"Missing expected rule {expected['rule_id']} in {v_path}. Found: {detected_rule_ids}"
+            )
+
+        # Safe counterpart
+        safe_key = f"tests/fixtures/extension/safe/ext_r{i}_safe.yml"
+        if safe_key in ground_truth["fixtures"]:
+            safe_res = load_workflows(base_dir / safe_key)[0]
+            detected_safe = default_registry.run_all(safe_res.workflow)
+            must_not_include = ground_truth["fixtures"][safe_key].get("must_not_include", [])
+            for not_rule in must_not_include:
+                assert not_rule not in {d.rule_id for d in detected_safe}, (
+                    f"Unexpected rule {not_rule} fired on safe fixture {safe_key}"
+                )
+
+
+def test_r16_github_env_injection_detection():
+    """Rule 16 (github-env-injection): Detects untrusted event context written to GITHUB_ENV."""
+    loader = WorkflowLoader()
+    rule = GitHubEnvInjectionRule()
+
+    vuln_yaml = """
+name: Env Injection
+on: issues
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TITLE=${{ github.event.issue.title }}" >> "$GITHUB_ENV"
+"""
+    res = loader.load_string(vuln_yaml, file_path="env_inj.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "github-env-injection"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Safe Env
+on: issues
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "TITLE_LEN=${#TITLE}" >> "$GITHUB_ENV"
+        env:
+          TITLE: ${{ github.event.issue.title }}
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_env.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r17_workflow_run_untrusted_artifact_detection():
+    """Rule 17 (workflow-run-untrusted-artifact): Detects download-artifact in workflow_run."""
+    loader = WorkflowLoader()
+    rule = WorkflowRunUntrustedArtifactRule()
+
+    vuln_yaml = """
+name: Workflow Run Artifact
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+jobs:
+  process:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          name: untrusted-bin
+"""
+    res = loader.load_string(vuln_yaml, file_path="wf_run.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "workflow-run-untrusted-artifact"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Safe Workflow Run
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+jobs:
+  status:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Done"
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_wf_run.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r18_comment_trigger_no_auth_detection():
+    """Rule 18 (comment-trigger-no-auth): Detects comment triggers without author verification."""
+    loader = WorkflowLoader()
+    rule = CommentTriggerNoAuthRule()
+
+    vuln_yaml = """
+name: Comment Trigger
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  handle:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./handle.sh
+"""
+    res = loader.load_string(vuln_yaml, file_path="comment.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "comment-trigger-no-auth"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Safe Comment Trigger
+on:
+  issue_comment:
+    types: [created]
+jobs:
+  handle:
+    if: github.event.comment.author_association == 'OWNER'
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./handle.sh
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_comment.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r19_dispatch_input_injection_detection():
+    """Rule 19 (dispatch-input-injection): Detects dispatch inputs interpolated in run steps."""
+    loader = WorkflowLoader()
+    rule = DispatchInputInjectionRule()
+
+    vuln_yaml = """
+name: Dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying ${{ inputs.target }}"
+"""
+    res = loader.load_string(vuln_yaml, file_path="dispatch.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "dispatch-input-injection"
+    assert findings[0].severity == Severity.LOW
+
+    safe_yaml = """
+name: Safe Dispatch
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        required: true
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Deploying $TARGET"
+        env:
+          TARGET: ${{ inputs.target }}
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_dispatch.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r20_bot_actor_spoofing_detection():
+    """Rule 20 (bot-actor-spoofing): Detects github.actor == 'bot' authorization."""
+    loader = WorkflowLoader()
+    rule = BotActorSpoofingRule()
+
+    vuln_yaml = """
+name: Bot Spoofing
+on: pull_request_target
+jobs:
+  merge:
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh pr merge
+"""
+    res = loader.load_string(vuln_yaml, file_path="bot_spoof.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "bot-actor-spoofing"
+    assert findings[0].severity == Severity.MEDIUM
+
+    safe_yaml = """
+name: Safe Bot
+on: pull_request_target
+jobs:
+  merge:
+    if: github.event.pull_request.user.id == 49699333
+    runs-on: ubuntu-latest
+    steps:
+      - run: gh pr merge
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_bot.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_extension_batch_b_fixtures_ground_truth():
+    """Verify Batch B extension fixtures (ext_r16..ext_r20) match ground truth."""
+    with open(BENCHMARK_GROUND_TRUTH, encoding="utf-8") as f:
+        ground_truth = json.load(f)
+
+    base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
+    for i in range(16, 21):
         vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
         matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
         assert len(matching_v) == 1

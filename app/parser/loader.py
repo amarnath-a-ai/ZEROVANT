@@ -391,6 +391,12 @@ class WorkflowLoader:
         secrets_line: int | None = None
         timeout_minutes: int | None = None
         timeout_minutes_line: int | None = None
+        if_condition: str = ""
+        if_line: int | None = None
+        container: Any = None
+        container_line: int | None = None
+        services: Any = None
+        services_line: int | None = None
 
         for k_node, v_node in job_node.value:
             k = str(k_node.value)
@@ -412,6 +418,22 @@ class WorkflowLoader:
             elif k == "environment":
                 environment, _ = _node_to_python(v_node)
                 environment_line = k_line
+
+            elif k == "if":
+                i_val, _ = _node_to_python(v_node)
+                if i_val is not None:
+                    if_condition = str(i_val)
+                if_line = k_line
+
+            elif k == "container":
+                c_val, _ = _node_to_python(v_node)
+                container = c_val
+                container_line = k_line
+
+            elif k == "services":
+                s_val, _ = _node_to_python(v_node)
+                services = s_val
+                services_line = k_line
 
             elif k == "needs":
                 needs_val, _ = _node_to_python(v_node)
@@ -469,6 +491,12 @@ class WorkflowLoader:
             secrets_line=secrets_line,
             timeout_minutes=timeout_minutes,
             timeout_minutes_line=timeout_minutes_line,
+            if_condition=if_condition,
+            if_line=if_line,
+            container=container,
+            container_line=container_line,
+            services=services,
+            services_line=services_line,
         )
 
     def _build_steps(self, steps_node: yaml.SequenceNode) -> list[Step]:
@@ -487,6 +515,10 @@ class WorkflowLoader:
             run_line: int | None = None
             with_params: dict[str, Any] = {}
             step_env: dict[str, Any] = {}
+            if_condition: str = ""
+            if_line: int | None = None
+            continue_on_error: Any = None
+            continue_on_error_line: int | None = None
 
             for k_node, v_node in step_node.value:
                 k = str(k_node.value)
@@ -513,6 +545,15 @@ class WorkflowLoader:
                     e_val, _ = _node_to_python(v_node)
                     if isinstance(e_val, dict):
                         step_env = e_val
+                elif k == "if":
+                    i_val, _ = _node_to_python(v_node)
+                    if i_val is not None:
+                        if_condition = str(i_val)
+                    if_line = k_line
+                elif k in ("continue-on-error", "continue_on_error"):
+                    c_val, _ = _node_to_python(v_node)
+                    continue_on_error = c_val
+                    continue_on_error_line = k_line
 
             action_ref = parse_uses(uses) if uses else None
 
@@ -528,6 +569,10 @@ class WorkflowLoader:
                     step_index=idx,
                     uses_line=uses_line,
                     run_line=run_line,
+                    if_condition=if_condition,
+                    if_line=if_line,
+                    continue_on_error=continue_on_error,
+                    continue_on_error_line=continue_on_error_line,
                 )
             )
 
