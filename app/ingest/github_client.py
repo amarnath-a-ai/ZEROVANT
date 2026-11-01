@@ -145,6 +145,41 @@ def parse_and_validate_github_url(repo_input: str) -> tuple[str, str, str | None
     return owner, repo_name, ref
 
 
+def validate_download_url(download_url: str) -> None:
+    """Validate that download_url is strictly from raw.githubusercontent.com via HTTPS.
+
+    Prevents SSRF attacks where a malicious or compromised API response directs the client
+    to download arbitrary internal/external resources, lookalike domains, or redirects
+    to unauthorized endpoints.
+    """
+    if not download_url or not isinstance(download_url, str):
+        raise GitHubSSRFError("download_url must be a non-empty string.")
+
+    raw = download_url.strip()
+    if raw.lower().startswith("http://"):
+        raise GitHubSSRFError(
+            "Insecure HTTP protocol is forbidden in download_url. Only HTTPS is permitted."
+        )
+
+    parsed = urlparse(raw)
+    if parsed.scheme.lower() != "https":
+        raise GitHubSSRFError(
+            f"Unsupported scheme '{parsed.scheme}' in download_url. Only HTTPS is permitted."
+        )
+
+    if parsed.username or parsed.password:
+        raise GitHubSSRFError("Credentials in download_url are strictly forbidden.")
+
+    hostname = (parsed.hostname or "").lower()
+    if hostname != "raw.githubusercontent.com":
+        raise GitHubSSRFError(
+            f"Forbidden host '{hostname}' in download_url. Only 'raw.githubusercontent.com' is allowed."
+        )
+
+    if parsed.port is not None and parsed.port != 443:
+        raise GitHubSSRFError(f"Non-standard port '{parsed.port}' in download_url is forbidden.")
+
+
 class GitHubClient:
     """Read-only GitHub REST API client for fetching workflow definitions."""
 
@@ -264,9 +299,16 @@ class GitHubClient:
             raise GitHubNetworkError(f"GitHub API network connection error: {exc}") from exc
 
     def _download_file_content(self, download_url: str, filename: str) -> str:
-        """Download raw file content with streaming size-limit enforcement."""
+        """Download raw file content with streaming size-limit enforcement and SSRF protection."""
+        validate_download_url(download_url)
         try:
-            with self.session.get(download_url, stream=True, timeout=self.timeout) as resp:
+            with self.session.get(
+                download_url, stream=True, timeout=self.timeout, allow_redirects=False
+            ) as resp:
+                if (resp.is_redirect is True) or (300 <= resp.status_code < 400):
+                    raise GitHubSSRFError(
+                        f"Redirect detected when downloading '{filename}' from {download_url} (HTTP {resp.status_code}). Redirects are forbidden."
+                    )
                 self._check_response_status(resp)
 
                 content_chunks = []

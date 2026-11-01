@@ -14,14 +14,22 @@ class LocalLoader:
       - Extension validation (.yml and .yaml)
     """
 
-    def __init__(self, max_file_size: int = DEFAULT_MAX_FILE_SIZE):
+    def __init__(
+        self,
+        max_file_size: int = DEFAULT_MAX_FILE_SIZE,
+        allowed_root: str | Path | None = None,
+    ):
         self.max_file_size = max_file_size
+        self.allowed_root = Path(allowed_root).resolve() if allowed_root is not None else None
 
-    def load_from_file(self, file_path: str | Path) -> str:
+    def load_from_file(
+        self, file_path: str | Path, allowed_root: str | Path | None = None
+    ) -> str:
         """Load and return content from a single workflow file.
 
         Args:
             file_path: Path to the workflow file.
+            allowed_root: Optional directory root restricting file access.
 
         Returns:
             The raw string content of the workflow file.
@@ -29,9 +37,19 @@ class LocalLoader:
         Raises:
             FileNotFoundError: If the file does not exist.
             ValueError: If the file is not a regular file, has an invalid extension,
-                        or exceeds the maximum file size.
+                        violates allowed root boundaries, or exceeds max file size.
         """
+        root = Path(allowed_root).resolve() if allowed_root is not None else self.allowed_root
         path = Path(file_path).resolve()
+
+        if root is not None:
+            try:
+                path.relative_to(root)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Path traversal security violation: '{file_path}' resolves outside allowed root '{root}'"
+                ) from exc
+
         if not path.exists():
             raise FileNotFoundError(f"Workflow file not found: {file_path}")
         if not path.is_file():
@@ -51,27 +69,39 @@ class LocalLoader:
         return path.read_text(encoding="utf-8")
 
     def load_from_directory(
-        self, dir_path: str | Path
+        self, dir_path: str | Path, allowed_root: str | Path | None = None
     ) -> list[tuple[str, str]]:
         """Discover and load all workflow YAML files from a local directory or repository root.
 
         Checks:
-          1. Searches inside `<dir_path>/.github/workflows/` for *.yml and *.yaml
-          2. If dir_path is itself a workflows directory or contains direct workflow files,
+          1. Verifies dir_path resolves within allowed_root if configured.
+          2. Searches inside `<dir_path>/.github/workflows/` for *.yml and *.yaml
+          3. If dir_path is itself a workflows directory or contains direct workflow files,
              discovers those.
-          3. Verifies that symlinks do not resolve outside the specified base directory.
+          4. Verifies that symlinks do not resolve outside the specified base directory or allowed root.
 
         Args:
             dir_path: Base directory or repository path.
+            allowed_root: Optional directory root restricting search directory.
 
         Returns:
             List of tuples: (relative_or_normalized_path, file_content)
 
         Raises:
             FileNotFoundError: If dir_path does not exist.
-            ValueError: If dir_path is not a directory or if a symlink escapes the base directory.
+            ValueError: If dir_path is not a directory, escapes allowed root, or if a symlink escapes.
         """
+        root = Path(allowed_root).resolve() if allowed_root is not None else self.allowed_root
         base_dir = Path(dir_path).resolve()
+
+        if root is not None:
+            try:
+                base_dir.relative_to(root)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Path traversal security violation: '{dir_path}' resolves outside allowed root '{root}'"
+                ) from exc
+
         if not base_dir.exists():
             raise FileNotFoundError(f"Directory not found: {dir_path}")
         if not base_dir.is_dir():
@@ -119,12 +149,22 @@ class LocalLoader:
 
         return discovered
 
-    def load(self, path: str | Path) -> list[tuple[str, str]]:
+    def load(
+        self, path: str | Path, allowed_root: str | Path | None = None
+    ) -> list[tuple[str, str]]:
         """Convenience loader accepting either a single file or directory path."""
+        root = Path(allowed_root).resolve() if allowed_root is not None else self.allowed_root
         p = Path(path)
+        if root is not None:
+            try:
+                p.resolve().relative_to(root)
+            except ValueError as exc:
+                raise ValueError(
+                    f"Path traversal security violation: '{path}' resolves outside allowed root '{root}'"
+                ) from exc
         if p.is_file():
-            content = self.load_from_file(p)
+            content = self.load_from_file(p, allowed_root=root)
             return [(str(p).replace("\\", "/"), content)]
         elif p.is_dir():
-            return self.load_from_directory(p)
+            return self.load_from_directory(p, allowed_root=root)
         raise FileNotFoundError(f"Path does not exist: {path}")

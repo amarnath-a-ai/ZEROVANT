@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-11-01
+
+### Phase 1: Hardening Follow-ups
+#### Added
+- Strict SSRF protection on GitHub client `download_url`:
+  - Host must strictly equal `raw.githubusercontent.com` (HTTPS, standard port 443).
+  - Explicitly rejects lookalike domains, credentials, non-standard ports, and metadata endpoints.
+  - HTTP redirects (301, 302, 307, 308) during download are strictly blocked with `GitHubSSRFError`.
+- Local loader path traversal defense:
+  - Supports configurable `allowed_root` boundary.
+  - Blocks directory traversal sequences (`../`) and external absolute paths resolving outside the allowed root.
+- Security and line accuracy test suites:
+  - `caplog` test proving `GITHUB_TOKEN` is never leaked in log output even across authentication and network error paths.
+  - Line accuracy verification for workflow root, triggers, jobs, runs-on, and step entities across fixtures.
+- Architectural and operational documentation:
+  - Documented `RefType` classification heuristic and handling of `${{ ... }}` expressions as `RefType.UNKNOWN`.
+  - Documented milestone roadmap limitations (Explainability engine scheduled for Phase 5; full REST API / Web Dashboard for Phase 7).
+
 ## [0.2.0] - 2026-11-01
 
 ### Phase 1: Ingestion and YAML Parser

@@ -174,6 +174,20 @@ pytest
 
 ---
 
+## Milestone Roadmap & Current Phase Status
+
+- [x] **Phase 0**: Project foundation, architecture design, and 35+ core test fixtures (`benchmark/ground_truth.json`).
+- [x] **Phase 0b**: Test suite expansion (55 extension fixtures, 90 total benchmark test cases).
+- [x] **Phase 1**: Ingestion layer (SSRF-protected GitHub client & path-traversal hardened LocalLoader) and AST YAML parser.
+- [ ] **Phase 2**: Vulnerability detection engine (10 core security rules).
+- [ ] **Phase 3**: Attack chain correlation engine & graph export.
+- [ ] **Phase 4**: Deterministic risk scoring.
+- [ ] **Phase 5**: Explainability engine (What / Why / How + Unified YAML diff remediations; currently template stub).
+- [ ] **Phase 6**: SQLite persistence repository.
+- [ ] **Phase 7**: Flask REST API wiring & interactive Web Dashboard (currently baseline health/rule endpoints).
+
+---
+
 ## License
 
 This project is licensed under the MIT License.

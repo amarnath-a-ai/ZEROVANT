@@ -11,6 +11,7 @@ from app.ingest.github_client import (
     GitHubResourceNotFoundError,
     GitHubSSRFError,
     parse_and_validate_github_url,
+    validate_download_url,
 )
 from app.ingest.local_loader import LocalLoader
 
@@ -26,4 +27,5 @@ __all__ = [
     "GitHubSSRFError",
     "LocalLoader",
     "parse_and_validate_github_url",
+    "validate_download_url",
 ]

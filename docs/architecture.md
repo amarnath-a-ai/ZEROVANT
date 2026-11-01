@@ -55,4 +55,12 @@ The CI/CD Pipeline Security Auditor is structured as a pipeline of independent, 
 2. **Deterministic Security Logic**: All vulnerability detections, attack path combinations, and risk scores are derived deterministically.
 3. **Line-Level Fidelity**: All parsed entities maintain exact source line numbers to provide precise UI highlighting and unified diff patching.
 4. **Stable Fingerprints**: Findings maintain stable cryptographic fingerprints (`sha256(rule_id:file:job:step:evidence)`) ensuring consistency across scans and upstream comment edits.
+5. **Action Reference Classification Heuristic**:
+   - `RefType.COMMIT_SHA`: 40-character hexadecimal commit hash representing immutable provenance.
+   - `RefType.TAG`: Semantic versioning or release tags (e.g., `v3`, `v1.2.0`).
+   - `RefType.BRANCH`: Mutable branch references (e.g., `main`, `master`, `release`).
+   - `RefType.LOCAL`: Actions located in the repository itself (`./.github/actions/...`).
+   - `RefType.DOCKER`: Docker container actions (`docker://...`).
+   - `RefType.UNKNOWN`: Dynamic GitHub expressions (e.g., `uses: ${{ matrix.action }}`) or unrecognized formats, conservatively flagged to avoid blind assumptions.
+
 

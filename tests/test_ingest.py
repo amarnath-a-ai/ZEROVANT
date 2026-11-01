@@ -17,6 +17,7 @@ from app.ingest import (
     GitHubSSRFError,
     LocalLoader,
     parse_and_validate_github_url,
+    validate_download_url,
 )
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
@@ -318,7 +319,7 @@ def test_github_client_oversized_file(mock_get):
     list_resp.json.return_value = [
         {
             "name": "huge.yml",
-            "download_url": "https://example.com/huge.yml",
+            "download_url": "https://raw.githubusercontent.com/owner/repo/main/.github/workflows/huge.yml",
         }
     ]
 
@@ -334,3 +335,118 @@ def test_github_client_oversized_file(mock_get):
     client = GitHubClient(max_file_size=100)
     with pytest.raises(GitHubPayloadTooLargeError, match="exceeded size limit"):
         client.fetch_workflows("owner/repo")
+
+
+def test_download_url_ssrf_strict_checks():
+    """Verify strict validation of download_url against unauthorized hosts and schemes."""
+    # Must be HTTPS
+    with pytest.raises(GitHubSSRFError, match="Insecure HTTP protocol"):
+        validate_download_url("http://raw.githubusercontent.com/owner/repo/main/.github/workflows/ci.yml")
+
+    # AWS metadata / private IP rejected
+    with pytest.raises(GitHubSSRFError):
+        validate_download_url("http://169.254.169.254/latest/meta-data/")
+
+    # Arbitrary evil host rejected
+    with pytest.raises(GitHubSSRFError, match="Forbidden host"):
+        validate_download_url("https://evil.example/malicious.yml")
+
+    # Lookalike domain rejected
+    with pytest.raises(GitHubSSRFError, match="Forbidden host"):
+        validate_download_url("https://raw.githubusercontent.com.evil.example/exploit.yml")
+
+    # Credentials rejected
+    with pytest.raises(GitHubSSRFError, match="Credentials"):
+        validate_download_url("https://user:pass@raw.githubusercontent.com/owner/repo/main/ci.yml")
+
+    # Non-standard port rejected
+    with pytest.raises(GitHubSSRFError, match="Non-standard port"):
+        validate_download_url("https://raw.githubusercontent.com:8443/owner/repo/main/ci.yml")
+
+    # Valid raw URL accepted
+    validate_download_url("https://raw.githubusercontent.com/owner/repo/main/.github/workflows/ci.yml")
+
+
+@patch("requests.Session.get")
+def test_download_url_redirect_forbidden(mock_get):
+    """Verify that HTTP redirects during file download are strictly rejected."""
+    list_resp = MagicMock()
+    list_resp.status_code = 200
+    list_resp.json.return_value = [
+        {
+            "name": "redirect.yml",
+            "download_url": "https://raw.githubusercontent.com/owner/repo/main/.github/workflows/redirect.yml",
+        }
+    ]
+
+    redirect_resp = MagicMock()
+    redirect_resp.status_code = 302
+    redirect_resp.is_redirect = True
+    redirect_resp.headers = {"Location": "http://169.254.169.254/"}
+    redirect_resp.__enter__.return_value = redirect_resp
+
+    mock_get.side_effect = [list_resp, redirect_resp]
+
+    client = GitHubClient()
+    with pytest.raises(GitHubSSRFError, match="Redirect detected"):
+        client.fetch_workflows("owner/repo")
+
+
+def test_github_client_token_never_logged_on_error(caplog):
+    """Verify that sensitive authentication tokens are NEVER emitted in logs even on errors."""
+    import logging
+
+    secret_token = "gh_pat_super_secret_audit_token_987654321"
+
+    with caplog.at_level(logging.DEBUG):
+        client = GitHubClient(token=secret_token)
+
+        # Trigger mock 401 error
+        with patch.object(client.session, "get") as mock_get:
+            mock_401 = MagicMock()
+            mock_401.status_code = 401
+            mock_get.return_value = mock_401
+
+            with pytest.raises(GitHubAuthError):
+                client.fetch_workflows("owner/repo")
+
+        # Trigger network error
+        with patch.object(client.session, "get", side_effect=requests.RequestException("connection drop")):
+            with pytest.raises(GitHubNetworkError):
+                client.fetch_workflows("owner/repo")
+
+    # Assert secret token is nowhere in the logs
+    assert secret_token not in caplog.text
+
+
+def test_local_loader_path_traversal_protection(tmp_path):
+    """Verify that path traversal attempts (../ segments or outside absolute paths) are rejected."""
+    allowed_dir = tmp_path / "allowed_repo"
+    allowed_dir.mkdir()
+    wf_file = allowed_dir / "workflow.yml"
+    wf_file.write_text("name: Test\non: push\njobs: {}\n", encoding="utf-8")
+
+    outside_dir = tmp_path / "outside_dir"
+    outside_dir.mkdir()
+    outside_file = outside_dir / "secret.yml"
+    outside_file.write_text("name: Outside\non: push\njobs: {}\n", encoding="utf-8")
+
+    loader = LocalLoader(allowed_root=allowed_dir)
+
+    # Legitimate load inside allowed root succeeds
+    content = loader.load_from_file(wf_file)
+    assert "name: Test" in content
+
+    # Loading file outside allowed root fails with ValueError
+    with pytest.raises(ValueError, match="Path traversal security violation"):
+        loader.load_from_file(outside_file)
+
+    # Relative path traversal using ../ fails
+    relative_traversal = allowed_dir / ".." / "outside_dir" / "secret.yml"
+    with pytest.raises(ValueError, match="Path traversal security violation"):
+        loader.load_from_file(relative_traversal)
+
+    # Directory loading outside allowed root fails
+    with pytest.raises(ValueError, match="Path traversal security violation"):
+        loader.load_from_directory(outside_dir)
+
