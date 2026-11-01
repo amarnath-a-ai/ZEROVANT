@@ -7,15 +7,19 @@ from app.parser import WorkflowLoader, load_workflows
 from app.rules import (
     BATCH_A_RULES,
     BATCH_B_RULES,
+    BATCH_C_RULES,
     CORE_RULES,
     ArtifactLeakRule,
     BotActorSpoofingRule,
+    CachePoisoningRiskRule,
     CommentTriggerNoAuthRule,
+    CurlPipeShellRule,
     DeployEnvironmentRule,
     DispatchInputInjectionRule,
     ExcessivePermissionsRule,
     Finding,
     GitHubEnvInjectionRule,
+    InsecureCommandsEnabledRule,
     LongLivedCredentialsRule,
     OverprovisionedSecretsRule,
     PersistCredentialsRule,
@@ -29,6 +33,8 @@ from app.rules import (
     Severity,
     ThirdPartyActionRule,
     UnpinnedActionRule,
+    UnpinnedDockerImageRule,
+    UnpinnedReusableWorkflowRule,
     WorkflowRunUntrustedArtifactRule,
     default_registry,
 )
@@ -46,10 +52,11 @@ BENCHMARK_GROUND_TRUTH = Path(__file__).resolve().parent.parent / "benchmark" / 
 def test_all_ten_rules_registered():
     """Verify all 10 core security rules and extension rules are registered."""
     registered = default_registry.list_rules()
-    assert len(registered) >= 20
+    assert len(registered) >= 25
     assert len(CORE_RULES) == 10
     assert len(BATCH_A_RULES) == 5
     assert len(BATCH_B_RULES) == 5
+    assert len(BATCH_C_RULES) == 5
 
     core_expected_ids = {
         "R001", "R002", "R003", "R004", "R005",
@@ -920,6 +927,221 @@ def test_extension_batch_b_fixtures_ground_truth():
 
     base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
     for i in range(16, 21):
+        vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
+        matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
+        assert len(matching_v) == 1
+        v_path = matching_v[0]
+
+        wf_res = load_workflows(base_dir / v_path)[0]
+        detected = default_registry.run_all(wf_res.workflow)
+        detected_rule_ids = {d.rule_id for d in detected}
+
+        must_include = ground_truth["fixtures"][v_path].get("must_include", [])
+        for expected in must_include:
+            assert expected["rule_id"] in detected_rule_ids, (
+                f"Missing expected rule {expected['rule_id']} in {v_path}. Found: {detected_rule_ids}"
+            )
+
+        # Safe counterpart
+        safe_key = f"tests/fixtures/extension/safe/ext_r{i}_safe.yml"
+        if safe_key in ground_truth["fixtures"]:
+            safe_res = load_workflows(base_dir / safe_key)[0]
+            detected_safe = default_registry.run_all(safe_res.workflow)
+            must_not_include = ground_truth["fixtures"][safe_key].get("must_not_include", [])
+            for not_rule in must_not_include:
+                assert not_rule not in {d.rule_id for d in detected_safe}, (
+                    f"Unexpected rule {not_rule} fired on safe fixture {safe_key}"
+                )
+
+
+def test_r21_unpinned_reusable_workflow_detection():
+    """Rule 21 (unpinned-reusable-workflow): Detects reusable workflow pinned to branch/tag."""
+    loader = WorkflowLoader()
+    rule = UnpinnedReusableWorkflowRule()
+
+    vuln_yaml = """
+name: Unpinned Workflow
+on: push
+jobs:
+  call:
+    uses: acme-corp/shared/.github/workflows/ci.yml@main
+"""
+    res = loader.load_string(vuln_yaml, file_path="unpinned_wf.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "unpinned-reusable-workflow"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Pinned Workflow
+on: push
+jobs:
+  call:
+    uses: acme-corp/shared/.github/workflows/ci.yml@0123456789abcdef0123456789abcdef01234567
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="pinned_wf.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r22_unpinned_docker_image_detection():
+    """Rule 22 (unpinned-docker-image): Detects container image not pinned by sha256 digest."""
+    loader = WorkflowLoader()
+    rule = UnpinnedDockerImageRule()
+
+    vuln_yaml = """
+name: Unpinned Docker
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node:20
+    steps:
+      - run: npm test
+"""
+    res = loader.load_string(vuln_yaml, file_path="unpinned_docker.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "unpinned-docker-image"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Pinned Docker
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container:
+      image: node@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+    steps:
+      - run: npm test
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="pinned_docker.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r23_curl_pipe_shell_detection():
+    """Rule 23 (curl-pipe-shell): Detects piping curl/wget directly to shell."""
+    loader = WorkflowLoader()
+    rule = CurlPipeShellRule()
+
+    vuln_yaml = """
+name: Pipe Shell
+on: push
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - run: curl -sSL https://example.com/install.sh | bash
+"""
+    res = loader.load_string(vuln_yaml, file_path="pipe_shell.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "curl-pipe-shell"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Safe Install
+on: push
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          curl -sSLo install.sh https://example.com/install.sh
+          echo "abc  install.sh" | sha256sum -c -
+          bash install.sh
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_install.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r24_insecure_commands_enabled_detection():
+    """Rule 24 (insecure-commands-enabled): Detects ACTIONS_ALLOW_UNSECURE_COMMANDS."""
+    loader = WorkflowLoader()
+    rule = InsecureCommandsEnabledRule()
+
+    vuln_yaml = """
+name: Insecure Commands
+on: push
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "hello"
+"""
+    res = loader.load_string(vuln_yaml, file_path="insec_cmd.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "insecure-commands-enabled"
+    assert findings[0].severity == Severity.CRITICAL
+
+    safe_yaml = """
+name: Safe Commands
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "FOO=bar" >> "$GITHUB_ENV"
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_cmd.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r25_cache_poisoning_risk_detection():
+    """Rule 25 (cache-poisoning-risk): Detects actions/cache in release/tag workflows."""
+    loader = WorkflowLoader()
+    rule = CachePoisoningRiskRule()
+
+    vuln_yaml = """
+name: Cache Poisoning
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@0123456789abcdef0123456789abcdef01234567
+        with:
+          path: ~/.cache
+          key: cache-key
+"""
+    res = loader.load_string(vuln_yaml, file_path="cache_risk.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "cache-poisoning-risk"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Safe Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Build without cache"
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_release.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_extension_batch_c_fixtures_ground_truth():
+    """Verify Batch C extension fixtures (ext_r21..ext_r25) match ground truth."""
+    with open(BENCHMARK_GROUND_TRUTH, encoding="utf-8") as f:
+        ground_truth = json.load(f)
+
+    base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
+    for i in range(21, 26):
         vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
         matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
         assert len(matching_v) == 1

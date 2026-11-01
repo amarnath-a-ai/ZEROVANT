@@ -243,6 +243,7 @@ class WorkflowLoader:
         workflow_permissions: Any = None
         permissions_line: int | None = None
         workflow_env: dict[str, Any] = {}
+        workflow_env_lines: dict[str, int] = {}
         jobs_dict: dict[str, Job] = {}
 
         jobs_node: yaml.MappingNode | None = None
@@ -274,6 +275,9 @@ class WorkflowLoader:
                 env_val, _ = _node_to_python(v_node)
                 if isinstance(env_val, dict):
                     workflow_env = env_val
+                if isinstance(v_node, yaml.MappingNode):
+                    for ek_node, _ev_node in v_node.value:
+                        workflow_env_lines[str(ek_node.value)] = ek_node.start_mark.line + 1
 
             elif key_raw == "jobs":
                 has_jobs_key = True
@@ -330,6 +334,7 @@ class WorkflowLoader:
             permissions=workflow_permissions,
             permissions_line=permissions_line,
             env=workflow_env,
+            env_lines=workflow_env_lines,
             jobs=jobs_dict,
             line=workflow_line,
             raw_content=raw_content,
@@ -395,8 +400,10 @@ class WorkflowLoader:
         if_line: int | None = None
         container: Any = None
         container_line: int | None = None
+        container_image_line: int | None = None
         services: Any = None
         services_line: int | None = None
+        uses_line: int | None = None
 
         for k_node, v_node in job_node.value:
             k = str(k_node.value)
@@ -429,6 +436,13 @@ class WorkflowLoader:
                 c_val, _ = _node_to_python(v_node)
                 container = c_val
                 container_line = k_line
+                if isinstance(v_node, yaml.MappingNode):
+                    for ck_node, _cv_node in v_node.value:
+                        if str(ck_node.value) == "image":
+                            container_image_line = ck_node.start_mark.line + 1
+                            break
+                elif isinstance(v_node, yaml.ScalarNode):
+                    container_image_line = k_line
 
             elif k == "services":
                 s_val, _ = _node_to_python(v_node)
@@ -453,6 +467,7 @@ class WorkflowLoader:
                 if u_val is not None:
                     uses = str(u_val)
                     action_ref = parse_uses(uses)
+                uses_line = k_line
 
             elif k == "secrets":
                 secrets_val, _ = _node_to_python(v_node)
@@ -486,6 +501,7 @@ class WorkflowLoader:
             env=job_env,
             line=job_line,
             uses=uses,
+            uses_line=uses_line,
             action_ref=action_ref,
             secrets=secrets,
             secrets_line=secrets_line,
@@ -495,6 +511,7 @@ class WorkflowLoader:
             if_line=if_line,
             container=container,
             container_line=container_line,
+            container_image_line=container_image_line,
             services=services,
             services_line=services_line,
         )

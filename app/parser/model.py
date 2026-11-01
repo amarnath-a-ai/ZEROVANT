@@ -77,6 +77,7 @@ class Job:
     env: dict[str, Any] = field(default_factory=dict)
     line: int = 1
     uses: str = ""
+    uses_line: int | None = None
     action_ref: ParsedUses | None = None
     secrets: Any = None
     secrets_line: int | None = None
@@ -86,6 +87,7 @@ class Job:
     if_line: int | None = None
     container: Any = None
     container_line: int | None = None
+    container_image_line: int | None = None
     services: Any = None
     services_line: int | None = None
 
@@ -101,6 +103,7 @@ class Workflow:
     permissions: Any = None
     permissions_line: int | None = None
     env: dict[str, Any] = field(default_factory=dict)
+    env_lines: dict[str, int] = field(default_factory=dict)
     jobs: dict[str, Job] = field(default_factory=dict)
     line: int = 1
     raw_content: str = ""

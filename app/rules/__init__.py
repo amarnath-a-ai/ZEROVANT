@@ -3,11 +3,14 @@
 from app.rules.base import BaseRule, Finding, Rule, Severity
 from app.rules.r_artifact_leak import ArtifactLeakRule
 from app.rules.r_bot_actor_spoofing import BotActorSpoofingRule
+from app.rules.r_cache_poisoning_risk import CachePoisoningRiskRule
 from app.rules.r_comment_trigger_no_auth import CommentTriggerNoAuthRule
+from app.rules.r_curl_pipe_shell import CurlPipeShellRule
 from app.rules.r_deploy_environment import DeployEnvironmentRule
 from app.rules.r_dispatch_input_injection import DispatchInputInjectionRule
 from app.rules.r_excessive_permissions import ExcessivePermissionsRule
 from app.rules.r_github_env_injection import GitHubEnvInjectionRule
+from app.rules.r_insecure_commands_enabled import InsecureCommandsEnabledRule
 from app.rules.r_long_lived_credentials import LongLivedCredentialsRule
 from app.rules.r_overprovisioned_secrets import OverprovisionedSecretsRule
 from app.rules.r_persist_credentials import PersistCredentialsRule
@@ -20,6 +23,8 @@ from app.rules.r_secrets_inherit import SecretsInheritRule
 from app.rules.r_self_hosted_runner import SelfHostedRunnerRule
 from app.rules.r_third_party_action import ThirdPartyActionRule
 from app.rules.r_unpinned_action import UnpinnedActionRule
+from app.rules.r_unpinned_docker_image import UnpinnedDockerImageRule
+from app.rules.r_unpinned_reusable_workflow import UnpinnedReusableWorkflowRule
 from app.rules.r_workflow_run_untrusted_artifact import WorkflowRunUntrustedArtifactRule
 from app.rules.registry import RuleRegistry, default_registry
 
@@ -52,7 +57,15 @@ BATCH_B_RULES = [
     BotActorSpoofingRule,
 ]
 
-ALL_RULES = CORE_RULES + BATCH_A_RULES + BATCH_B_RULES
+BATCH_C_RULES = [
+    UnpinnedReusableWorkflowRule,
+    UnpinnedDockerImageRule,
+    CurlPipeShellRule,
+    InsecureCommandsEnabledRule,
+    CachePoisoningRiskRule,
+]
+
+ALL_RULES = CORE_RULES + BATCH_A_RULES + BATCH_B_RULES + BATCH_C_RULES
 
 for rule_cls in ALL_RULES:
     default_registry.register(rule_cls)
@@ -62,15 +75,19 @@ __all__ = [
     "ArtifactLeakRule",
     "BATCH_A_RULES",
     "BATCH_B_RULES",
+    "BATCH_C_RULES",
     "BaseRule",
     "BotActorSpoofingRule",
+    "CachePoisoningRiskRule",
     "CommentTriggerNoAuthRule",
     "CORE_RULES",
+    "CurlPipeShellRule",
     "DeployEnvironmentRule",
     "DispatchInputInjectionRule",
     "ExcessivePermissionsRule",
     "Finding",
     "GitHubEnvInjectionRule",
+    "InsecureCommandsEnabledRule",
     "LongLivedCredentialsRule",
     "OverprovisionedSecretsRule",
     "PersistCredentialsRule",
@@ -86,6 +103,8 @@ __all__ = [
     "Severity",
     "ThirdPartyActionRule",
     "UnpinnedActionRule",
+    "UnpinnedDockerImageRule",
+    "UnpinnedReusableWorkflowRule",
     "WorkflowRunUntrustedArtifactRule",
     "default_registry",
 ]
