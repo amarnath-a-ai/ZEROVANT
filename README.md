@@ -14,8 +14,8 @@ Misconfigurations in CI/CD workflows expose organizations to severe supply chain
 
 **CI/CD Pipeline Security Auditor** is a static security analysis tool specifically engineered to:
 1. Parse and model GitHub Actions workflows with source-line fidelity.
-2. Statically audit workflows across 10 security rules without code execution.
-3. Correlate isolated findings into high-risk multi-stage **Attack Chains**.
+2. Statically audit workflows across 30 deterministic security rules without code execution.
+3. Correlate isolated findings into high-risk multi-stage **Attack Chains** (10 attack chain definitions).
 4. Compute deterministic, explainable risk scores.
 5. Provide actionable remediation (What / Why / How + YAML unified diffs).
 6. Present findings in a web dashboard with interactive Cytoscape.js attack-path graphs.
@@ -46,8 +46,8 @@ The auditor follows a strict modular pipeline:
                                        |
                                        v
 +---------------------------------------------------------------------------------+
-|                     RULE ENGINE (app.rules: 10 Rules)                           |
-|   Detects unpinned actions, excessive permissions, script injection, etc.       |
+|                     RULE ENGINE (app.rules: 30 Rules)                           |
+|   10 Core + 20 Extension Rules covering credentials, injection, OIDC, etc.     |
 |   Emits normalized Finding objects with source lines & stable fingerprints      |
 +---------------------------------------------------------------------------------+
                                        |

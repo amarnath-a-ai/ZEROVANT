@@ -5,6 +5,46 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-11-01
+
+### Extension Phase 2B: 20 Extension Security Rules (30 Rules Total)
+#### Added
+- Implemented 20 extension static security rules across four functional batches:
+  - **Batch A (Credential and Secret Handling)**:
+    - `persist-credentials`: Flags `actions/checkout` lacking `persist-credentials: false` in jobs uploading artifacts or invoking third-party actions.
+    - `secret-to-unpinned-action`: Flags passing secrets to third-party actions pinned to mutable tags or branches.
+    - `overprovisioned-secrets`: Flags dynamic serialization or indexing of secret contexts (`toJSON(secrets)`, `secrets[var]`).
+    - `artifact-leak`: Flags `actions/upload-artifact` targeting workspace root (`.`, `./`), `.git`, or `.env`.
+    - `secrets-inherit`: Flags reusable workflow calls passing all repository secrets via `secrets: inherit`.
+  - **Batch B (Untrusted Input and Trigger Abuse)**:
+    - `github-env-injection`: Flags untrusted event context written directly into `$GITHUB_ENV`, `$GITHUB_PATH`, or `$GITHUB_OUTPUT`.
+    - `workflow-run-untrusted-artifact`: Flags `workflow_run` workflows downloading untrusted artifacts from upstream runs without validation.
+    - `comment-trigger-no-auth`: Flags `issue_comment` and `pull_request_review_comment` triggers lacking `author_association` authorization.
+    - `dispatch-input-injection`: Flags workflow dispatch inputs interpolated directly into shell `run:` strings.
+    - `bot-actor-spoofing`: Flags authorization checks relying solely on `github.actor == 'dependabot[bot]'` username matching.
+  - **Batch C (Supply Chain and Execution Hygiene)**:
+    - `unpinned-reusable-workflow`: Flags reusable workflow calls referenced by mutable branch or tag instead of 40-character commit SHA.
+    - `unpinned-docker-image`: Flags container and service images referenced by mutable tags instead of sha256 digests.
+    - `curl-pipe-shell`: Flags downloading remote scripts via curl/wget piped directly into shell interpreters.
+    - `insecure-commands-enabled`: Flags enabling `ACTIONS_ALLOW_UNSECURE_COMMANDS: true` or using deprecated runner commands (`::set-env`, `::add-path`).
+    - `cache-poisoning-risk`: Flags restoring `actions/cache` in privileged workflows with write permissions or release triggers.
+  - **Batch D (OIDC, Permissions, and Reliability Hygiene)**:
+    - `oidc-write-untrusted`: Flags granting `id-token: write` on untrusted triggers (`pull_request`, `issue_comment`).
+    - `permissions-overbroad-job`: Flags jobs requesting write permissions while executing strictly read-only commands.
+    - `continue-on-error-security-step`: Flags security scanner and signing steps configured with `continue-on-error: true`.
+    - `missing-timeout`: Flags execution jobs that omit `timeout-minutes`, risking 6-hour runner starvation.
+    - `known-vulnerable-action`: Flags action versions matching verified published security advisories (e.g. CVE-2025-30066 for `tj-actions/changed-files`).
+- Curated Action Advisories Database in `app/data/action_advisories.json`.
+- Standardized `build_finding` helper on `BaseRule` for consistent finding creation.
+- Enhanced AST parser and workflow object model in `app/parser/`:
+  - Captured `if_condition` and `if_line` on `Job` and `Step`.
+  - Captured `container`, `container_image_line`, and `services` on `Job`.
+  - Captured `continue_on_error` and `continue_on_error_line` on `Step`.
+  - Captured `permission_lines` on `Workflow` and `Job`.
+  - Captured `env_lines` on `Workflow`.
+- Expanded CLI table formatter with severity summary breakdown (CRITICAL, HIGH, MEDIUM, LOW, INFO).
+- Full test suite expansion: 95 passing tests with 0 failures, 100% precision and recall on synthetic benchmark corpus.
+
 ## [0.3.0] - 2026-11-01
 
 ### Phase 2: Vulnerability Detection Engine

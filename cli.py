@@ -52,19 +52,33 @@ def format_table(findings: list[Finding]) -> str:
         return "\n[+] No security vulnerabilities detected. All checks passed!\n"
 
     lines = []
-    lines.append("\n" + "=" * 90)
-    lines.append(f"{'RULE':<6} {'SEV':<10} {'LOCATION':<30} {'TITLE'}")
-    lines.append("-" * 90)
+    lines.append("\n" + "=" * 110)
+    lines.append(f"{'RULE':<32} {'SEV':<10} {'LOCATION':<32} {'TITLE'}")
+    lines.append("-" * 110)
+
+    from collections import Counter
+    sev_counts = Counter()
+    rule_counts = Counter()
 
     for f in findings:
         loc = f"{Path(f.file).name}:{f.line}"
         if f.job:
             loc += f" [{f.job}]"
         sev_str = f.severity.value if isinstance(f.severity, Severity) else str(f.severity)
-        lines.append(f"{f.rule_id:<6} {sev_str:<10} {loc:<30} {f.title}")
+        sev_counts[sev_str] += 1
+        rule_counts[f.rule_id] += 1
+        lines.append(f"{f.rule_id:<32} {sev_str:<10} {loc:<32} {f.title}")
 
-    lines.append("=" * 90)
-    lines.append(f"Total findings: {len(findings)}\n")
+    lines.append("=" * 110)
+    lines.append(f"Total findings: {len(findings)}")
+
+    # Severity summary breakdown
+    ordered_sevs = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
+    sev_parts = [f"{s}: {sev_counts[s]}" for s in ordered_sevs if sev_counts[s] > 0]
+    if sev_parts:
+        lines.append("Severity breakdown: " + ", ".join(sev_parts))
+
+    lines.append("")
     return "\n".join(lines)
 
 
