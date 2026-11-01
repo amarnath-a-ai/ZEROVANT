@@ -1,0 +1,18 @@
+name: neg-oidc-trusted
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  cloud-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@0123456789abcdef0123456789abcdef01234567
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/ci
+          aws-region: us-east-1

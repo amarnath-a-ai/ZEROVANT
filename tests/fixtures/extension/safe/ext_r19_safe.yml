@@ -1,0 +1,17 @@
+name: ext-dispatch-input-injection-safe
+on:
+  workflow_dispatch:
+    inputs:
+      name:
+        description: Name to greet
+        required: true
+permissions:
+  contents: read
+jobs:
+  greet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: echo "Hello $NAME"
+        env:
+          NAME: ${{ inputs.name }}

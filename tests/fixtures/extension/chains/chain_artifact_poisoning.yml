@@ -1,0 +1,20 @@
+name: chain-artifact-poisoning
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/download-artifact@0123456789abcdef0123456789abcdef01234567
+        with:
+          name: out
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - run: bash ./out/apply.sh
+        env:
+          APPLY_TOKEN: ${{ secrets.APPLY_TOKEN }}

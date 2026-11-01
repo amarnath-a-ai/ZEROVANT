@@ -85,3 +85,46 @@ def test_real_world_sources_documented():
     assert "actions_checkout_check_dist.yml" in content
     assert "pallets_flask_tests.yaml" in content
     assert "License" in content
+
+
+def test_extension_fixtures_coverage_and_ground_truth():
+    """Verify extension fixtures exist, parse as valid YAML, and match ground-truth assertions."""
+    ext_dir = FIXTURES_DIR / "extension"
+    assert ext_dir.is_dir(), "Missing tests/fixtures/extension directory"
+
+    vuln_files = list((ext_dir / "vulnerable").glob("*.yml")) + list((ext_dir / "vulnerable").glob("*.yaml"))
+    safe_files = list((ext_dir / "safe").glob("*.yml")) + list((ext_dir / "safe").glob("*.yaml"))
+    chain_files = list((ext_dir / "chains").glob("*.yml")) + list((ext_dir / "chains").glob("*.yaml"))
+
+    assert len(vuln_files) == 20, f"Expected 20 extension vulnerable fixtures, got {len(vuln_files)}"
+    assert len(safe_files) == 20, f"Expected 20 extension safe fixtures, got {len(safe_files)}"
+    assert len(chain_files) == 15, f"Expected 15 extension chain fixtures, got {len(chain_files)}"
+
+    ext_gt_path = GROUND_TRUTH_PATH.parent / "ground_truth_extension.json"
+    assert ext_gt_path.is_file(), "Missing benchmark/ground_truth_extension.json"
+    ext_gt = json.loads(ext_gt_path.read_text(encoding="utf-8"))
+    base_dir = GROUND_TRUTH_PATH.parent.parent
+
+    for entry in ext_gt["fixtures"]:
+        file_rel = entry["file"]
+        full_path = base_dir / file_rel
+        assert full_path.is_file(), f"Ground-truth file does not exist: {file_rel}"
+
+        content = full_path.read_text(encoding="utf-8")
+        parsed = yaml.safe_load(content)
+        assert isinstance(parsed, dict), f"Extension fixture {file_rel} did not parse into mapping"
+
+        lines = content.splitlines()
+
+        for item in entry.get("must_include", []):
+            job_name = item.get("job")
+            if job_name:
+                assert "jobs" in parsed, f"Fixture {file_rel} missing 'jobs' section"
+                assert job_name in parsed["jobs"], f"Job '{job_name}' not found in {file_rel}"
+
+            line_no = item.get("line")
+            if line_no:
+                assert 1 <= line_no <= len(lines), f"Line {line_no} out of bounds for {file_rel} ({len(lines)} lines)"
+                line_text = lines[line_no - 1].strip()
+                assert len(line_text) > 0, f"Line {line_no} in {file_rel} is unexpectedly empty"
+

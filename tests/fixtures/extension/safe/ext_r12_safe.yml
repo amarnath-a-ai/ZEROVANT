@@ -1,0 +1,14 @@
+name: ext-secret-to-unpinned-action-safe
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: acme-corp/notify-action@0123456789abcdef0123456789abcdef01234567
+        with:
+          token: ${{ secrets.NOTIFY_TOKEN }}

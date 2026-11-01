@@ -1,0 +1,12 @@
+name: ext-github-env-injection
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: echo "TITLE=${{ github.event.issue.title }}" >> "$GITHUB_ENV"

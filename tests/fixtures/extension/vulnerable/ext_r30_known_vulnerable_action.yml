@@ -1,0 +1,11 @@
+name: ext-known-vulnerable-action
+on:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: tj-actions/changed-files@v35

@@ -1,0 +1,16 @@
+name: ext-continue-on-error-security-safe
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@0123456789abcdef0123456789abcdef01234567
+        with:
+          persist-credentials: false
+      - name: Run security scan
+        run: npm audit --audit-level=high

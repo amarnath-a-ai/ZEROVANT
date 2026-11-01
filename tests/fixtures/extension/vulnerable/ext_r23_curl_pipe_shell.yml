@@ -1,0 +1,12 @@
+name: ext-curl-pipe-shell
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: curl -sSL https://example.com/install.sh | bash

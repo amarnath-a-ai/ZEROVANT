@@ -1,0 +1,12 @@
+name: ext-insecure-commands-safe
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  modern:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: echo "MODE=fast" >> "$GITHUB_ENV"

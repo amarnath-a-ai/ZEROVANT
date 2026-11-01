@@ -5,128 +5,318 @@
     "tests/fixtures/vulnerable/vuln_r001_unpinned.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R001", "job": "build", "step": "Checkout Code", "line": 9},
-        {"rule_id": "R001", "job": "build", "step": "Run Linter", "line": 11},
-        {"rule_id": "R002", "job": "build", "step": null, "line": 5}
+        {
+          "rule_id": "R001",
+          "job": "build",
+          "step": "Checkout Code",
+          "line": 9
+        },
+        {
+          "rule_id": "R001",
+          "job": "build",
+          "step": "Run Linter",
+          "line": 11
+        },
+        {
+          "rule_id": "R002",
+          "job": "build",
+          "step": null,
+          "line": 5
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r002_excessive_perms.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R002", "job": "test", "step": null, "line": 9}
+        {
+          "rule_id": "R002",
+          "job": "test",
+          "step": null,
+          "line": 9
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r003_pr_target_checkout.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R003", "job": "pwn_me", "step": "Checkout Untrusted PR Head", "line": 9},
-        {"rule_id": "R002", "job": "pwn_me", "step": null, "line": 7}
+        {
+          "rule_id": "R003",
+          "job": "pwn_me",
+          "step": "Checkout Untrusted PR Head",
+          "line": 9
+        },
+        {
+          "rule_id": "R002",
+          "job": "pwn_me",
+          "step": null,
+          "line": 7
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r004_script_injection.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R004", "job": "echo_title", "step": "Print Issue Title", "line": 9},
-        {"rule_id": "R002", "job": "echo_title", "step": null, "line": 7}
+        {
+          "rule_id": "R004",
+          "job": "echo_title",
+          "step": "Print Issue Title",
+          "line": 9
+        },
+        {
+          "rule_id": "R002",
+          "job": "echo_title",
+          "step": null,
+          "line": 7
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r005_plaintext_secret.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R005", "job": "notify", "step": "Send Notification with Static Token", "line": 9},
-        {"rule_id": "R005", "job": "notify", "step": "Send Notification with Static Token", "line": 10},
-        {"rule_id": "R002", "job": "notify", "step": null, "line": 5}
+        {
+          "rule_id": "R005",
+          "job": "notify",
+          "step": "Send Notification with Static Token",
+          "line": 9
+        },
+        {
+          "rule_id": "R005",
+          "job": "notify",
+          "step": "Send Notification with Static Token",
+          "line": 10
+        },
+        {
+          "rule_id": "R002",
+          "job": "notify",
+          "step": null,
+          "line": 5
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r006_secret_in_log.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R006", "job": "debug_job", "step": "Debug Output Token", "line": 9},
-        {"rule_id": "R002", "job": "debug_job", "step": null, "line": 5}
+        {
+          "rule_id": "R006",
+          "job": "debug_job",
+          "step": "Debug Output Token",
+          "line": 9
+        },
+        {
+          "rule_id": "R002",
+          "job": "debug_job",
+          "step": null,
+          "line": 5
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r007_long_lived_credentials.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R007", "job": "deploy_aws", "step": "Configure AWS with Static Keys", "line": 12},
-        {"rule_id": "R002", "job": "deploy_aws", "step": null, "line": 7}
+        {
+          "rule_id": "R007",
+          "job": "deploy_aws",
+          "step": "Configure AWS with Static Keys",
+          "line": 12
+        },
+        {
+          "rule_id": "R002",
+          "job": "deploy_aws",
+          "step": null,
+          "line": 7
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r008_deploy_environment.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R008", "job": "deploy_prod", "step": null, "line": 7},
-        {"rule_id": "R002", "job": "deploy_prod", "step": null, "line": 7}
+        {
+          "rule_id": "R008",
+          "job": "deploy_prod",
+          "step": null,
+          "line": 7
+        },
+        {
+          "rule_id": "R002",
+          "job": "deploy_prod",
+          "step": null,
+          "line": 7
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r009_self_hosted_runner.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R009", "job": "run_on_prem", "step": null, "line": 8},
-        {"rule_id": "R002", "job": "run_on_prem", "step": null, "line": 7}
+        {
+          "rule_id": "R009",
+          "job": "run_on_prem",
+          "step": null,
+          "line": 8
+        },
+        {
+          "rule_id": "R002",
+          "job": "run_on_prem",
+          "step": null,
+          "line": 7
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/vuln_r010_third_party_action.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R010", "job": "third_party_step", "step": "Use Unvetted Third Party Action", "line": 9},
-        {"rule_id": "R001", "job": "third_party_step", "step": "Use Unvetted Third Party Action", "line": 9},
-        {"rule_id": "R002", "job": "third_party_step", "step": null, "line": 5}
+        {
+          "rule_id": "R010",
+          "job": "third_party_step",
+          "step": "Use Unvetted Third Party Action",
+          "line": 9
+        },
+        {
+          "rule_id": "R001",
+          "job": "third_party_step",
+          "step": "Use Unvetted Third Party Action",
+          "line": 9
+        },
+        {
+          "rule_id": "R002",
+          "job": "third_party_step",
+          "step": null,
+          "line": 5
+        }
       ],
       "expected_chains": []
     },
     "tests/fixtures/vulnerable/chain_pwn_request.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R003", "job": "pwn_target_job", "step": "Checkout Attacker Code", "line": 9},
-        {"rule_id": "R004", "job": "pwn_target_job", "step": "Insecure Execution of PR Script", "line": 15},
-        {"rule_id": "R002", "job": "pwn_target_job", "step": null, "line": 7}
+        {
+          "rule_id": "R003",
+          "job": "pwn_target_job",
+          "step": "Checkout Attacker Code",
+          "line": 9
+        },
+        {
+          "rule_id": "R004",
+          "job": "pwn_target_job",
+          "step": "Insecure Execution of PR Script",
+          "line": 15
+        },
+        {
+          "rule_id": "R002",
+          "job": "pwn_target_job",
+          "step": null,
+          "line": 7
+        }
       ],
-      "expected_chains": ["pwn-request"]
+      "expected_chains": [
+        "pwn-request"
+      ]
     },
     "tests/fixtures/vulnerable/chain_injection_to_exfil.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R004", "job": "triage", "step": "Process Issue", "line": 16},
-        {"rule_id": "R002", "job": "triage", "step": null, "line": 10}
+        {
+          "rule_id": "R004",
+          "job": "triage",
+          "step": "Process Issue",
+          "line": 16
+        },
+        {
+          "rule_id": "R002",
+          "job": "triage",
+          "step": null,
+          "line": 10
+        }
       ],
-      "expected_chains": ["injection-to-exfil"]
+      "expected_chains": [
+        "injection-to-exfil"
+      ]
     },
     "tests/fixtures/vulnerable/chain_supply_chain_takeover.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R001", "job": "publish_job", "step": "Untrusted Third Party Action With Mutable Tag", "line": 15},
-        {"rule_id": "R010", "job": "publish_job", "step": "Untrusted Third Party Action With Mutable Tag", "line": 15},
-        {"rule_id": "R002", "job": "publish_job", "step": null, "line": 10}
+        {
+          "rule_id": "R001",
+          "job": "publish_job",
+          "step": "Untrusted Third Party Action With Mutable Tag",
+          "line": 15
+        },
+        {
+          "rule_id": "R010",
+          "job": "publish_job",
+          "step": "Untrusted Third Party Action With Mutable Tag",
+          "line": 15
+        },
+        {
+          "rule_id": "R002",
+          "job": "publish_job",
+          "step": null,
+          "line": 10
+        }
       ],
-      "expected_chains": ["supply-chain-takeover"]
+      "expected_chains": [
+        "supply-chain-takeover"
+      ]
     },
     "tests/fixtures/vulnerable/chain_deploy_blast_radius.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R001", "job": "production_deploy", "step": "Checkout Code", "line": 10},
-        {"rule_id": "R008", "job": "production_deploy", "step": null, "line": 7},
-        {"rule_id": "R007", "job": "production_deploy", "step": "Deploy Without Environment Protection", "line": 13},
-        {"rule_id": "R002", "job": "production_deploy", "step": null, "line": 7}
+        {
+          "rule_id": "R001",
+          "job": "production_deploy",
+          "step": "Checkout Code",
+          "line": 10
+        },
+        {
+          "rule_id": "R008",
+          "job": "production_deploy",
+          "step": null,
+          "line": 7
+        },
+        {
+          "rule_id": "R007",
+          "job": "production_deploy",
+          "step": "Deploy Without Environment Protection",
+          "line": 13
+        },
+        {
+          "rule_id": "R002",
+          "job": "production_deploy",
+          "step": null,
+          "line": 7
+        }
       ],
-      "expected_chains": ["deploy-blast-radius"]
+      "expected_chains": [
+        "deploy-blast-radius"
+      ]
     },
     "tests/fixtures/vulnerable/chain_runner_persistence.yml": {
       "type": "synthetic_vulnerable",
       "expected_findings": [
-        {"rule_id": "R009", "job": "host_execution", "step": null, "line": 8},
-        {"rule_id": "R002", "job": "host_execution", "step": null, "line": 7}
+        {
+          "rule_id": "R009",
+          "job": "host_execution",
+          "step": null,
+          "line": 8
+        },
+        {
+          "rule_id": "R002",
+          "job": "host_execution",
+          "step": null,
+          "line": 7
+        }
       ],
-      "expected_chains": ["runner-persistence"]
+      "expected_chains": [
+        "runner-persistence"
+      ]
     },
     "tests/fixtures/vulnerable/edge_malformed.yml": {
       "type": "edge_malformed",
@@ -183,7 +373,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Unpinned action tags used in steps"}
+        {
+          "rule_id": "R001",
+          "note": "Unpinned action tags used in steps"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -192,7 +385,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4 and actions/setup-python@v5"}
+        {
+          "rule_id": "R001",
+          "note": "Unpinned actions/checkout@v4 and actions/setup-python@v5"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -201,7 +397,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Unpinned mutable tags on official actions"}
+        {
+          "rule_id": "R001",
+          "note": "Unpinned mutable tags on official actions"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -210,7 +409,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4"}
+        {
+          "rule_id": "R001",
+          "note": "Unpinned actions/checkout@v4"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -219,7 +421,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4"}
+        {
+          "rule_id": "R001",
+          "note": "Unpinned actions/checkout@v4"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -228,7 +433,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Unpinned actions/checkout@v4"}
+        {
+          "rule_id": "R001",
+          "note": "Unpinned actions/checkout@v4"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -237,7 +445,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Uses tag refs on actions"}
+        {
+          "rule_id": "R001",
+          "note": "Uses tag refs on actions"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -246,7 +457,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Uses actions/checkout@v4 and setup-node@v4"}
+        {
+          "rule_id": "R001",
+          "note": "Uses actions/checkout@v4 and setup-node@v4"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -255,7 +469,10 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Uses actions/checkout@v4"}
+        {
+          "rule_id": "R001",
+          "note": "Uses actions/checkout@v4"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
@@ -264,11 +481,1048 @@
       "type": "real_world",
       "review_status": "manually reviewed",
       "expected_findings": [
-        {"rule_id": "R001", "note": "Uses unpinned actions/checkout@v4"}
+        {
+          "rule_id": "R001",
+          "note": "Uses unpinned actions/checkout@v4"
+        }
       ],
       "expected_chains": [],
       "uncertainties": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r11_persist_credentials.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "persist-credentials",
+          "job": "build",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "persist-credentials",
+          "job": "build",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r11_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "persist-credentials"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r12_secret_to_unpinned_action.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "secret-to-unpinned-action",
+          "job": "notify",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "secret-to-unpinned-action",
+          "job": "notify",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r12_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "secret-to-unpinned-action"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r13_overprovisioned_secrets.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "overprovisioned-secrets",
+          "job": "report",
+          "line": 17,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "overprovisioned-secrets",
+          "job": "report",
+          "line": 17,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r13_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "overprovisioned-secrets"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r14_artifact_leak.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "artifact-leak",
+          "job": "package",
+          "line": 19,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "artifact-leak",
+          "job": "package",
+          "line": 19,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r14_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "artifact-leak"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r15_secrets_inherit.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "secrets-inherit",
+          "job": "call-build",
+          "line": 10,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "secrets-inherit",
+          "job": "call-build",
+          "line": 10,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r15_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "secrets-inherit",
+        "missing-timeout"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r16_github_env_injection.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "github-env-injection",
+          "job": "triage",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "github-env-injection",
+          "job": "triage",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r16_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "github-env-injection",
+        "script-injection"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r17_workflow_run_artifact.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "workflow-run-untrusted-artifact",
+          "job": "comment",
+          "line": 14,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "workflow-run-untrusted-artifact",
+          "job": "comment",
+          "line": 14,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r17_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "workflow-run-untrusted-artifact"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r18_comment_no_auth.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "comment-trigger-no-auth",
+          "job": "handle",
+          "line": 3,
+          "line_strict": false
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "comment-trigger-no-auth",
+          "job": "handle",
+          "line": 3,
+          "line_strict": false
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r18_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "comment-trigger-no-auth"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r19_dispatch_input_injection.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "dispatch-input-injection",
+          "job": "greet",
+          "line": 15,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "dispatch-input-injection",
+          "job": "greet",
+          "line": 15,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r19_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "dispatch-input-injection"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r20_bot_actor_spoofing.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "bot-actor-spoofing",
+          "job": "automerge",
+          "line": 10,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "bot-actor-spoofing",
+          "job": "automerge",
+          "line": 10,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r20_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "bot-actor-spoofing"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r21_unpinned_reusable_workflow.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "unpinned-reusable-workflow",
+          "job": "shared-build",
+          "line": 9,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "unpinned-reusable-workflow",
+          "job": "shared-build",
+          "line": 9,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r21_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "unpinned-reusable-workflow"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r22_unpinned_docker_image.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "unpinned-docker-image",
+          "job": "test",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "unpinned-docker-image",
+          "job": "test",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r22_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "unpinned-docker-image"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r23_curl_pipe_shell.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "curl-pipe-shell",
+          "job": "setup",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "curl-pipe-shell",
+          "job": "setup",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r23_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "curl-pipe-shell"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r24_insecure_commands.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "insecure-commands-enabled",
+          "job": null,
+          "line": 8,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "insecure-commands-enabled",
+          "job": null,
+          "line": 8,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r24_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "insecure-commands-enabled"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r25_cache_poisoning.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "cache-poisoning-risk",
+          "job": "package",
+          "line": 15,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "cache-poisoning-risk",
+          "job": "package",
+          "line": 15,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r25_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "cache-poisoning-risk"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r26_oidc_untrusted.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "oidc-write-untrusted",
+          "job": null,
+          "line": 5,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "oidc-write-untrusted",
+          "job": null,
+          "line": 5,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r26_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "oidc-write-untrusted"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r27_permissions_overbroad_job.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "permissions-overbroad-job",
+          "job": "unit-tests",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "permissions-overbroad-job",
+          "job": "unit-tests",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r27_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "permissions-overbroad-job"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r28_continue_on_error_security.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "continue-on-error-security-step",
+          "job": "audit",
+          "line": 17,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "continue-on-error-security-step",
+          "job": "audit",
+          "line": 17,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r28_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "continue-on-error-security-step"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r29_missing_timeout.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "missing-timeout",
+          "job": "lint",
+          "line": 8,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "missing-timeout",
+          "job": "lint",
+          "line": 8,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r29_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "missing-timeout"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/vulnerable/ext_r30_known_vulnerable_action.yml": {
+      "type": "extension_vulnerable",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "known-vulnerable-action",
+          "job": "changes",
+          "line": 11,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "known-vulnerable-action",
+          "job": "changes",
+          "line": 11,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/safe/ext_r30_safe.yml": {
+      "type": "extension_safe",
+      "category": "safe",
+      "must_include": [],
+      "must_not_include": [
+        "known-vulnerable-action"
+      ],
+      "expected_chains": [],
+      "must_not_have_chains": [],
+      "fully_clean": true,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_core_pwn_request_no_privilege.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "pwn-request"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_core_injection_no_secrets_in_job.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [
+        {
+          "rule_id": "script-injection",
+          "job": "triage",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "injection-to-exfil"
+      ],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "script-injection",
+          "job": "triage",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/chains/neg_core_supply_chain_readonly.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "supply-chain-takeover"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_core_deploy_protected.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "deploy-blast-radius"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_core_runner_trusted_trigger.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "runner-persistence"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/chain_artifact_poisoning.yml": {
+      "type": "extension_chain",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "workflow-run-untrusted-artifact",
+          "job": "apply",
+          "line": 13,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [
+        {
+          "chain_type": "artifact-poisoning",
+          "jobs": [
+            "apply"
+          ]
+        }
+      ],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "workflow-run-untrusted-artifact",
+          "job": "apply",
+          "line": 13,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/chains/chain_comment_trigger_takeover.yml": {
+      "type": "extension_chain",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "script-injection",
+          "job": "run-command",
+          "line": 12,
+          "line_strict": true
+        },
+        {
+          "rule_id": "comment-trigger-no-auth",
+          "job": "run-command",
+          "line": 3,
+          "line_strict": false
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [
+        {
+          "chain_type": "comment-trigger-takeover",
+          "jobs": [
+            "run-command"
+          ]
+        }
+      ],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "script-injection",
+          "job": "run-command",
+          "line": 12,
+          "line_strict": true
+        },
+        {
+          "rule_id": "comment-trigger-no-auth",
+          "job": "run-command",
+          "line": 3,
+          "line_strict": false
+        }
+      ]
+    },
+    "tests/fixtures/extension/chains/chain_credential_persistence.yml": {
+      "type": "extension_chain",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "persist-credentials",
+          "job": "build",
+          "line": 12,
+          "line_strict": true
+        },
+        {
+          "rule_id": "unpinned-action-tag",
+          "job": "build",
+          "line": 13,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [
+        {
+          "chain_type": "credential-persistence",
+          "jobs": [
+            "build"
+          ]
+        }
+      ],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "persist-credentials",
+          "job": "build",
+          "line": 12,
+          "line_strict": true
+        },
+        {
+          "rule_id": "unpinned-action-tag",
+          "job": "build",
+          "line": 13,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/chains/chain_cache_poisoning_escalation.yml": {
+      "type": "extension_chain",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "cache-poisoning-risk",
+          "job": "package",
+          "line": 15,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [
+        {
+          "chain_type": "cache-poisoning-escalation",
+          "jobs": [
+            "package"
+          ]
+        }
+      ],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "cache-poisoning-risk",
+          "job": "package",
+          "line": 15,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/chains/chain_oidc_abuse.yml": {
+      "type": "extension_chain",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "oidc-write-untrusted",
+          "job": null,
+          "line": 5,
+          "line_strict": true
+        }
+      ],
+      "must_not_include": [],
+      "expected_chains": [
+        {
+          "chain_type": "oidc-abuse",
+          "jobs": [
+            "cloud-check"
+          ]
+        }
+      ],
+      "must_not_have_chains": [],
+      "fully_clean": false,
+      "expected_findings": [
+        {
+          "rule_id": "oidc-write-untrusted",
+          "job": null,
+          "line": 5,
+          "line_strict": true
+        }
+      ]
+    },
+    "tests/fixtures/extension/chains/neg_artifact_poisoning_split.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "artifact-poisoning"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_comment_with_auth.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "comment-trigger-takeover"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_credential_persistence_split.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "credential-persistence"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_cache_unprivileged.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "cache-poisoning-escalation"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
+    },
+    "tests/fixtures/extension/chains/neg_oidc_trusted.yml": {
+      "type": "extension_chain_negative",
+      "category": "chain_negative",
+      "must_include": [],
+      "must_not_include": [],
+      "expected_chains": [],
+      "must_not_have_chains": [
+        "oidc-abuse"
+      ],
+      "fully_clean": false,
+      "expected_findings": []
     }
   }
 }
-

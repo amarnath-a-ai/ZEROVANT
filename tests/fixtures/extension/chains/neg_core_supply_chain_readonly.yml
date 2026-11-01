@@ -1,0 +1,12 @@
+name: neg-supply-chain-readonly
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: acme-corp/lint-action@v2

@@ -1,0 +1,14 @@
+name: ext-github-env-injection-safe
+on:
+  issues:
+    types: [opened]
+permissions:
+  contents: read
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: echo "TITLE_LEN=${#TITLE}" >> "$GITHUB_ENV"
+        env:
+          TITLE: ${{ github.event.issue.title }}

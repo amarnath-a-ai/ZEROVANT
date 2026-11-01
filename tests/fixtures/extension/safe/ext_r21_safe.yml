@@ -1,0 +1,9 @@
+name: ext-unpinned-reusable-workflow-safe
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  shared-build:
+    uses: acme-corp/shared-workflows/.github/workflows/build.yml@0123456789abcdef0123456789abcdef01234567

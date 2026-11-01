@@ -1,0 +1,20 @@
+name: neg-deploy-protected
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  deploy-app:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: aws-actions/configure-aws-credentials@0123456789abcdef0123456789abcdef01234567
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/deploy
+          aws-region: us-east-1
+      - run: ./deploy.sh

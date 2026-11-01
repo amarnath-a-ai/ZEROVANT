@@ -1,0 +1,19 @@
+name: ext-artifact-leak-safe
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@0123456789abcdef0123456789abcdef01234567
+        with:
+          persist-credentials: false
+      - run: make dist
+      - uses: actions/upload-artifact@0123456789abcdef0123456789abcdef01234567
+        with:
+          name: dist
+          path: dist/

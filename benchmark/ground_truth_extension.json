@@ -1,0 +1,611 @@
+{
+  "schema_version": 1,
+  "description": "Extension ground truth for rules 11-30, five extra chains and chain near-miss fixtures. Hand-reasoned from fixture text. Merge into benchmark/ground_truth.json using that file's existing schema. must_include = findings that must appear (other findings are allowed). must_not_include = rule ids that must NOT fire on that file. fully_clean = hand-reasoned expectation of zero findings; if the engine disagrees, analyse by hand who is wrong and explain, do not silently edit. line_strict=false means the finding may be reported on the trigger or the job line.",
+  "fixtures": [
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r11_persist_credentials.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "persist-credentials",
+          "job": "build",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r11_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "persist-credentials"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r12_secret_to_unpinned_action.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "secret-to-unpinned-action",
+          "job": "notify",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r12_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "secret-to-unpinned-action"
+      ],
+      "note": "third-party-unverified-action may still fire; only secret-to-unpinned-action must be absent"
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r13_overprovisioned_secrets.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "overprovisioned-secrets",
+          "job": "report",
+          "line": 17,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r13_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "overprovisioned-secrets"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r14_artifact_leak.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "artifact-leak",
+          "job": "package",
+          "line": 19,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r14_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "artifact-leak"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r15_secrets_inherit.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "secrets-inherit",
+          "job": "call-build",
+          "line": 10,
+          "line_strict": true
+        }
+      ],
+      "note": "reusable-workflow caller job: no steps/runs-on/timeout; missing-timeout must NOT fire on caller jobs"
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r15_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "secrets-inherit",
+        "missing-timeout"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r16_github_env_injection.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "github-env-injection",
+          "job": "triage",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r16_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "github-env-injection",
+        "script-injection"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r17_workflow_run_artifact.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "workflow-run-untrusted-artifact",
+          "job": "comment",
+          "line": 14,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r17_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "workflow-run-untrusted-artifact"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r18_comment_no_auth.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "comment-trigger-no-auth",
+          "job": "handle",
+          "line": 3,
+          "line_strict": false
+        }
+      ],
+      "note": "location may be the trigger or the job; line_strict is false"
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r18_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "comment-trigger-no-auth"
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r19_dispatch_input_injection.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "dispatch-input-injection",
+          "job": "greet",
+          "line": 15,
+          "line_strict": true
+        }
+      ],
+      "note": "severity should be low/info: only users with write access can dispatch"
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r19_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "dispatch-input-injection"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r20_bot_actor_spoofing.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "bot-actor-spoofing",
+          "job": "automerge",
+          "line": 10,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r20_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "bot-actor-spoofing"
+      ],
+      "note": "49699333 is the numeric user id commonly documented for dependabot[bot]; verify before citing in docs"
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r21_unpinned_reusable_workflow.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "unpinned-reusable-workflow",
+          "job": "shared-build",
+          "line": 9,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r21_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "unpinned-reusable-workflow"
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r22_unpinned_docker_image.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "unpinned-docker-image",
+          "job": "test",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r22_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "unpinned-docker-image"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r23_curl_pipe_shell.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "curl-pipe-shell",
+          "job": "setup",
+          "line": 12,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r23_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "curl-pipe-shell"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r24_insecure_commands.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "insecure-commands-enabled",
+          "job": null,
+          "line": 8,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r24_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "insecure-commands-enabled"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r25_cache_poisoning.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "cache-poisoning-risk",
+          "job": "package",
+          "line": 15,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r25_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "cache-poisoning-risk"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r26_oidc_untrusted.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "oidc-write-untrusted",
+          "job": null,
+          "line": 5,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r26_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "oidc-write-untrusted"
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r27_permissions_overbroad_job.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "permissions-overbroad-job",
+          "job": "unit-tests",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "note": "heuristic rule; job only runs read-only commands"
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r27_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "permissions-overbroad-job"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r28_continue_on_error_security.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "continue-on-error-security-step",
+          "job": "audit",
+          "line": 17,
+          "line_strict": true
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r28_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "continue-on-error-security-step"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r29_missing_timeout.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "missing-timeout",
+          "job": "lint",
+          "line": 8,
+          "line_strict": true
+        }
+      ],
+      "note": "informational severity"
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r29_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "missing-timeout"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/vulnerable/ext_r30_known_vulnerable_action.yml",
+      "category": "vulnerable",
+      "must_include": [
+        {
+          "rule_id": "known-vulnerable-action",
+          "job": "changes",
+          "line": 11,
+          "line_strict": true
+        }
+      ],
+      "note": "CONDITIONAL: only valid if the agent verifies a published advisory for this action from GitHub Advisories or the action's official page and records its ID/URL in the data file. If it cannot verify, remove this expectation and say so."
+    },
+    {
+      "file": "tests/fixtures/extension/safe/ext_r30_safe.yml",
+      "category": "safe",
+      "must_not_include": [
+        "known-vulnerable-action"
+      ],
+      "fully_clean": true
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_core_pwn_request_no_privilege.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "pwn-request"
+      ],
+      "note": "PR-head checkout exists but job has no secrets and only read permission, so no pwn-request chain. pr-target-unsafe-checkout may still fire as a standalone finding."
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_core_injection_no_secrets_in_job.yml",
+      "category": "chain_negative",
+      "must_include": [
+        {
+          "rule_id": "script-injection",
+          "job": "triage",
+          "line": 12,
+          "line_strict": true
+        }
+      ],
+      "must_not_have_chains": [
+        "injection-to-exfil"
+      ],
+      "note": "injection and secrets are in DIFFERENT jobs, so correlation must not join them"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_core_supply_chain_readonly.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "supply-chain-takeover"
+      ],
+      "note": "unpinned third-party action but read-only permissions and no secrets"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_core_deploy_protected.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "deploy-blast-radius"
+      ],
+      "note": "deployment job has environment protection and uses OIDC, not long-lived keys"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_core_runner_trusted_trigger.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "runner-persistence"
+      ],
+      "note": "self-hosted runner but only trusted triggers (push to main, manual dispatch)"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/chain_artifact_poisoning.yml",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "workflow-run-untrusted-artifact",
+          "job": "apply",
+          "line": 13,
+          "line_strict": true
+        }
+      ],
+      "expected_chains": [
+        {
+          "chain_type": "artifact-poisoning",
+          "jobs": [
+            "apply"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/chains/chain_comment_trigger_takeover.yml",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "script-injection",
+          "job": "run-command",
+          "line": 12,
+          "line_strict": true
+        },
+        {
+          "rule_id": "comment-trigger-no-auth",
+          "job": "run-command",
+          "line": 3,
+          "line_strict": false
+        }
+      ],
+      "expected_chains": [
+        {
+          "chain_type": "comment-trigger-takeover",
+          "jobs": [
+            "run-command"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/chains/chain_credential_persistence.yml",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "persist-credentials",
+          "job": "build",
+          "line": 12,
+          "line_strict": true
+        },
+        {
+          "rule_id": "unpinned-action-tag",
+          "job": "build",
+          "line": 13,
+          "line_strict": true
+        }
+      ],
+      "expected_chains": [
+        {
+          "chain_type": "credential-persistence",
+          "jobs": [
+            "build"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/chains/chain_cache_poisoning_escalation.yml",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "cache-poisoning-risk",
+          "job": "package",
+          "line": 15,
+          "line_strict": true
+        }
+      ],
+      "expected_chains": [
+        {
+          "chain_type": "cache-poisoning-escalation",
+          "jobs": [
+            "package"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/chains/chain_oidc_abuse.yml",
+      "category": "chain",
+      "must_include": [
+        {
+          "rule_id": "oidc-write-untrusted",
+          "job": null,
+          "line": 5,
+          "line_strict": true
+        }
+      ],
+      "expected_chains": [
+        {
+          "chain_type": "oidc-abuse",
+          "jobs": [
+            "cloud-check"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_artifact_poisoning_split.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "artifact-poisoning"
+      ],
+      "note": "artifact job has no secrets or write permission; the secret is in a different job"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_comment_with_auth.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "comment-trigger-takeover"
+      ],
+      "note": "author check present and comment body passed through env, not interpolated"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_credential_persistence_split.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "credential-persistence"
+      ],
+      "note": "persisted checkout credentials and the unpinned third-party action are in different jobs"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_cache_unprivileged.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "cache-poisoning-escalation"
+      ],
+      "note": "cache used in an unprivileged test job: no secrets, no write permission, not a deploy job"
+    },
+    {
+      "file": "tests/fixtures/extension/chains/neg_oidc_trusted.yml",
+      "category": "chain_negative",
+      "must_not_have_chains": [
+        "oidc-abuse"
+      ],
+      "note": "id-token write but trusted trigger and pinned action"
+    }
+  ]
+}

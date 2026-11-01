@@ -1,0 +1,14 @@
+name: ext-insecure-commands
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+env:
+  ACTIONS_ALLOW_UNSECURE_COMMANDS: true
+jobs:
+  legacy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: echo "::set-env name=MODE::fast"

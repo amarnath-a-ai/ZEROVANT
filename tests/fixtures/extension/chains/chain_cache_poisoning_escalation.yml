@@ -1,0 +1,21 @@
+name: chain-cache-poisoning-escalation
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@0123456789abcdef0123456789abcdef01234567
+        with:
+          persist-credentials: false
+      - uses: actions/cache@0123456789abcdef0123456789abcdef01234567
+        with:
+          path: ~/.npm
+          key: npm-${{ hashFiles('package-lock.json') }}
+      - run: npm ci && npm run build
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

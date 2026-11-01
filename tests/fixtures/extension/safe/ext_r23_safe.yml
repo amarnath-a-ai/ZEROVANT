@@ -1,0 +1,15 @@
+name: ext-curl-pipe-shell-safe
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: |
+          curl -sSLo install.sh https://example.com/install.sh
+          echo "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef  install.sh" | sha256sum -c -
+          bash install.sh

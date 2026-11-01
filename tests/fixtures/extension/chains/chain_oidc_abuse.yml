@@ -1,0 +1,15 @@
+name: chain-oidc-abuse
+on:
+  pull_request:
+permissions:
+  id-token: write
+  contents: read
+jobs:
+  cloud-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::123456789012:role/ci
+          aws-region: us-east-1

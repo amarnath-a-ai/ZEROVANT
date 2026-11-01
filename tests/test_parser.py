@@ -46,8 +46,8 @@ def test_all_valid_fixtures_parse_successfully():
         assert len(result.workflow.jobs) > 0
         valid_count += 1
 
-    # Should have parsed at least 30 valid fixtures
-    assert valid_count >= 30, f"Expected >= 30 valid fixtures, parsed {valid_count}"
+    # Should have parsed at least 85 valid fixtures
+    assert valid_count >= 85, f"Expected >= 85 valid fixtures, parsed {valid_count}"
 
 
 def test_trigger_normalization_string():
@@ -340,3 +340,44 @@ def test_load_workflows_helper():
     assert len(res_dir) >= 8
     for r in res_dir:
         assert r.is_valid
+
+
+def test_extension_fixtures_exact_line_accuracy():
+    """Verify exact line accuracy for representative extension fixtures."""
+    loader = WorkflowLoader()
+
+    # Test ext_r11_persist_credentials.yml
+    f11_path = FIXTURES_DIR / "extension" / "vulnerable" / "ext_r11_persist_credentials.yml"
+    res11 = loader.load_string(f11_path.read_text(encoding="utf-8"), file_path="ext_r11_persist_credentials.yml")
+    assert res11.is_valid
+    wf11 = res11.workflow
+    assert wf11.line == 1
+    assert "build" in wf11.jobs
+    job11 = wf11.jobs["build"]
+    assert job11.line == 8
+    assert len(job11.steps) == 3
+    assert job11.steps[0].line == 12
+
+    # Test ext_r21_unpinned_reusable_workflow.yml (reusable workflow call at job level)
+    f21_path = FIXTURES_DIR / "extension" / "vulnerable" / "ext_r21_unpinned_reusable_workflow.yml"
+    res21 = loader.load_string(f21_path.read_text(encoding="utf-8"), file_path="ext_r21_unpinned_reusable_workflow.yml")
+    assert res21.is_valid
+    wf21 = res21.workflow
+    assert "shared-build" in wf21.jobs
+    job21 = wf21.jobs["shared-build"]
+    assert job21.line == 8
+    assert job21.uses == "acme-corp/shared-workflows/.github/workflows/build.yml@main"
+    assert job21.action_ref is not None
+    assert job21.action_ref.ref_type == RefType.BRANCH
+    assert job21.action_ref.ref == "main"
+
+    # Test ext_r23_curl_pipe_shell.yml
+    f23_path = FIXTURES_DIR / "extension" / "vulnerable" / "ext_r23_curl_pipe_shell.yml"
+    res23 = loader.load_string(f23_path.read_text(encoding="utf-8"), file_path="ext_r23_curl_pipe_shell.yml")
+    assert res23.is_valid
+    wf23 = res23.workflow
+    assert "setup" in wf23.jobs
+    job23 = wf23.jobs["setup"]
+    assert job23.steps[0].line == 12
+    assert "curl -sSL https://example.com/install.sh | bash" in job23.steps[0].run
+

@@ -1,0 +1,14 @@
+name: chain-comment-trigger-takeover
+on:
+  issue_comment:
+    types: [created]
+permissions:
+  contents: write
+jobs:
+  run-command:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: ./bot.sh "${{ github.event.comment.body }}"
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}

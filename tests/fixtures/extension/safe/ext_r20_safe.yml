@@ -1,0 +1,17 @@
+name: ext-bot-actor-spoofing-safe
+on:
+  pull_request_target:
+    types: [opened]
+permissions:
+  contents: write
+  pull-requests: write
+jobs:
+  automerge:
+    if: github.event.pull_request.user.id == 49699333
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - run: gh pr merge --auto --squash "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
