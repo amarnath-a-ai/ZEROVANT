@@ -387,6 +387,10 @@ class WorkflowLoader:
         job_env: dict[str, Any] = {}
         uses: str = ""
         action_ref: ParsedUses | None = None
+        secrets: Any = None
+        secrets_line: int | None = None
+        timeout_minutes: int | None = None
+        timeout_minutes_line: int | None = None
 
         for k_node, v_node in job_node.value:
             k = str(k_node.value)
@@ -428,6 +432,20 @@ class WorkflowLoader:
                     uses = str(u_val)
                     action_ref = parse_uses(uses)
 
+            elif k == "secrets":
+                secrets_val, _ = _node_to_python(v_node)
+                secrets = secrets_val
+                secrets_line = k_line
+
+            elif k in ("timeout-minutes", "timeout_minutes"):
+                t_val, _ = _node_to_python(v_node)
+                if t_val is not None:
+                    try:
+                        timeout_minutes = int(t_val)
+                        timeout_minutes_line = k_line
+                    except (ValueError, TypeError):
+                        pass
+
             elif k == "steps":
                 if isinstance(v_node, yaml.SequenceNode):
                     steps = self._build_steps(v_node)
@@ -447,6 +465,10 @@ class WorkflowLoader:
             line=job_line,
             uses=uses,
             action_ref=action_ref,
+            secrets=secrets,
+            secrets_line=secrets_line,
+            timeout_minutes=timeout_minutes,
+            timeout_minutes_line=timeout_minutes_line,
         )
 
     def _build_steps(self, steps_node: yaml.SequenceNode) -> list[Step]:

@@ -20,12 +20,10 @@ TRUSTED_ACTION_OWNERS = {
 DEFAULT_PERMISSIONS_SEVERITY = "MEDIUM"
 WRITE_ALL_PERMISSIONS_SEVERITY = "HIGH"
 
-# Deployment job identification keywords
+# Production deployment identification keywords
 PRODUCTION_KEYWORDS = {
     "prod",
     "production",
-    "release",
-    "publish",
 }
 
 # Untrusted workflow triggers that can be triggered by external actors

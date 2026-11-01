@@ -14,7 +14,7 @@ def test_get_rules_endpoint(client):
     assert response.status_code == 200
     data = response.get_json()
     assert "rules" in data
-    assert data["total"] == 10
+    assert data["total"] >= 10
     rule_ids = {r["id"] for r in data["rules"]}
     assert "R001" in rule_ids
     assert "R003" in rule_ids

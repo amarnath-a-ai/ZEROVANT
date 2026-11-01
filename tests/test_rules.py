@@ -5,15 +5,21 @@ from pathlib import Path
 
 from app.parser import WorkflowLoader, load_workflows
 from app.rules import (
-    ALL_RULES,
+    BATCH_A_RULES,
+    CORE_RULES,
+    ArtifactLeakRule,
     DeployEnvironmentRule,
     ExcessivePermissionsRule,
     Finding,
     LongLivedCredentialsRule,
+    OverprovisionedSecretsRule,
+    PersistCredentialsRule,
     PlaintextSecretRule,
     PrTargetCheckoutRule,
     ScriptInjectionRule,
     SecretInLogRule,
+    SecretsInheritRule,
+    SecretToUnpinnedActionRule,
     SelfHostedRunnerRule,
     Severity,
     ThirdPartyActionRule,
@@ -32,25 +38,35 @@ BENCHMARK_GROUND_TRUTH = Path(__file__).resolve().parent.parent / "benchmark" / 
 
 
 def test_all_ten_rules_registered():
-    """Verify all 10 security rules are defined, metadata-complete, and registered."""
+    """Verify all 10 core security rules and extension rules are registered."""
     registered = default_registry.list_rules()
-    assert len(registered) == 10
-    assert len(ALL_RULES) == 10
+    assert len(registered) >= 15
+    assert len(CORE_RULES) == 10
+    assert len(BATCH_A_RULES) == 5
 
-    expected_ids = {
+    core_expected_ids = {
         "R001", "R002", "R003", "R004", "R005",
         "R006", "R007", "R008", "R009", "R010",
     }
     actual_ids = {r.id for r in registered}
-    assert actual_ids == expected_ids
+    assert core_expected_ids.issubset(actual_ids)
+
+    batch_a_expected_ids = {
+        "persist-credentials",
+        "secret-to-unpinned-action",
+        "overprovisioned-secrets",
+        "artifact-leak",
+        "secrets-inherit",
+    }
+    assert batch_a_expected_ids.issubset(actual_ids)
 
     for rule in registered:
-        assert rule.id.startswith("R")
         assert rule.name, f"Rule {rule.id} missing name"
         assert rule.description, f"Rule {rule.id} missing description"
         assert rule.default_severity in Severity, f"Rule {rule.id} has invalid severity"
         assert len(rule.tags) > 0, f"Rule {rule.id} missing tags"
         assert len(rule.references) > 0, f"Rule {rule.id} missing references"
+        assert rule.tier in ("core", "extension"), f"Rule {rule.id} has invalid tier"
 
 
 # ============================================================================
@@ -482,6 +498,221 @@ jobs:
 """
     res_safe = loader.load_string(safe_yaml, file_path="safe_official.yml")
     assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r11_persist_credentials_detection():
+    """Rule 11 (persist-credentials): Detects actions/checkout without persist-credentials: false."""
+    loader = WorkflowLoader()
+    rule = PersistCredentialsRule()
+
+    vuln_yaml = """
+name: Persist Cred
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+      - uses: actions/upload-artifact@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          name: dist
+          path: dist/
+"""
+    res = loader.load_string(vuln_yaml, file_path="persist.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "persist-credentials"
+
+    safe_yaml = """
+name: No Persist Cred
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          persist-credentials: false
+      - run: make dist
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_persist.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r12_secret_to_unpinned_action_detection():
+    """Rule 12 (secret-to-unpinned-action): Detects secrets passed to unpinned third-party actions."""
+    loader = WorkflowLoader()
+    rule = SecretToUnpinnedActionRule()
+
+    vuln_yaml = """
+name: Secret Unpinned
+on: push
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: acme-corp/notify-action@v1
+        with:
+          token: ${{ secrets.NOTIFY_TOKEN }}
+"""
+    res = loader.load_string(vuln_yaml, file_path="sec_unpinned.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "secret-to-unpinned-action"
+
+    safe_yaml = """
+name: Secret Pinned
+on: push
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: acme-corp/notify-action@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          token: ${{ secrets.NOTIFY_TOKEN }}
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_sec_pinned.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r13_overprovisioned_secrets_detection():
+    """Rule 13 (overprovisioned-secrets): Detects toJSON(secrets) or dynamic indexing."""
+    loader = WorkflowLoader()
+    rule = OverprovisionedSecretsRule()
+
+    vuln_yaml = """
+name: Overprov
+on: push
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./collect.sh
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}
+"""
+    res = loader.load_string(vuln_yaml, file_path="overprov.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "overprovisioned-secrets"
+
+    safe_yaml = """
+name: Safe Secrets
+on: push
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - run: ./collect.sh
+        env:
+          TOKEN: ${{ secrets.REPORT_TOKEN }}
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_secrets.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r14_artifact_leak_detection():
+    """Rule 14 (artifact-leak): Detects archiving entire workspace root or .git/config."""
+    loader = WorkflowLoader()
+    rule = ArtifactLeakRule()
+
+    vuln_yaml = """
+name: Leak
+on: push
+jobs:
+  pkg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          name: everything
+          path: .
+"""
+    res = loader.load_string(vuln_yaml, file_path="leak.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "artifact-leak"
+
+    safe_yaml = """
+name: Safe Upload
+on: push
+jobs:
+  pkg:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@b4ffde65f46336ab88eb53be808477a3936bae11
+        with:
+          name: dist
+          path: dist/
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_upload.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r15_secrets_inherit_detection():
+    """Rule 15 (secrets-inherit): Detects reusable workflow calls using secrets: inherit."""
+    loader = WorkflowLoader()
+    rule = SecretsInheritRule()
+
+    vuln_yaml = """
+name: Inherit
+on: push
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets: inherit
+"""
+    res = loader.load_string(vuln_yaml, file_path="inherit.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "secrets-inherit"
+
+    safe_yaml = """
+name: Safe Inherit
+on: push
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+    secrets:
+      token: ${{ secrets.MY_TOKEN }}
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_inherit.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_extension_batch_a_fixtures_ground_truth():
+    """Verify Batch A extension fixtures (ext_r11..ext_r15) match ground truth."""
+    with open(BENCHMARK_GROUND_TRUTH, encoding="utf-8") as f:
+        ground_truth = json.load(f)
+
+    base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
+    for i in range(11, 16):
+        vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
+        matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
+        assert len(matching_v) == 1
+        v_path = matching_v[0]
+
+        wf_res = load_workflows(base_dir / v_path)[0]
+        detected = default_registry.run_all(wf_res.workflow)
+        detected_rule_ids = {d.rule_id for d in detected}
+
+        must_include = ground_truth["fixtures"][v_path].get("must_include", [])
+        for expected in must_include:
+            assert expected["rule_id"] in detected_rule_ids, (
+                f"Missing expected rule {expected['rule_id']} in {v_path}. Found: {detected_rule_ids}"
+            )
+
+        # Safe counterpart
+        safe_key = f"tests/fixtures/extension/safe/ext_r{i}_safe.yml"
+        if safe_key in ground_truth["fixtures"]:
+            safe_res = load_workflows(base_dir / safe_key)[0]
+            detected_safe = default_registry.run_all(safe_res.workflow)
+            must_not_include = ground_truth["fixtures"][safe_key].get("must_not_include", [])
+            for not_rule in must_not_include:
+                assert not_rule not in {d.rule_id for d in detected_safe}, (
+                    f"Unexpected rule {not_rule} fired on safe fixture {safe_key}"
+                )
+
 
 
 # ============================================================================

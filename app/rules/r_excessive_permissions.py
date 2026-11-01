@@ -115,26 +115,26 @@ class ExcessivePermissionsRule(BaseRule):
                     k for k, v in effective_perms.items()
                     if str(v).lower() in ("write", "true")
                 ]
-                # If multiple write scopes or sensitive write on untrusted triggers (issues, pull_request)
                 has_untrusted_trigger = any(
                     trig in ("issues", "issue_comment", "pull_request", "pull_request_target")
                     for trig in workflow.triggers
                 )
-                if has_untrusted_trigger and ("contents" in write_scopes or len(write_scopes) >= 2):
+                if len(write_scopes) >= 2 or (has_untrusted_trigger and "contents" in write_scopes):
                     finding_line = job.permissions_line or workflow.permissions_line or job.line
                     findings.append(
                         Finding(
                             id=f"f-r002-{len(findings)+1:04d}",
                             rule_id=self.id,
-                            title="Overbroad Write Permissions on Untrusted Trigger",
+                            title="Overbroad Write Permissions Configuration",
                             severity=Severity.HIGH,
                             file=workflow.file_path,
                             job=job_id,
                             step=None,
                             line=finding_line,
                             evidence=(
-                                f"Job '{job_id}' grants write permissions ({', '.join(write_scopes)}) "
-                                f"on untrusted event trigger ({', '.join(workflow.triggers.keys())})."
+                                f"Job '{job_id}' grants excessive write permissions ({', '.join(write_scopes)}). "
+                                "Adhere to the principle of least privilege by scoping GITHUB_TOKEN permissions "
+                                "only to the minimum required scopes."
                             ),
                             tags=list(self.tags),
                             base_score=7.8,

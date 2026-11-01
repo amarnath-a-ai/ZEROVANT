@@ -74,6 +74,10 @@ class Job:
     line: int = 1
     uses: str = ""
     action_ref: ParsedUses | None = None
+    secrets: Any = None
+    secrets_line: int | None = None
+    timeout_minutes: int | None = None
+    timeout_minutes_line: int | None = None
 
 
 @dataclass

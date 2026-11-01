@@ -68,6 +68,7 @@ class BaseRule(ABC):
     tags: list[str] = []
     references: list[str] = []
     category: str = "General"
+    tier: str = "core"  # "core" or "extension"
 
     @abstractmethod
     def evaluate(self, workflow: Workflow) -> list[Finding]:
@@ -77,4 +78,8 @@ class BaseRule(ABC):
     def check(self, workflow: Workflow) -> list[Finding]:
         """Alias for evaluate() to adhere to check(workflow) contract."""
         return self.evaluate(workflow)
+
+
+# Convenient alias
+Rule = BaseRule
 

@@ -12,11 +12,7 @@ SECRET_LOG_PATTERNS = [
         "Echoing secret directly via expression interpolation",
     ),
     (
-        re.compile(r"(?i)\b(?:echo|printf)\s+.*?\$[A-Z0-9_]*(?:TOKEN|SECRET|KEY|PASSWORD|AUTH)"),
-        "Echoing environment variable holding secret credential",
-    ),
-    (
-        re.compile(r"(?i)\b(?:printenv|env)\b(?:\s*\|.*)?$"),
+        re.compile(r"(?i)^\s*(?:printenv|env)\b(?:\s*\|.*)?$"),
         "Dumping full environment with printenv/env",
     ),
 ]
