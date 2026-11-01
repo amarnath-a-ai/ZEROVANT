@@ -8,11 +8,13 @@ from app.rules import (
     BATCH_A_RULES,
     BATCH_B_RULES,
     BATCH_C_RULES,
+    BATCH_D_RULES,
     CORE_RULES,
     ArtifactLeakRule,
     BotActorSpoofingRule,
     CachePoisoningRiskRule,
     CommentTriggerNoAuthRule,
+    ContinueOnErrorSecurityStepRule,
     CurlPipeShellRule,
     DeployEnvironmentRule,
     DispatchInputInjectionRule,
@@ -20,8 +22,12 @@ from app.rules import (
     Finding,
     GitHubEnvInjectionRule,
     InsecureCommandsEnabledRule,
+    KnownVulnerableActionRule,
     LongLivedCredentialsRule,
+    MissingTimeoutRule,
+    OidcWriteUntrustedRule,
     OverprovisionedSecretsRule,
+    PermissionsOverbroadJobRule,
     PersistCredentialsRule,
     PlaintextSecretRule,
     PrTargetCheckoutRule,
@@ -52,11 +58,12 @@ BENCHMARK_GROUND_TRUTH = Path(__file__).resolve().parent.parent / "benchmark" / 
 def test_all_ten_rules_registered():
     """Verify all 10 core security rules and extension rules are registered."""
     registered = default_registry.list_rules()
-    assert len(registered) >= 25
+    assert len(registered) == 30
     assert len(CORE_RULES) == 10
     assert len(BATCH_A_RULES) == 5
     assert len(BATCH_B_RULES) == 5
     assert len(BATCH_C_RULES) == 5
+    assert len(BATCH_D_RULES) == 5
 
     core_expected_ids = {
         "R001", "R002", "R003", "R004", "R005",
@@ -1142,6 +1149,218 @@ def test_extension_batch_c_fixtures_ground_truth():
 
     base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
     for i in range(21, 26):
+        vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
+        matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
+        assert len(matching_v) == 1
+        v_path = matching_v[0]
+
+        wf_res = load_workflows(base_dir / v_path)[0]
+        detected = default_registry.run_all(wf_res.workflow)
+        detected_rule_ids = {d.rule_id for d in detected}
+
+        must_include = ground_truth["fixtures"][v_path].get("must_include", [])
+        for expected in must_include:
+            assert expected["rule_id"] in detected_rule_ids, (
+                f"Missing expected rule {expected['rule_id']} in {v_path}. Found: {detected_rule_ids}"
+            )
+
+        # Safe counterpart
+        safe_key = f"tests/fixtures/extension/safe/ext_r{i}_safe.yml"
+        if safe_key in ground_truth["fixtures"]:
+            safe_res = load_workflows(base_dir / safe_key)[0]
+            detected_safe = default_registry.run_all(safe_res.workflow)
+            must_not_include = ground_truth["fixtures"][safe_key].get("must_not_include", [])
+            for not_rule in must_not_include:
+                assert not_rule not in {d.rule_id for d in detected_safe}, (
+                    f"Unexpected rule {not_rule} fired on safe fixture {safe_key}"
+                )
+
+
+def test_r26_oidc_write_untrusted_detection():
+    """Rule 26 (oidc-write-untrusted): Detects id-token: write on untrusted triggers."""
+    loader = WorkflowLoader()
+    rule = OidcWriteUntrustedRule()
+
+    vuln_yaml = """
+name: OIDC PR
+on: pull_request
+permissions:
+  id-token: write
+jobs:
+  auth:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "mint token"
+"""
+    res = loader.load_string(vuln_yaml, file_path="oidc_pr.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "oidc-write-untrusted"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: OIDC Push
+on:
+  push:
+    branches: [main]
+permissions:
+  id-token: write
+jobs:
+  auth:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "mint token"
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="oidc_push.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r27_permissions_overbroad_job_detection():
+    """Rule 27 (permissions-overbroad-job): Detects write permissions for read-only workloads."""
+    loader = WorkflowLoader()
+    rule = PermissionsOverbroadJobRule()
+
+    vuln_yaml = """
+name: Overbroad Perms
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - run: pytest
+"""
+    res = loader.load_string(vuln_yaml, file_path="overbroad_perms.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "permissions-overbroad-job"
+
+    safe_yaml = """
+name: Least Privilege Perms
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - run: pytest
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_perms.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r28_continue_on_error_security_step_detection():
+    """Rule 28 (continue-on-error-security-step): Detects continue-on-error on security scans."""
+    loader = WorkflowLoader()
+    rule = ContinueOnErrorSecurityStepRule()
+
+    vuln_yaml = """
+name: Audit Ignore
+on: push
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run snyk test
+        run: snyk test
+        continue-on-error: true
+"""
+    res = loader.load_string(vuln_yaml, file_path="audit_ignore.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "continue-on-error-security-step"
+    assert findings[0].severity == Severity.HIGH
+
+    safe_yaml = """
+name: Audit Enforce
+on: push
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run snyk test
+        run: snyk test
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="audit_enforce.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r29_missing_timeout_detection():
+    """Rule 29 (missing-timeout): Detects missing timeout-minutes on execution jobs."""
+    loader = WorkflowLoader()
+    rule = MissingTimeoutRule()
+
+    vuln_yaml = """
+name: No Timeout
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: make build
+"""
+    res = loader.load_string(vuln_yaml, file_path="no_timeout.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "missing-timeout"
+
+    safe_yaml = """
+name: With Timeout
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - run: make build
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="with_timeout.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_r30_known_vulnerable_action_detection():
+    """Rule 30 (known-vulnerable-action): Detects actions with published security advisories."""
+    loader = WorkflowLoader()
+    rule = KnownVulnerableActionRule()
+
+    vuln_yaml = """
+name: Vuln Action
+on: push
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: tj-actions/changed-files@v35
+"""
+    res = loader.load_string(vuln_yaml, file_path="vuln_act.yml")
+    findings = rule.evaluate(res.workflow)
+    assert len(findings) == 1
+    assert findings[0].rule_id == "known-vulnerable-action"
+    assert findings[0].severity == Severity.CRITICAL
+
+    safe_yaml = """
+name: Safe Action
+on: push
+jobs:
+  changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@0123456789abcdef0123456789abcdef01234567
+"""
+    res_safe = loader.load_string(safe_yaml, file_path="safe_act.yml")
+    assert len(rule.evaluate(res_safe.workflow)) == 0
+
+
+def test_extension_batch_d_fixtures_ground_truth():
+    """Verify Batch D extension fixtures (ext_r26..ext_r30) match ground truth."""
+    with open(BENCHMARK_GROUND_TRUTH, encoding="utf-8") as f:
+        ground_truth = json.load(f)
+
+    base_dir = BENCHMARK_GROUND_TRUTH.parent.parent
+    for i in range(26, 31):
         vuln_key = f"tests/fixtures/extension/vulnerable/ext_r{i}_"
         matching_v = [k for k in ground_truth["fixtures"] if k.startswith(vuln_key)]
         assert len(matching_v) == 1

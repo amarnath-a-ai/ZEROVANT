@@ -1,0 +1,29 @@
+{
+  "tj-actions/changed-files": [
+    {
+      "advisory_id": "CVE-2025-30066",
+      "vulnerable_versions": ["v1", "v2", "v3", "v35", "v36", "v37", "v38", "v39", "v40", "v41", "v42", "v43", "v44", "v45"],
+      "title": "Supply Chain Compromise in tj-actions/changed-files (Embedded Malicious Code)",
+      "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-30066",
+      "severity": "CRITICAL"
+    }
+  ],
+  "actions/cache": [
+    {
+      "advisory_id": "GHSA-v845-jxx5-vc9f",
+      "vulnerable_versions": ["v1"],
+      "title": "Cache pollution risk in actions/cache",
+      "url": "https://github.com/advisories/GHSA-v845-jxx5-vc9f",
+      "severity": "MEDIUM"
+    }
+  ],
+  "actions/checkout": [
+    {
+      "advisory_id": "GHSA-9hv6-8g55-7g84",
+      "vulnerable_versions": ["v1"],
+      "title": "Workspace credential leakage in actions/checkout v1",
+      "url": "https://github.com/advisories/GHSA-9hv6-8g55-7g84",
+      "severity": "HIGH"
+    }
+  ]
+}

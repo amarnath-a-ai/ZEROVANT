@@ -18,4 +18,5 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::123456789012:role/github-actions-role
           aws-region: us-east-1
+    timeout-minutes: 10
 

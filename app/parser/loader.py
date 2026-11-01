@@ -242,6 +242,7 @@ class WorkflowLoader:
         trigger_lines: dict[str, int] = {}
         workflow_permissions: Any = None
         permissions_line: int | None = None
+        workflow_permission_lines: dict[str, int] = {}
         workflow_env: dict[str, Any] = {}
         workflow_env_lines: dict[str, int] = {}
         jobs_dict: dict[str, Job] = {}
@@ -270,6 +271,9 @@ class WorkflowLoader:
             elif key_raw == "permissions":
                 workflow_permissions, _ = _node_to_python(v_node)
                 permissions_line = key_line
+                if isinstance(v_node, yaml.MappingNode):
+                    for pk_node, _pv_node in v_node.value:
+                        workflow_permission_lines[str(pk_node.value)] = pk_node.start_mark.line + 1
 
             elif key_raw == "env":
                 env_val, _ = _node_to_python(v_node)
@@ -333,6 +337,7 @@ class WorkflowLoader:
             trigger_lines=trigger_lines,
             permissions=workflow_permissions,
             permissions_line=permissions_line,
+            permission_lines=workflow_permission_lines,
             env=workflow_env,
             env_lines=workflow_env_lines,
             jobs=jobs_dict,
@@ -385,6 +390,7 @@ class WorkflowLoader:
         runs_on_line: int | None = None
         permissions: Any = None
         permissions_line: int | None = None
+        job_permission_lines: dict[str, int] = {}
         environment: Any = None
         environment_line: int | None = None
         needs: list[str] = []
@@ -421,6 +427,9 @@ class WorkflowLoader:
             elif k == "permissions":
                 permissions, _ = _node_to_python(v_node)
                 permissions_line = k_line
+                if isinstance(v_node, yaml.MappingNode):
+                    for pk_node, _pv_node in v_node.value:
+                        job_permission_lines[str(pk_node.value)] = pk_node.start_mark.line + 1
 
             elif k == "environment":
                 environment, _ = _node_to_python(v_node)
@@ -494,6 +503,7 @@ class WorkflowLoader:
             runs_on_line=runs_on_line,
             permissions=permissions,
             permissions_line=permissions_line,
+            permission_lines=job_permission_lines,
             environment=environment,
             environment_line=environment_line,
             needs=needs,

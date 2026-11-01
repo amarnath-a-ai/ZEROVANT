@@ -70,6 +70,7 @@ class Job:
     runs_on_line: int | None = None
     permissions: Any = None
     permissions_line: int | None = None
+    permission_lines: dict[str, int] = field(default_factory=dict)
     environment: Any = None
     environment_line: int | None = None
     needs: list[str] = field(default_factory=list)
@@ -102,6 +103,7 @@ class Workflow:
     trigger_lines: dict[str, int] = field(default_factory=dict)
     permissions: Any = None
     permissions_line: int | None = None
+    permission_lines: dict[str, int] = field(default_factory=dict)
     env: dict[str, Any] = field(default_factory=dict)
     env_lines: dict[str, int] = field(default_factory=dict)
     jobs: dict[str, Job] = field(default_factory=dict)

@@ -15,4 +15,5 @@ jobs:
           ISSUE_TITLE: ${{ github.event.issue.title }}
         run: |
           echo "Processing issue: $ISSUE_TITLE"
+    timeout-minutes: 10
 

@@ -5,14 +5,19 @@ from app.rules.r_artifact_leak import ArtifactLeakRule
 from app.rules.r_bot_actor_spoofing import BotActorSpoofingRule
 from app.rules.r_cache_poisoning_risk import CachePoisoningRiskRule
 from app.rules.r_comment_trigger_no_auth import CommentTriggerNoAuthRule
+from app.rules.r_continue_on_error_security_step import ContinueOnErrorSecurityStepRule
 from app.rules.r_curl_pipe_shell import CurlPipeShellRule
 from app.rules.r_deploy_environment import DeployEnvironmentRule
 from app.rules.r_dispatch_input_injection import DispatchInputInjectionRule
 from app.rules.r_excessive_permissions import ExcessivePermissionsRule
 from app.rules.r_github_env_injection import GitHubEnvInjectionRule
 from app.rules.r_insecure_commands_enabled import InsecureCommandsEnabledRule
+from app.rules.r_known_vulnerable_action import KnownVulnerableActionRule
 from app.rules.r_long_lived_credentials import LongLivedCredentialsRule
+from app.rules.r_missing_timeout import MissingTimeoutRule
+from app.rules.r_oidc_write_untrusted import OidcWriteUntrustedRule
 from app.rules.r_overprovisioned_secrets import OverprovisionedSecretsRule
+from app.rules.r_permissions_overbroad_job import PermissionsOverbroadJobRule
 from app.rules.r_persist_credentials import PersistCredentialsRule
 from app.rules.r_plaintext_secret import PlaintextSecretRule
 from app.rules.r_pr_target_checkout import PrTargetCheckoutRule
@@ -65,7 +70,15 @@ BATCH_C_RULES = [
     CachePoisoningRiskRule,
 ]
 
-ALL_RULES = CORE_RULES + BATCH_A_RULES + BATCH_B_RULES + BATCH_C_RULES
+BATCH_D_RULES = [
+    OidcWriteUntrustedRule,
+    PermissionsOverbroadJobRule,
+    ContinueOnErrorSecurityStepRule,
+    MissingTimeoutRule,
+    KnownVulnerableActionRule,
+]
+
+ALL_RULES = CORE_RULES + BATCH_A_RULES + BATCH_B_RULES + BATCH_C_RULES + BATCH_D_RULES
 
 for rule_cls in ALL_RULES:
     default_registry.register(rule_cls)
@@ -76,10 +89,12 @@ __all__ = [
     "BATCH_A_RULES",
     "BATCH_B_RULES",
     "BATCH_C_RULES",
+    "BATCH_D_RULES",
     "BaseRule",
     "BotActorSpoofingRule",
     "CachePoisoningRiskRule",
     "CommentTriggerNoAuthRule",
+    "ContinueOnErrorSecurityStepRule",
     "CORE_RULES",
     "CurlPipeShellRule",
     "DeployEnvironmentRule",
@@ -88,8 +103,12 @@ __all__ = [
     "Finding",
     "GitHubEnvInjectionRule",
     "InsecureCommandsEnabledRule",
+    "KnownVulnerableActionRule",
     "LongLivedCredentialsRule",
+    "MissingTimeoutRule",
+    "OidcWriteUntrustedRule",
     "OverprovisionedSecretsRule",
+    "PermissionsOverbroadJobRule",
     "PersistCredentialsRule",
     "PlaintextSecretRule",
     "PrTargetCheckoutRule",

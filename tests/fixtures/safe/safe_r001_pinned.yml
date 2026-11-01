@@ -16,4 +16,5 @@ jobs:
         uses: actions/setup-node@60edb5dd545a775178f5252478332d7967c149c8 # v4.0.2
         with:
           node-version: 20
+    timeout-minutes: 10
 
