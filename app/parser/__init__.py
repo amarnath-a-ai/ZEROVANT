@@ -18,11 +18,13 @@ from app.parser.model import (
 
 def load_workflows(
     source: str | Path | list[str | Path],
+    file_path: str | None = None,
 ) -> list[ParseResult]:
     """Unified entry point to ingest and parse workflows from a file, directory, or raw YAML string.
 
     Args:
         source: Path to file/directory, raw workflow YAML string, or list thereof.
+        file_path: Optional filename identifier when source is raw YAML content.
 
     Returns:
         List of ParseResult objects containing valid Workflow ASTs or structured ParseErrors.
@@ -51,14 +53,14 @@ def load_workflows(
         path_obj = Path(source)
         if path_obj.is_file():
             content = local_loader.load_from_file(path_obj)
-            results.append(loader.load_string(content, file_path=str(path_obj)))
+            results.append(loader.load_string(content, file_path=file_path or str(path_obj)))
         elif path_obj.is_dir():
             discovered = local_loader.load_from_directory(path_obj)
             for fpath, content in discovered:
                 results.append(loader.load_string(content, file_path=fpath))
     else:
         # Treat as raw YAML string
-        results.append(loader.load_string(str(source), file_path="pasted.yml"))
+        results.append(loader.load_string(str(source), file_path=file_path or "pasted.yml"))
 
     return results
 

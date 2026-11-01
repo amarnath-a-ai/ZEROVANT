@@ -52,6 +52,8 @@ class Step:
     line: int = 1
     action_ref: ParsedUses | None = None
     step_index: int = 0
+    uses_line: int | None = None
+    run_line: int | None = None
 
 
 @dataclass

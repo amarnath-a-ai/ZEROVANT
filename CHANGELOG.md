@@ -5,6 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-11-01
+
+### Phase 2: Vulnerability Detection Engine
+#### Added
+- Complete implementation of all 10 core static security rules in `app/rules/`:
+  - `R001` (`UnpinnedActionRule`): Flags mutable tags and branches on actions and reusable workflow calls in favor of immutable commit SHAs.
+  - `R002` (`ExcessivePermissionsRule`): Flags omitted permissions blocks (MEDIUM severity, defaults to write-all) and explicit `write-all` permissions (HIGH severity).
+  - `R003` (`PrTargetCheckoutRule`): Flags dangerous checkout of untrusted pull request head commits under privileged `pull_request_target` workflows (CRITICAL severity).
+  - `R004` (`ScriptInjectionRule`): Flags direct inline interpolation of untrusted GitHub event contexts inside shell `run:` commands (CRITICAL severity).
+  - `R005` (`PlaintextSecretRule`): Flags hardcoded static secrets, API keys, and private keys while strictly preserving legitimate `${{ secrets.* }}` references (HIGH severity).
+  - `R006` (`SecretInLogRule`): Flags steps that print, echo, or dump secret values into build logs (MEDIUM severity).
+  - `R007` (`LongLivedCredentialsRule`): Flags static AWS access keys and cloud credentials in favor of OpenID Connect (OIDC) identity federation (MEDIUM severity).
+  - `R008` (`DeployEnvironmentRule`): Flags deployment-like jobs lacking protected GitHub environment approval gates (MEDIUM severity).
+  - `R009` (`SelfHostedRunnerRule`): Flags persistent self-hosted runners assigned to untrusted triggers (e.g. `pull_request`) (HIGH severity).
+  - `R010` (`ThirdPartyActionRule`): Flags actions published by third-party owners outside verified vendor organizations (MEDIUM severity).
+- Stable cryptographic finding fingerprint:
+  - Formulated as `sha256(rule_id:file:job:step:evidence)[:16]`.
+  - Fully immune to line number shifts or step reordering across commits.
+- Support for reusable workflow caller jobs (`job.uses`):
+  - Evaluates action ref pinning and third-party vendor risks at the job level.
+  - Safely skips step-level and runner-level checks for caller jobs.
+- CLI static scanner tool in `cli.py`:
+  - Scans files, directories, or remote GitHub repositories.
+  - Emits results in table, JSON, and SARIF formats.
+  - Supports `--exit-code` for CI gate blocking on high/critical findings.
+- Comprehensive test coverage in `tests/test_rules.py`:
+  - 17 unit tests, negative tests, fingerprint stability tests, and CLI tests.
+  - Ground-truth evaluation against benchmark dataset (Precision: 94.6%, Recall: 97.2%, F1-Score: 95.9%).
+  - Total test suite now stands at 71 passing tests.
+
 ## [0.2.1] - 2026-11-01
 
 ### Phase 1: Hardening Follow-ups

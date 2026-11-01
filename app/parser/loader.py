@@ -460,12 +460,15 @@ class WorkflowLoader:
 
             name = ""
             uses = ""
+            uses_line: int | None = None
             run = ""
+            run_line: int | None = None
             with_params: dict[str, Any] = {}
             step_env: dict[str, Any] = {}
 
             for k_node, v_node in step_node.value:
                 k = str(k_node.value)
+                k_line = k_node.start_mark.line + 1
                 if k == "name":
                     n_val, _ = _node_to_python(v_node)
                     if n_val is not None:
@@ -474,10 +477,12 @@ class WorkflowLoader:
                     u_val, _ = _node_to_python(v_node)
                     if u_val is not None:
                         uses = str(u_val)
+                    uses_line = k_line
                 elif k == "run":
                     r_val, _ = _node_to_python(v_node)
                     if r_val is not None:
                         run = str(r_val)
+                    run_line = k_line
                 elif k == "with":
                     w_val, _ = _node_to_python(v_node)
                     if isinstance(w_val, dict):
@@ -499,6 +504,8 @@ class WorkflowLoader:
                     line=step_line,
                     action_ref=action_ref,
                     step_index=idx,
+                    uses_line=uses_line,
+                    run_line=run_line,
                 )
             )
 

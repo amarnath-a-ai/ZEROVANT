@@ -36,7 +36,14 @@ class RuleRegistry:
                 findings.extend(rule_findings)
             except Exception as exc:
                 logger.error("Error evaluating rule %s: %s", rule_id, exc)
+
+        # Sort findings deterministically by file, line, and rule_id
+        findings.sort(key=lambda f: (f.file, f.line, f.rule_id))
         return findings
+
+    def run_all(self, workflow: Workflow) -> list[Finding]:
+        """Convenience alias for evaluate_all()."""
+        return self.evaluate_all(workflow)
 
 
 # Global default registry
