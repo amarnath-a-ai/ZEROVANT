@@ -1,12 +1,29 @@
 """Base definitions for static security rules and findings."""
 
 import hashlib
+import re
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass, field
 from enum import Enum
 from typing import Any
 
 from app.parser.model import Workflow
+
+SECRET_TOKEN_PATTERN = re.compile(
+    r"\b((?:gh[pousr]_[A-Za-z0-9_]{10,})|(?:github_pat_[A-Za-z0-9_]{10,})|(?:AKIA[0-9A-Z]{16})|(?:sk-ant-[A-Za-z0-9_-]{10,})|(?:sk-[A-Za-z0-9_-]{10,})|(?:glpat-[A-Za-z0-9_-]{10,}))\b"
+)
+
+
+def redact_secret_value(text: str) -> str:
+    """Redact raw credentials in finding evidence, retaining at most 4 chars + '[REDACTED]' marker."""
+    if not text:
+        return ""
+
+    def _mask(match: re.Match) -> str:
+        token = match.group(1)
+        return token[:4] + "...[REDACTED]"
+
+    return SECRET_TOKEN_PATTERN.sub(_mask, text)
 
 
 class Severity(str, Enum):
@@ -37,6 +54,8 @@ class Finding:
     fingerprint: str = ""
 
     def __post_init__(self):
+        if self.evidence:
+            self.evidence = redact_secret_value(self.evidence)
         if not self.fingerprint:
             self.fingerprint = self.compute_fingerprint()
 

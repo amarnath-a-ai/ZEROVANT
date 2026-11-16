@@ -228,7 +228,12 @@ def test_apply_fix_and_rescan_removes_finding_extension_fixtures():
         findings = default_registry.run_all(wf)
 
         for f in findings:
-            fix = apply_mechanical_fix(f, content)
+            fix = apply_mechanical_fix(
+                f,
+                content,
+                placeholder_sha="0123456789abcdef0123456789abcdef01234567",
+                placeholder_digest="sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+            )
             if fix is not None:
                 # Re-parse modified workflow YAML
                 res_fixed = load_workflows(fix, file_path=str(yml_file))
@@ -589,3 +594,24 @@ def test_app_cli_explain_with_chains(capsys):
     assert "explanations" in data
     assert "findings" in data["explanations"]
     assert "chains" in data["explanations"]
+
+
+def test_secret_values_redacted_in_evidence():
+    """Verify secret values in finding evidence are redacted to first 4 chars + [REDACTED]."""
+    from app.rules.base import Finding, Severity, redact_secret_value
+
+    assert redact_secret_value("ghp_1234567890abcdef1234567890abcdef") == "ghp_...[REDACTED]"
+    assert redact_secret_value("AKIAIOSFODNN7EXAMPLE") == "AKIA...[REDACTED]"
+    assert redact_secret_value("sk-ant-api03-1234567890abcdef") == "sk-a...[REDACTED]"
+
+    f = Finding(
+        id="f-sec",
+        rule_id="R005",
+        title="Plaintext Secret",
+        severity=Severity.HIGH,
+        file="ci.yml",
+        line=10,
+        evidence="Found token ghp_ABCDEF1234567890abcdef in step run",
+    )
+    assert "ghp_...[REDACTED]" in f.evidence
+    assert "1234567890abcdef" not in f.evidence

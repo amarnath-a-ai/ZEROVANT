@@ -12,6 +12,9 @@ from pathlib import Path
 
 from app.rules.base import Finding
 
+PLACEHOLDER_SHA = "<FULL_40_CHAR_COMMIT_SHA>"
+PLACEHOLDER_DIGEST = "<IMAGE_DIGEST>"
+
 
 def get_raw_workflow(finding: Finding, raw_workflow: str = "") -> str:
     """Retrieve raw workflow YAML content from argument or finding file path."""
@@ -25,7 +28,12 @@ def get_raw_workflow(finding: Finding, raw_workflow: str = "") -> str:
     return ""
 
 
-def apply_mechanical_fix(finding: Finding, raw_workflow: str) -> str | None:
+def apply_mechanical_fix(
+    finding: Finding,
+    raw_workflow: str,
+    placeholder_sha: str = PLACEHOLDER_SHA,
+    placeholder_digest: str = PLACEHOLDER_DIGEST,
+) -> str | None:
     """Apply a deterministic, mechanical security fix to a workflow YAML string.
 
     Returns the modified YAML string if a mechanical fix is technically feasible,
@@ -209,12 +217,9 @@ def apply_mechanical_fix(finding: Finding, raw_workflow: str) -> str | None:
     elif rule_id == "unpinned-reusable-workflow":
         for i in range(max(0, target_idx - 2), min(len(lines), target_idx + 4)):
             if "uses:" in lines[i] and "@" in lines[i]:
-                # Pin to placeholder SHA
                 ref_part = lines[i].split("@")[-1].strip()
                 base_part = lines[i].split("@")[0]
-                lines[i] = (
-                    f"{base_part}@0123456789abcdef0123456789abcdef01234567 # {ref_part}\n"
-                )
+                lines[i] = f"{base_part}@{placeholder_sha} # {ref_part}\n"
                 return "".join(lines)
 
     # 12. unpinned-docker-image (R22)
@@ -223,9 +228,7 @@ def apply_mechanical_fix(finding: Finding, raw_workflow: str) -> str | None:
             if "image:" in lines[i]:
                 curr_image = lines[i].strip().split("image:")[-1].strip()
                 indent = re.match(r"^(\s*)", lines[i]).group(1)
-                lines[i] = (
-                    f"{indent}image: {curr_image}@sha256:0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\n"
-                )
+                lines[i] = f"{indent}image: {curr_image}@{placeholder_digest}\n"
                 return "".join(lines)
 
     # 13. github-env-injection (R16)
@@ -245,9 +248,7 @@ def apply_mechanical_fix(finding: Finding, raw_workflow: str) -> str | None:
             if "uses:" in lines[i] and "@" in lines[i]:
                 base_action = lines[i].split("@")[0].strip()
                 indent = re.match(r"^(\s*)", lines[i]).group(1)
-                lines[i] = (
-                    f"{indent}{base_action}@0123456789abcdef0123456789abcdef01234567 # v4 (patched)\n"
-                )
+                lines[i] = f"{indent}{base_action}@{placeholder_sha} # v4 (patched)\n"
                 return "".join(lines)
 
     # 15. R001 (unpinned_action)
@@ -256,9 +257,7 @@ def apply_mechanical_fix(finding: Finding, raw_workflow: str) -> str | None:
             if "uses:" in lines[i] and "@" in lines[i]:
                 base_action = lines[i].split("@")[0]
                 tag = lines[i].split("@")[1].strip()
-                lines[i] = (
-                    f"{base_action}@0123456789abcdef0123456789abcdef01234567 # {tag}\n"
-                )
+                lines[i] = f"{base_action}@{placeholder_sha} # {tag}\n"
                 return "".join(lines)
 
     # 16. R002 (excessive_permissions / missing permissions)
@@ -355,7 +354,7 @@ def _generate_fallback_diff(finding: Finding, file_label: str) -> str:
         "secret-to-unpinned-action": (
             ["- uses: third-party/action@v1", "-   with: token: ${{ secrets.KEY }}"],
             [
-                "+ uses: third-party/action@0123456789abcdef0123456789abcdef01234567 # pin commit SHA first",
+                "+ uses: third-party/action@<FULL_40_CHAR_COMMIT_SHA> # pin commit SHA first",
                 "+   with: token: ${{ secrets.KEY }}",
             ],
         ),
@@ -405,7 +404,7 @@ def _generate_fallback_diff(finding: Finding, file_label: str) -> str:
         ),
         "R010": (
             ["- uses: unverified-author/action@v1"],
-            ["+ uses: unverified-author/action@0123456789abcdef0123456789abcdef01234567 # v1 (pinned SHA)"],
+            ["+ uses: unverified-author/action@<FULL_40_CHAR_COMMIT_SHA> # v1 (pinned SHA)"],
         ),
     }
 

@@ -66,3 +66,26 @@ The CI/CD Pipeline Security Auditor implements 30 deterministic static security 
 | **continue-on-error-security-step** | Reliability Hygiene | HIGH | Security scanner or signing step specifies `continue-on-error: true`, silencing failures. | Remove `continue-on-error: true` so failed security gates block the pipeline. |
 | **missing-timeout** | Reliability Hygiene | LOW | Job omits `timeout-minutes`, allowing runaway jobs to lock runners for up to 6 hours. | Specify explicit `timeout-minutes: 15` on all execution jobs. |
 | **known-vulnerable-action** | Supply Chain | CRITICAL | Action version matches verified published security advisory (e.g. CVE-2025-30066). | Upgrade action to patched release or pin to an audited commit SHA. |
+
+---
+
+## Non-Mechanical Remediation Rules (Architectural / Policy Decisions Required)
+
+While 17 rules in the engine have fully deterministic mechanical fixes that can be automatically generated and validated, the following 13 rules require deliberate human architectural decisions or policy choices:
+
+| Rule ID | Category | Reason Automated Mechanical Patching Is Unsafe / Infeasible |
+|---|---|---|
+| `artifact-leak` (R14) | Credentials | The auditor cannot determine which build artifacts are intended for distribution vs internal/confidential without developer intent. Automatically stripping upload paths could break production delivery pipelines. |
+| `overprovisioned-secrets` (R13) | Credentials | Deciding which subset of secrets is truly necessary requires deep domain knowledge of the internal logic of the scripts executed during the job. |
+| `secret-to-unpinned-action` (R12) | Credentials | The secret is legitimately required by the action; safely pinning the third-party action requires human review and verification of the upstream git commit history. |
+| `workflow-run-untrusted-artifact` (R17) | Privilege Escalation | Eliminating the risk requires an architectural redesign of the dual-workflow communication mechanism (e.g. status check polling, signature verification, or OIDC tokens). |
+| `cache-poisoning-risk` (R25) | Supply Chain | Cache key generation depends on the exact build tool, lockfiles, and branching strategy used across the organization. |
+| `oidc-write-untrusted` (R26) | Access Control | Configuring cloud IAM role trust policies and deciding which branch names are permitted to assume AWS/GCP roles requires cloud administrator authorization. |
+| `R003` (`pr-target-checkout`) | Privilege Escalation | Developers must choose between migrating to an unprivileged `pull_request` workflow or decomposing the workflow into separate untrusted build and trusted publisher jobs. |
+| `R005` (`plaintext-secret`) | Secrets Management | The secret value must be uploaded to GitHub Repository Secrets storage (`gh secret set` or web UI) and deleted from the repository git history. |
+| `R006` (`secret-in-log`) | Information Disclosure | Deciding whether the logging was unintended debug code or necessary audit output requires developer intent. |
+| `R007` (`long-lived-credentials`) | Credential Management | Transitioning to cloud OIDC federation requires establishing OpenID Connect identity providers in AWS IAM, GCP Workload Identity, or Azure AD. |
+| `R008` (`deploy-environment`) | Environment Protection | Adding an `environment:` tag requires creating the corresponding Environment entity in the GitHub repository settings with designated human reviewers. |
+| `R009` (`self-hosted-runner`) | Infrastructure Security | Deciding whether to migrate to GitHub-hosted cloud runners (`ubuntu-latest`) or deploy an ephemeral runner autoscaling infrastructure (e.g. Actions Runner Controller) is an infrastructure architecture decision. |
+| `R010` (`third-party-action`) | Supply Chain | Organizations must evaluate whether to vendor the third-party action internally, fork it into their enterprise organization, or audit and pin the external upstream version. |
+
