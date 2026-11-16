@@ -83,3 +83,4 @@ class SecretToUnpinnedActionRule(BaseRule):
                     )
 
         return findings
+

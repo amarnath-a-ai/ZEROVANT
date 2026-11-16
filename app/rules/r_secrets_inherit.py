@@ -54,3 +54,4 @@ class SecretsInheritRule(BaseRule):
                 )
 
         return findings
+

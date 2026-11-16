@@ -79,3 +79,4 @@ class CommentTriggerNoAuthRule(BaseRule):
                 )
 
         return findings
+

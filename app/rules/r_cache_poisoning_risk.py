@@ -78,3 +78,4 @@ class CachePoisoningRiskRule(BaseRule):
                     )
 
         return findings
+

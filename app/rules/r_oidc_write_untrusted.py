@@ -95,3 +95,4 @@ class OidcWriteUntrustedRule(BaseRule):
                         )
 
         return findings
+

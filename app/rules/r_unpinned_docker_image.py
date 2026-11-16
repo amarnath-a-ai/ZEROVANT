@@ -106,3 +106,4 @@ class UnpinnedDockerImageRule(BaseRule):
                         )
 
         return findings
+

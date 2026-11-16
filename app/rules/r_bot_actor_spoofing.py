@@ -75,3 +75,4 @@ class BotActorSpoofingRule(BaseRule):
                     )
 
         return findings
+

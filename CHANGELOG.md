@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-11-16
+
+### Phase 3: Attack Chain Correlation Engine
+#### Added
+- Declarative, data-driven Attack Chain Correlation Engine in `app/correlation/chains.py`:
+  - 10 composite attack chains modeled (5 core + 5 extension):
+    1. `pwn-request`: `pull_request_target` + untrusted PR head checkout (`R003`) + elevated write permissions / secrets (`R002`).
+    2. `injection-to-exfil`: Script injection via untrusted event payloads (`R004`) + reachable secrets in job scope.
+    3. `supply-chain-takeover`: Unpinned third-party action (`R001` + `R010`) + elevated repository write permissions.
+    4. `deploy-blast-radius`: Unprotected deployment job lacking environment gates (`R008`) + long-lived cloud credentials (`R007`).
+    5. `runner-persistence`: Persistent self-hosted runner (`R009`) executing untrusted pull request or issue workloads.
+    6. `artifact-poisoning`: Privileged `workflow_run` downloading unverified fork artifacts (`workflow-run-untrusted-artifact`) in write context.
+    7. `comment-trigger-takeover`: Issue/PR comment trigger lacking author authorization (`comment-trigger-no-auth`) + script execution / write tokens.
+    8. `credential-persistence`: Checkout without `persist-credentials: false` (`persist-credentials`) followed by unpinned third-party actions or artifact leak.
+    9. `cache-poisoning-escalation`: Shared dependency cache in release/deployment jobs (`cache-poisoning-risk`) vulnerable to upstream cache poisoning.
+    10. `oidc-abuse`: Untrusted OIDC token minting (`oidc-write-untrusted` / `id-token: write`) paired with unpinned actions or untrusted triggers.
+  - Data-driven `ChainDefinition` specifications and `JobContext` abstraction capturing permissions, triggers, secrets reachability, and runners.
+  - Same-job scoping boundary preventing cross-job false correlations while inheriting workflow-level security contexts.
+  - Multi-chain membership support allowing shared vulnerabilities (e.g. `R002`) to link across multiple distinct attack vectors.
+  - Isolation of uncorrelated findings in `CorrelationResult.standalone_findings`.
+- Attack Graph Generator and Cytoscape.js Export in `app/correlation/graph.py`:
+  - Directed Acyclic Graph (DAG) construction representing attack stages: `trigger` -> `misconfiguration` -> `privilege` -> `impact`.
+  - Schema-validated `to_cytoscape_elements()` export compatible with Cytoscape.js web visualization.
+  - Strict graph integrity validator verifying edge source and target node existence.
+  - Consolidated multi-chain graph generation (`AttackGraph.from_chains`).
+- Extended CLI in `cli.py`:
+  - Added discovered attack chains table output displaying chain IDs, chain types, jobs, and component findings.
+  - Added `--chains` CLI option for structured JSON output including attack chain topologies.
+- Comprehensive Test Suite in `tests/test_correlation.py`:
+  - 8 rigorous tests covering all 10 positive chain fixtures, 10 negative near-miss fixtures, clean fixtures, multi-chain membership, standalone retention, Cytoscape schema validation, and ground-truth corpus consistency.
+  - Total test count reached 102 passing tests with 100% pass rate.
+- Comprehensive Documentation in `docs/attack_chains.md` covering threat narratives, node/edge templates, Cytoscape schema, scoping rules, and CSE viva defensibility.
+
 ## [0.4.0] - 2026-11-01
 
 ### Extension Phase 2B: 20 Extension Security Rules (30 Rules Total)

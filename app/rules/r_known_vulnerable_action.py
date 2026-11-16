@@ -85,3 +85,4 @@ class KnownVulnerableActionRule(BaseRule):
                         )
 
         return findings
+

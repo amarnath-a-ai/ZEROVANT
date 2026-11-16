@@ -63,3 +63,4 @@ class CurlPipeShellRule(BaseRule):
                         )
 
         return findings
+

@@ -110,3 +110,4 @@ class OverprovisionedSecretsRule(BaseRule):
                     )
 
         return findings
+

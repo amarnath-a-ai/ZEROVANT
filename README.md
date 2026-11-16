@@ -95,13 +95,18 @@ The auditor follows a strict modular pipeline:
 
 ---
 
-## 5 Correlated Attack Chains
+## 10 Correlated Attack Chains
 
-1. **Pwn-Request (`pwn-request`)**: Privileged `pull_request_target` event + checking out untrusted PR ref + build script execution -> arbitrary code execution in repository context with write tokens.
-2. **Injection to Exfiltration (`injection-to-exfil`)**: Untrusted input interpolated into shell commands (`r_script_injection`) + excessive workflow permissions or repository secrets -> exfiltration of environment credentials.
-3. **Supply-Chain Takeover (`supply-chain-takeover`)**: Unpinned 3rd-party action (`r_unpinned_action` / `r_third_party_action`) running with broad write permissions -> malicious dependency tampering or repo hijack.
-4. **Deploy Blast Radius (`deploy-blast-radius`)**: Unprotected deployment jobs (`r_deploy_environment`) utilizing static long-lived credentials (`r_long_lived_credentials`) -> unauthorized infrastructure compromise.
-5. **Runner Persistence (`runner-persistence`)**: Untrusted pull request trigger running on a non-ephemeral self-hosted runner (`r_self_hosted_runner`) -> host takeover and lateral movement in private network.
+1. **Pwn-Request (`pwn-request`)**: Privileged `pull_request_target` event + checking out untrusted PR ref (`R003`) + elevated write permissions (`R002`) -> arbitrary code execution in base repository context with write tokens.
+2. **Injection to Exfiltration (`injection-to-exfil`)**: Untrusted input interpolated into shell commands (`R004`) + reachable secrets in job scope -> command injection and exfiltration of repository credentials.
+3. **Supply-Chain Takeover (`supply-chain-takeover`)**: Unpinned third-party action (`R001` + `R010`) running with elevated write permissions -> malicious dependency tampering or repo hijack.
+4. **Deploy Blast Radius (`deploy-blast-radius`)**: Unprotected deployment jobs (`R008`) utilizing static long-lived credentials (`R007`) -> unauthorized production infrastructure compromise.
+5. **Runner Persistence (`runner-persistence`)**: Untrusted pull request trigger running on a non-ephemeral self-hosted runner (`R009`) -> host takeover and lateral movement in private network.
+6. **Artifact Poisoning (`artifact-poisoning`)**: Privileged `workflow_run` downloading unverified fork artifacts (`workflow-run-untrusted-artifact`) in write context -> privilege escalation and malicious binary execution.
+7. **Comment Trigger Takeover (`comment-trigger-takeover`)**: Issue/PR comment trigger lacking author authorization (`comment-trigger-no-auth`) + script execution / write tokens -> unauthorized bot hijacking and command execution.
+8. **Credential Persistence (`credential-persistence`)**: Checkout without `persist-credentials: false` (`persist-credentials`) followed by unpinned third-party actions or artifact leaks -> GITHUB_TOKEN harvesting from local `.git/config`.
+9. **Cache Poisoning Escalation (`cache-poisoning-escalation`)**: Shared dependency cache in release/deployment jobs (`cache-poisoning-risk`) vulnerable to upstream cache poisoning -> malicious build-time dependency injection.
+10. **OIDC Abuse (`oidc-abuse`)**: Untrusted OIDC token minting (`oidc-write-untrusted`) paired with unpinned actions or untrusted triggers -> unauthorized cloud provider IAM role assumption (AWS/GCP/Azure).
 
 ---
 

@@ -80,3 +80,4 @@ class ArtifactLeakRule(BaseRule):
                     )
 
         return findings
+

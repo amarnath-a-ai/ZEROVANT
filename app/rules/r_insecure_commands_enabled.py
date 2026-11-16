@@ -94,3 +94,4 @@ class InsecureCommandsEnabledRule(BaseRule):
                         )
 
         return findings
+
