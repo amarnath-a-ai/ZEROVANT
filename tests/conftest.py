@@ -3,6 +3,15 @@
 import pytest
 
 from app import create_app
+from app.api.limiter import limiter
+
+
+@pytest.fixture(autouse=True)
+def reset_rate_limiter():
+    """Ensure in-memory rate limiter is reset before and after every test."""
+    limiter.reset()
+    yield
+    limiter.reset()
 
 
 @pytest.fixture

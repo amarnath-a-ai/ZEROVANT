@@ -71,6 +71,12 @@ class Config:
     GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN", "")
     ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY", "")
     ANTHROPIC_MODEL = os.environ.get("ANTHROPIC_MODEL", "claude-3-5-sonnet-20241022")
+    MAX_CONTENT_LENGTH = 2 * 1024 * 1024  # 2MB maximum HTTP request body
+    MAX_YAML_SIZE = 1 * 1024 * 1024       # 1MB maximum YAML workflow size
+    ALLOW_LOCAL_PATH = False              # Disabled by default for web API security
+    RATELIMIT_ENABLED = True              # Enable per-IP rate limiting
+    RATELIMIT_PER_MINUTE = 60             # 60 requests per minute by default
+    RATELIMIT_WINDOW_SECONDS = 60         # 60-second sliding window
 
 
 class DevelopmentConfig(Config):

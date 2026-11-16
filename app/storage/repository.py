@@ -96,6 +96,29 @@ class ScanRepository:
         finally:
             self._close_if_ephemeral(conn)
 
+    def list_repos(self, limit: int = 50, offset: int = 0) -> list[dict[str, Any]]:
+        """List registered repositories with summary statistics and scan counts."""
+        conn = self._connect()
+        try:
+            rows = conn.execute(
+                """
+                SELECT r.id, r.name, r.url, r.created_at,
+                       COUNT(s.id) AS scan_count,
+                       MAX(s.scanned_at) AS latest_scan_at,
+                       (SELECT repo_score FROM scans WHERE repo_id = r.id ORDER BY scanned_at DESC, rowid DESC LIMIT 1) AS latest_score,
+                       (SELECT risk_level FROM scans WHERE repo_id = r.id ORDER BY scanned_at DESC, rowid DESC LIMIT 1) AS latest_risk_level
+                FROM repos r
+                LEFT JOIN scans s ON r.id = s.repo_id
+                GROUP BY r.id
+                ORDER BY (latest_scan_at IS NULL), latest_scan_at DESC, r.created_at DESC
+                LIMIT ? OFFSET ?;
+                """,
+                (limit, offset),
+            ).fetchall()
+            return [dict(r) for r in rows]
+        finally:
+            self._close_if_ephemeral(conn)
+
     def save_scan(self, repo_id: str, scan_data: dict[str, Any]) -> str:
         """Persist a completed scan and all its child entities in a single atomic transaction.
 
