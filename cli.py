@@ -46,6 +46,18 @@ def parse_args(args=None):
         help="Include correlated attack chain analysis in output",
     )
     scan_parser.add_argument(
+        "--explain",
+        action="store_true",
+        default=False,
+        help="Generate detailed What/Why/How explanations and remediation patches",
+    )
+    scan_parser.add_argument(
+        "--llm",
+        action="store_true",
+        default=False,
+        help="Use optional Anthropic Claude LLM provider for explanation enrichment",
+    )
+    scan_parser.add_argument(
         "--exit-code",
         action="store_true",
         default=False,
@@ -156,10 +168,20 @@ def run_scan(args) -> int:
     # Compute deterministic risk scores (Phase 4)
     scoring_result = compute_scores(findings, all_chains, workflows)
 
+    # Generate explanations if requested (Phase 5)
+    scan_explanation = None
+    if getattr(args, "explain", False):
+        import os
+
+        from app.explain import RemediationExplainer
+        api_key = os.environ.get("ANTHROPIC_API_KEY") if getattr(args, "llm", False) else None
+        explainer = RemediationExplainer(anthropic_api_key=api_key)
+        scan_explanation = explainer.explain_all(findings, all_chains, workflows)
+
     # Render results
     if args.format == "json":
         if getattr(args, "chains", False):
-            print(json.dumps({
+            payload = {
                 "findings": [f.to_dict() for f in findings],
                 "chains": [c.to_dict() for c in all_chains],
                 "scoring": {
@@ -169,17 +191,50 @@ def run_scan(args) -> int:
                     "chain_scores": scoring_result.chain_scores,
                     "breakdown": scoring_result.breakdown,
                 },
-            }, indent=2))
+            }
+            if scan_explanation:
+                payload["explanations"] = scan_explanation.to_dict()
+            print(json.dumps(payload, indent=2))
         else:
             # Flat list of findings (base_score already set by compute_scores)
             # Keep this shape for backward compatibility with existing tests.
-            print(json.dumps([f.to_dict() for f in findings], indent=2))
+            out_list = []
+            for f in findings:
+                fd = f.to_dict()
+                if scan_explanation and f.id in scan_explanation.findings:
+                    fd["explanation"] = scan_explanation.findings[f.id].to_dict()
+                out_list.append(fd)
+            print(json.dumps(out_list, indent=2))
     elif args.format == "table":
         print(format_table(findings, chains=all_chains))
         # Show repo risk score summary
         rs = scoring_result.repo_score
         risk_lvl = "CRITICAL" if rs >= 75 else "HIGH" if rs >= 50 else "MEDIUM" if rs >= 25 else "LOW"
         print(f"Repository Risk Score: {rs:.1f}/100  [{risk_lvl}]")
+
+        if scan_explanation and findings:
+            print("\n" + "=" * 110)
+            print("REMEDIATION GUIDANCE & EXPLANATIONS (Phase 5)")
+            print("=" * 110)
+            for f in findings:
+                exp = scan_explanation.findings.get(f.id)
+                if exp:
+                    print(f"\n[{f.rule_id}] {f.title} ({f.file}:{f.line}) [Source: {exp.source}]")
+                    print(f"  WHAT: {exp.what}")
+                    print(f"  WHY:  {exp.why}")
+                    print(f"  HOW:  {exp.how}")
+                    if exp.fix_diff:
+                        print("  FIX PATCH:")
+                        for diff_line in exp.fix_diff.strip().splitlines()[:6]:
+                            print(f"    {diff_line}")
+            if scan_explanation.chains:
+                print("\n" + "-" * 110)
+                print("ATTACK CHAIN REMEDIATION:")
+                print("-" * 110)
+                for cid, cexp in scan_explanation.chains.items():
+                    print(f"\n[{cid}] {cexp.chain_type.upper()}")
+                    print(f"  NARRATIVE: {cexp.narrative}")
+                    print(f"  BREAK THE CHAIN: {cexp.break_the_chain}")
     elif args.format == "sarif":
         # SARIF baseline format
         sarif_data = {
