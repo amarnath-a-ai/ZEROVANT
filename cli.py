@@ -11,6 +11,7 @@ from app.parser import load_workflows
 from app.parser.model import Workflow
 from app.rules import default_registry
 from app.rules.base import Finding, Severity
+from app.scoring.scorer import compute_scores
 
 
 def parse_args(args=None):
@@ -152,18 +153,33 @@ def run_scan(args) -> int:
         chains = correlator.correlate(wf_findings, workflow=wf)
         all_chains.extend(chains)
 
+    # Compute deterministic risk scores (Phase 4)
+    scoring_result = compute_scores(findings, all_chains, workflows)
+
     # Render results
     if args.format == "json":
         if getattr(args, "chains", False):
             print(json.dumps({
                 "findings": [f.to_dict() for f in findings],
                 "chains": [c.to_dict() for c in all_chains],
+                "scoring": {
+                    "repo_score": scoring_result.repo_score,
+                    "severity_distribution": scoring_result.severity_distribution,
+                    "finding_scores": scoring_result.finding_scores,
+                    "chain_scores": scoring_result.chain_scores,
+                    "breakdown": scoring_result.breakdown,
+                },
             }, indent=2))
         else:
-            output_data = [f.to_dict() for f in findings]
-            print(json.dumps(output_data, indent=2))
+            # Flat list of findings (base_score already set by compute_scores)
+            # Keep this shape for backward compatibility with existing tests.
+            print(json.dumps([f.to_dict() for f in findings], indent=2))
     elif args.format == "table":
         print(format_table(findings, chains=all_chains))
+        # Show repo risk score summary
+        rs = scoring_result.repo_score
+        risk_lvl = "CRITICAL" if rs >= 75 else "HIGH" if rs >= 50 else "MEDIUM" if rs >= 25 else "LOW"
+        print(f"Repository Risk Score: {rs:.1f}/100  [{risk_lvl}]")
     elif args.format == "sarif":
         # SARIF baseline format
         sarif_data = {
