@@ -64,10 +64,13 @@ CHAIN_MULTIPLIER_2: float = 1.3   # exactly 2 member findings
 CHAIN_MULTIPLIER_3PLUS: float = 1.5  # 3 or more member findings
 
 # ---------------------------------------------------------------------------
-# Repository decay factor  k ∈ (0, 1]
-# repo_score = 100 × (1 − ∏ᵢ (1 − sᵢ/10 × k))
+# Repository decay factors
+# k ∈ (0, 1] scales base severity contribution.
+# r ∈ (0, 1] applies rank-order exponential decay to subsequent findings.
+# repo_score = 100 × (1 − ∏ᵢ (1 − sᵢ/10 × k × rⁱ))
 # ---------------------------------------------------------------------------
 REPO_DECAY_K: float = 0.9
+REPO_RANK_DECAY: float = 0.8
 
 # ---------------------------------------------------------------------------
 # Rule-to-default-severity mapping (reference — authoritative source is each

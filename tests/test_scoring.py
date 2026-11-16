@@ -395,22 +395,69 @@ def test_repo_score_single_critical():
 def test_repo_score_many_lows_vs_one_critical():
     """Example C: five LOW findings should be less than one CRITICAL.
 
-    Five LOW findings, each fs=2.0:
-      product_per = (1 - 0.18) = 0.82
-      product     = 0.82^5 ≈ 0.370726
-      rs          = 100*(1-0.370726) ≈ 62.927...
+    Five LOW findings, each fs=2.0 (sorted desc: [2, 2, 2, 2, 2]):
+      Rank 0: 1 - 0.18*0.8^0 = 0.82
+      Rank 1: 1 - 0.18*0.8^1 = 0.856
+      Rank 2: 1 - 0.18*0.8^2 = 0.8848
+      Rank 3: 1 - 0.18*0.8^3 = 0.90784
+      Rank 4: 1 - 0.18*0.8^4 = 0.926272
+      product = 0.82 * 0.856 * 0.8848 * 0.90784 * 0.926272 ≈ 0.52225256
+      rs      = 100 * (1 - 0.52225256) ≈ 47.7747...
     One CRITICAL (fs=9.0) → 81.0  (from test above)
-    Assert many-lows < one-critical (diminishing returns confirmed).
+    Assert many-lows < one-critical (diminishing returns & rank decay confirmed).
     """
     findings_5low = [_make_finding(f"f{i}", severity=Severity.LOW) for i in range(5)]
     scores = {f"f{i}": 2.0 for i in range(5)}
     rs_many_low = score_repository([], findings_5low, {}, scores)
     rs_one_crit = score_repository([], [_make_finding("fx", severity=Severity.CRITICAL)], {}, {"fx": 9.0})
-    # 62.9x < 81.0
+    # 47.77 < 81.0
     assert rs_many_low < rs_one_crit
     # Exact value check
-    expected = 100.0 * (1.0 - 0.82**5)
+    expected = 100.0 * (1.0 - (0.82 * 0.856 * 0.8848 * 0.90784 * 0.926272))
     assert abs(rs_many_low - expected) < 1e-4
+
+
+def test_ten_lows_less_than_one_critical():
+    """10 LOW findings (score 2.0 each) must NOT outweigh 1 CRITICAL standalone (score 9.0)."""
+    findings_10low = [_make_finding(f"low_{i}", severity=Severity.LOW) for i in range(10)]
+    scores = {f"low_{i}": 2.0 for i in range(10)}
+    rs_10_low = score_repository([], findings_10low, {}, scores)
+
+    f_crit = _make_finding("crit", severity=Severity.CRITICAL)
+    rs_1_crit = score_repository([], [f_crit], {}, {"crit": 9.0})
+
+    assert rs_10_low < rs_1_crit
+
+
+def test_hundred_info_less_than_one_critical():
+    """100 INFO findings (score 0.5 each) must NOT outweigh 1 CRITICAL standalone (score 9.0)."""
+    findings_100info = [_make_finding(f"info_{i}", severity=Severity.INFO) for i in range(100)]
+    scores = {f"info_{i}": 0.5 for i in range(100)}
+    rs_100_info = score_repository([], findings_100info, {}, scores)
+
+    f_crit = _make_finding("crit", severity=Severity.CRITICAL)
+    rs_1_crit = score_repository([], [f_crit], {}, {"crit": 9.0})
+
+    assert rs_100_info < rs_1_crit
+
+
+def test_monotonicity_adding_finding_never_lowers_score():
+    """Monotonicity: adding a finding of any severity never lowers the score."""
+    base_findings = [_make_finding("f_base", severity=Severity.MEDIUM)]
+    base_scores = {"f_base": 4.0}
+    score_base = score_repository([], base_findings, {}, base_scores)
+
+    for sev, val in [
+        (Severity.INFO, 0.5),
+        (Severity.LOW, 2.0),
+        (Severity.MEDIUM, 4.0),
+        (Severity.HIGH, 7.0),
+        (Severity.CRITICAL, 9.0),
+    ]:
+        f_add = _make_finding("f_add", severity=sev)
+        new_scores = {"f_base": 4.0, "f_add": val}
+        score_new = score_repository([], base_findings + [f_add], {}, new_scores)
+        assert score_new >= score_base, f"Adding {sev} lowered score from {score_base} to {score_new}"
 
 
 def test_chain_vs_standalone_no_double_count():
@@ -442,15 +489,15 @@ def test_repo_score_chain_plus_standalone():
     """Chain (score=10.0) + one standalone LOW (fs=2.0).
 
     Hand-calc (sorted desc: [10.0, 2.0]):
-      p1 = (1 - 10.0/10 * 0.9) = 0.1
-      p2 = (1 - 2.0/10 * 0.9)  = 0.82
-      product = 0.1 * 0.82 = 0.082
-      rs = 100*(1-0.082) = 91.8
+      p1 (rank 0) = (1 - 10.0/10 * 0.9 * 0.8^0) = 0.1
+      p2 (rank 1) = (1 - 2.0/10 * 0.9 * 0.8^1)  = (1 - 0.144) = 0.856
+      product = 0.1 * 0.856 = 0.0856
+      rs = 100 * (1 - 0.0856) = 91.44
     """
     f_standalone = _make_finding("f_s", severity=Severity.LOW)
     c = _make_chain("c1", ["f1", "f2"])
     rs = score_repository([c], [f_standalone], {"c1": 10.0}, {"f_s": 2.0})
-    assert abs(rs - 91.8) < 1e-6
+    assert abs(rs - 91.44) < 1e-6
 
 
 # ===========================================================================
@@ -640,12 +687,12 @@ def test_mixed_2_chains_plus_standalone():
     Standalone: f6=4.0, f7=2.0
 
     score_items (sorted desc): [10.0, 10.0, 4.0, 2.0]
-    p1 = 1 - (10/10)*0.9 = 0.1
-    p2 = 1 - (10/10)*0.9 = 0.1
-    p3 = 1 - (4/10)*0.9  = 0.64
-    p4 = 1 - (2/10)*0.9  = 0.82
-    product = 0.1 * 0.1 * 0.64 * 0.82 = 0.005248
-    rs = 100*(1-0.005248) = 99.4752
+    Rank 0: 1 - (10/10)*0.9*0.8^0 = 0.1
+    Rank 1: 1 - (10/10)*0.9*0.8^1 = 1 - 0.72 = 0.28
+    Rank 2: 1 - (4/10)*0.9*0.8^2  = 1 - 0.2304 = 0.7696
+    Rank 3: 1 - (2/10)*0.9*0.8^3  = 1 - 0.09216 = 0.90784
+    product = 0.1 * 0.28 * 0.7696 * 0.90784 = 0.019562862592
+    rs = 100 * (1 - 0.019562862592) = 98.0437137408
     """
     finding_scores = {
         "f1": 10.0, "f2": 9.1, "f3": 7.0, "f4": 5.6, "f5": 4.0,
@@ -658,7 +705,7 @@ def test_mixed_2_chains_plus_standalone():
     f7 = _make_finding("f7", severity=Severity.LOW)
 
     rs = score_repository([c1, c2], [f6, f7], chain_scores, finding_scores)
-    expected = 100.0 * (1.0 - 0.1 * 0.1 * 0.64 * 0.82)
+    expected = 100.0 * (1.0 - 0.1 * 0.28 * 0.7696 * 0.90784)
     assert abs(rs - expected) < 1e-4
 
 

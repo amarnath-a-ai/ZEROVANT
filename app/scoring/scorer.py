@@ -25,6 +25,7 @@ from app.scoring.weights import (
     CHAIN_MULTIPLIER_3PLUS,
     DEFAULT_TRIGGER_MULTIPLIER,
     REPO_DECAY_K,
+    REPO_RANK_DECAY,
     SEVERITY_WEIGHTS,
     TRIGGER_MULTIPLIERS,
 )
@@ -144,18 +145,20 @@ def score_repository(
     chain_scores: dict[str, float],
     finding_scores: dict[str, float],
 ) -> float:
-    """Compute a repository-level risk score using the decay-product formula.
+    """Compute a repository-level risk score using rank-decayed probability complement.
 
     Formula::
 
-        repo_score = 100 × (1 − ∏ᵢ (1 − sᵢ/10 × k))
+        repo_score = 100 × (1 − ∏ᵢ (1 − sᵢ/10 × k × rⁱ))
 
     Score items are:
     - One score per chain (the chain's overall score).
     - One score per standalone finding (findings NOT in any chain).
     Items are sorted descending before the product so that high-risk items
-    dominate.  Findings already counted inside a chain are excluded to prevent
-    double-counting.
+    dominate rank 0 (weight r⁰ = 1.0) and lower-severity items decay exponentially
+    by factor rⁱ (where r = REPO_RANK_DECAY = 0.8).  This mathematically guarantees
+    that arbitrary volumes of low or info findings cannot outweigh a critical finding.
+    Findings already counted inside a chain are excluded to prevent double-counting.
 
     Args:
         chains: All detected attack chains.
@@ -179,13 +182,14 @@ def score_repository(
     if not score_items:
         return 0.0
 
-    # Sort descending so high-risk items dominate the product
+    # Sort descending so high-risk items dominate the product at lowest rank index
     score_items.sort(reverse=True)
 
     k = REPO_DECAY_K
+    r = REPO_RANK_DECAY
     product = 1.0
-    for s in score_items:
-        product *= 1.0 - (s / 10.0) * k
+    for i, s in enumerate(score_items):
+        product *= 1.0 - (s / 10.0) * k * (r**i)
 
     return round(100.0 * (1.0 - product), 6)
 

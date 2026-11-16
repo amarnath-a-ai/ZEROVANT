@@ -139,24 +139,30 @@ chain_score     = min(10.0, 4.66) = 4.66
 
 ## 4. Repository Score
 
-### Design Choice: Decay-Product Formula
+### Design Choice: Rank-Decayed Probability-Complement Formula
 
-We use a **probability-complement product** (decay-product):
+We use a **rank-decayed probability-complement product**:
 
 ```
-repo_score = 100 × (1 − ∏ᵢ (1 − sᵢ/10 × k))
+repo_score = 100 × (1 − ∏ᵢ (1 − s₍ᵢ₎/10 × k × rⁱ))
 ```
 
 where:
-- `sᵢ` is each score item (chain score or standalone finding score), **sorted descending**.
-- `k = 0.9` is a fixed decay factor that provides diminishing returns.
+- `s₍ᵢ₎` is each score item (chain score or standalone finding score), **sorted in descending order**: $s_{(0)} \ge s_{(1)} \ge \dots \ge s_{(N-1)}$.
+- `k = 0.9` is the severity scaling factor (calibrates 1 CRITICAL with neutral trigger to $81.0$).
+- `r = 0.8` is the **rank-order exponential decay factor** (`REPO_RANK_DECAY`).
 - **No double-counting**: findings that belong to a chain are represented by the chain score only; they are excluded from the standalone list.
 
-The decay factor `k` means each successive item contributes less than its face value.  This models the real-world intuition that having 20 LOW findings should not be as bad as a single CRITICAL one.
+### Why Rank Decay? (Viva Defense)
 
-**Why decay-product over sum-then-cap?**
-- A simple sum rewards quantity over quality; a cap makes scores brittle.
-- The product formula is monotone (adding an item never lowers the score), bounded in [0, 100], and behaves sensibly on empty inputs.
+In standard independent-event probability aggregation, $100 \times (1 - \prod (1 - p_i))$, arbitrary volumes of minor findings drive the product to zero, falsely inflating the risk score to 100%. For example, without rank decay, 10 LOW findings would score ~86.3 and 100 INFO findings would score ~99.0, outweighing a single CRITICAL finding at 81.0.
+
+In DevSecOps reality, minor hygiene issues (such as missing timeout or dispatch input) must never outweigh or obscure an exploitable CRITICAL vulnerability (e.g. script injection or vulnerable action).
+
+By sorting findings descending and multiplying by $r^i = 0.8^i$:
+1. **Primary vulnerability dominates**: The most severe item ($i=0$) enters with full weight ($0.8^0 = 1.0$).
+2. **Strict mathematical asymptote**: Because $\sum_{i=0}^\infty r^i = \frac{1}{1 - 0.8} = 5.0$, the cumulative impact of lower-tier findings is strictly bounded. Even an **infinite** number of LOW findings cannot exceed ~61.3, which is strictly less than 1 CRITICAL (81.0).
+3. **Monotonicity**: Adding any finding with score $s \ge 0$ never lowers the repository score.
 
 ### Worked Examples — Repository Score
 
@@ -171,23 +177,41 @@ repo_score  = 100 × (1 − 1.0)   [empty product = 1]
 ```
 finding_score  = min(10, 9.0 × 1.0) = 9.0
 score_items    = [9.0]  (standalone, no chain)
-product        = (1 − 9.0/10 × 0.9)
-               = (1 − 0.81) = 0.19
+Rank i=0:        1 − (9.0/10) × 0.9 × 0.8^0 = 1 − 0.81 = 0.19
+product        = 0.19
 repo_score     = 100 × (1 − 0.19) = 81.0
 ```
 
-**Example C — Many LOW findings vs one CRITICAL**
+**Example C — Many LOW findings vs one CRITICAL (Diminishing Returns & Rank Decay)**
 
-Scenario 1: single CRITICAL (push) → repo_score = 81.0 (from Example B)
+Scenario 1: Single CRITICAL (push) → repo_score = 81.0 (from Example B)
 
-Scenario 2: five LOW findings (push), each score = 2.0
+Scenario 2: Five LOW findings (push), each score = 2.0
 ```
-item contribution per finding = 2.0/10 × 0.9 = 0.18
-product = (1-0.18)^5 = 0.82^5 ≈ 0.3707
-repo_score = 100 × (1 − 0.3707) ≈ 62.93
+Sorted items: [2.0, 2.0, 2.0, 2.0, 2.0]
+Rank i=0: 1 − (2.0/10) × 0.9 × 0.8^0 = 1 − 0.18000 = 0.82000
+Rank i=1: 1 − (2.0/10) × 0.9 × 0.8^1 = 1 − 0.14400 = 0.85600
+Rank i=2: 1 − (2.0/10) × 0.9 × 0.8^2 = 1 − 0.11520 = 0.88480
+Rank i=3: 1 − (2.0/10) × 0.9 × 0.8^3 = 1 − 0.09216 = 0.90784
+Rank i=4: 1 − (2.0/10) × 0.9 × 0.8^4 = 1 − 0.07373 = 0.92627
+
+product    = 0.82 × 0.856 × 0.8848 × 0.90784 × 0.92627 ≈ 0.52225
+repo_score = 100 × (1 − 0.52225) ≈ 47.77
 ```
 
-Five LOW findings (62.93) are worse than zero but still below one CRITICAL (81.0). ✓ Diminishing returns work correctly.
+Scenario 3: Ten LOW findings (push), each score = 2.0
+```
+product    ≈ 0.42642
+repo_score ≈ 57.36  <  81.0 (1 Critical)
+```
+
+Scenario 4: One Hundred INFO findings (push), each score = 0.5
+```
+product    ≈ 0.79622
+repo_score ≈ 20.38  <  81.0 (1 Critical)
+```
+
+Both 10 LOWs (57.36) and 100 INFOs (20.38) remain strictly below 1 CRITICAL (81.0). ✓ Diminishing returns and tier hierarchy verified.
 
 **Example D — Chain vs standalone (no double-count)**
 
@@ -196,14 +220,19 @@ Chain score C1 = min(10, 9.0×1.3 + 0.25×7.0) = min(10, 13.58) = 10.0
 
 ```
 score_items      = [10.0]   ← chain score only; f1 & f2 NOT added again
-product          = (1 − 10.0/10 × 0.9) = (1 − 0.9) = 0.1
+Rank i=0:          1 − (10.0/10) × 0.9 × 0.8^0 = 1 − 0.9 = 0.1
+product          = 0.1
 repo_score       = 100 × (1 − 0.1) = 90.0
 ```
 
 If we had double-counted (added f1=9.0, f2=7.0, chain=10.0):
 ```
-product = (1−0.9)(1−0.81)(1−0.63) = 0.1 × 0.19 × 0.37 ≈ 0.007
-repo_score ≈ 99.3  ← inflated; that's why we don't double-count
+Sorted items: [10.0, 9.0, 7.0]
+Rank i=0: 1 − 0.900 = 0.100
+Rank i=1: 1 − 0.648 = 0.352
+Rank i=2: 1 − 0.403 = 0.597
+product ≈ 0.0210
+repo_score ≈ 97.90  ← artificially inflated; that's why we don't double-count
 ```
 
 ---
@@ -271,4 +300,5 @@ DEFAULT_MULTIPLIER = 1.0
 CHAIN_MULTIPLIER_2 = 1.3
 CHAIN_MULTIPLIER_3 = 1.5
 REPO_DECAY_K       = 0.9
+REPO_RANK_DECAY    = 0.8
 ```
