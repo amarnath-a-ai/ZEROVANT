@@ -63,6 +63,18 @@ def parse_args(args=None):
         default=False,
         help="Exit with code 1 if CRITICAL or HIGH findings are discovered",
     )
+    scan_parser.add_argument(
+        "--save",
+        action="store_true",
+        default=False,
+        help="Save scan results to SQLite database",
+    )
+    scan_parser.add_argument(
+        "--db",
+        type=str,
+        default=None,
+        help="SQLite database path for saving scan results",
+    )
 
     return parser.parse_args(args)
 
@@ -271,6 +283,29 @@ def run_scan(args) -> int:
             ],
         }
         print(json.dumps(sarif_data, indent=2))
+
+    if getattr(args, "save", False):
+        from app.storage.repository import ScanRepository, synthetic_repo_identity
+
+        target_str = args.repo or target_path or "inline-scan"
+        source_t = "github_repo" if args.repo else "local_directory"
+        s_name, s_url = synthetic_repo_identity(source_t, str(target_str))
+        repo_mgr = ScanRepository(db_path=getattr(args, "db", None))
+        rep_id = repo_mgr.get_or_create_repo(s_name, s_url)
+        saved_scan_id = repo_mgr.save_scan(
+            repo_id=rep_id,
+            scan_data={
+                "repo_score": scoring_result.repo_score,
+                "source_type": source_t,
+                "severity_distribution": scoring_result.severity_distribution,
+                "findings": findings,
+                "chains": all_chains,
+                "explanations": scan_explanation.findings if scan_explanation else {},
+                "workflows": workflows,
+            },
+        )
+        if args.format == "table":
+            print(f"\n[+] Scan saved to database with ID: {saved_scan_id}")
 
     if args.exit_code:
         has_high_or_crit = any(
