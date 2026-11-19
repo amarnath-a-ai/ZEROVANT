@@ -64,6 +64,7 @@ UNTRUSTED_CONTEXT_PATTERNS = [
 class Config:
     """Base configuration."""
 
+    DEBUG = False
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-replace-in-production")
     DATABASE_PATH = os.environ.get(
         "DATABASE_PATH", str(BASE_DIR / "instance" / "auditor.db")
@@ -82,7 +83,7 @@ class Config:
 class DevelopmentConfig(Config):
     """Development configuration."""
 
-    DEBUG = True
+    DEBUG = os.environ.get("FLASK_DEBUG", "0").lower() in ("1", "true", "yes")
 
 
 class TestingConfig(Config):

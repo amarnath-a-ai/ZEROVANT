@@ -576,3 +576,64 @@ jobs:
     assert diff["score_delta"] < 0  # Risk score decreased
     assert diff["fixed_count"] >= 2
     assert diff["new_count"] == 0
+
+
+def test_debug_mode_off_by_default(monkeypatch):
+    """Verify debug mode is strictly disabled by default and only enabled via FLASK_DEBUG."""
+    from app import create_app
+
+    # 1. Default invocation (no env var)
+    monkeypatch.delenv("FLASK_DEBUG", raising=False)
+    monkeypatch.delenv("FLASK_ENV", raising=False)
+    default_app = create_app()
+    assert default_app.debug is False
+    assert default_app.config["DEBUG"] is False
+
+    # 2. Explicit FLASK_DEBUG=1 in development config
+    monkeypatch.setenv("FLASK_DEBUG", "1")
+    dev_app = create_app("development")
+    assert dev_app.debug is False or dev_app.config["DEBUG"] is True
+
+
+def test_secret_redaction_across_api_storage_and_explanations(client):
+    """Verify fake secret tokens in scanned workflows are redacted across API responses, storage, and explanations."""
+    fake_token = "ghp_fakeToken1234567890abcdef123456"
+    fake_aws_key = "AKIAIOSFODNN7EXAMPLE"
+
+    secret_yaml = f"""
+name: SecretLeak
+on: push
+jobs:
+  leak:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "AWS={fake_aws_key}"
+      - run: echo "TOKEN={fake_token}"
+"""
+    scan_res = client.post("/api/scan", json={"yaml": secret_yaml})
+    assert scan_res.status_code == 201
+    scan_id = scan_res.get_json()["scan_id"]
+
+    # 1. API Response Check
+    detail_res = client.get(f"/api/scans/{scan_id}")
+    assert detail_res.status_code == 200
+    scan_data = detail_res.get_json()
+
+    # The raw token values must NEVER appear in any finding evidence or title
+    for finding in scan_data["findings"]:
+        assert fake_token not in finding.get("evidence", "")
+        assert fake_aws_key not in finding.get("evidence", "")
+
+    # 2. Database Storage Check
+    repo_mgr = client.application.extensions["repository"]
+    stored_scan = repo_mgr.get_scan(scan_id)
+    assert stored_scan is not None
+    for f in stored_scan["findings"]:
+        assert fake_token not in f.get("evidence", "")
+        assert fake_aws_key not in f.get("evidence", "")
+
+    # 3. Explanations Check
+    for exp in stored_scan.get("explanations", {}).values():
+        assert fake_token not in exp.get("what", "")
+        assert fake_token not in exp.get("why", "")
+        assert fake_token not in exp.get("fix_diff", "")

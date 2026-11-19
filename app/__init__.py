@@ -1,5 +1,6 @@
 """Flask application factory."""
 
+import os
 from typing import Any
 
 from flask import Flask, jsonify, request
@@ -7,7 +8,7 @@ from flask import Flask, jsonify, request
 from app.config import config_by_name
 
 
-def create_app(config_name: str = "development", test_config: dict[str, Any] | None = None) -> Flask:
+def create_app(config_name: str | None = None, test_config: dict[str, Any] | None = None) -> Flask:
     """Create and configure an instance of the Flask application."""
     app = Flask(
         __name__,
@@ -15,7 +16,8 @@ def create_app(config_name: str = "development", test_config: dict[str, Any] | N
         static_folder="web/static",
     )
 
-    app_config = config_by_name.get(config_name, config_by_name["development"])
+    resolved_config = config_name or os.environ.get("FLASK_ENV", "production")
+    app_config = config_by_name.get(resolved_config, config_by_name["production"])
     app.config.from_object(app_config)
     if test_config:
         app.config.update(test_config)
