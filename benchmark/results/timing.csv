@@ -1,0 +1,4 @@
+Tool,Run_1_Sec,Run_2_Sec,Run_3_Sec,Median_Sec,Per_Workflow_Ms,Throughput_Workflows_Per_Sec
+ZEROVANT,0.6203,0.2776,0.3227,0.3227,3.59,278.92
+Zizmor,0.3078,0.3396,0.3025,0.3078,3.42,292.37
+Poutine,N/A,N/A,N/A,N/A,N/A,N/A (Skipped on Windows; Linux/Docker instructions documented)

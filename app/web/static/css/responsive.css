@@ -1,20 +1,14 @@
-/* ZEROVANT Responsive Layouts & Breakpoints */
+/* ZEROVANT Responsive Layouts & Breakpoints — Obsidian Liquid Glass */
 
-@media (max-width: 1200px) {
-  .overview-metrics-grid {
-    grid-template-columns: 1fr 1fr;
+@media (max-width: 1280px) {
+  .overview-top-grid {
+    grid-template-columns: 280px 1fr;
   }
-  .score-card {
-    grid-column: span 2;
-  }
-  .overview-charts-grid {
-    grid-template-columns: 1fr;
+  .overview-metrics-strip {
+    grid-template-columns: repeat(3, 1fr);
   }
   .capabilities-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .workflow-steps-grid {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -25,7 +19,7 @@
 
   .app-sidebar.open {
     transform: translateX(0);
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.9);
   }
 
   .app-main {
@@ -39,7 +33,11 @@
   .landing-hero {
     grid-template-columns: 1fr;
     text-align: center;
-    gap: 2.5rem;
+    gap: 3rem;
+  }
+
+  .hero-content {
+    align-items: center;
   }
 
   .hero-desc {
@@ -50,32 +48,49 @@
     justify-content: center;
   }
 
-  .attack-graph-wrapper {
-    grid-template-columns: 1fr;
-    height: auto;
+  .hero-emblem-container {
+    margin: 0 auto;
+    width: 340px;
+    height: 300px;
   }
 
-  .graph-canvas-container {
-    height: 450px;
+  .hero-glass-slab {
+    width: 230px;
+    height: 230px;
   }
 
-  .remediation-expl-grid, .diff-view {
-    grid-template-columns: 1fr;
-  }
-
-  .comparison-selectors-bar {
+  .overview-top-grid {
     grid-template-columns: 1fr;
   }
 
-  .delta-summary-grid {
+  .overview-metrics-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .overview-charts-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .diff-split-container {
+    grid-template-columns: 1fr;
+  }
+
+  .scan-options-row {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .capabilities-dock {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+    border-radius: var(--radius-lg);
   }
 }
 
 @media (max-width: 768px) {
   .landing-nav {
     width: calc(100% - 1.5rem);
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 1rem;
   }
 
   .nav-links {
@@ -86,27 +101,27 @@
     font-size: 2.5rem;
   }
 
-  .overview-metrics-grid {
+  .overview-metrics-strip {
     grid-template-columns: 1fr;
   }
 
-  .score-card {
-    grid-column: span 1;
-  }
-
-  .capabilities-grid, .workflow-steps-grid {
+  .capabilities-grid {
     grid-template-columns: 1fr;
   }
 
-  .global-search-container {
-    display: none;
+  .scan-options-row {
+    grid-template-columns: 1fr;
   }
 
   .app-content {
-    padding: 1rem;
+    padding: 1.25rem 1rem 3rem;
   }
 
-  .delta-summary-grid {
-    grid-template-columns: 1fr;
+  .drawer-slide {
+    width: 100%;
+  }
+
+  .provider-tabs-bar {
+    flex-wrap: wrap;
   }
 }

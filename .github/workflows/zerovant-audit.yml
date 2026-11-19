@@ -1,0 +1,71 @@
+name: ZEROVANT CI/CD Pipeline Security Audit
+
+# Triggers audit on pull requests and pushes affecting workflow files
+on:
+  push:
+    paths:
+      - '.github/workflows/**'
+    branches: [main, master, develop]
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+    types: [opened, synchronize, reopened]
+
+# Minimum required permissions: read contents only
+permissions:
+  contents: read
+
+jobs:
+  zerovant_static_audit:
+    name: ZEROVANT Misconfiguration & Attack-Chain Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Repository Workflows
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Python 3.11 Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install ZEROVANT Core Audit Engine
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml requests
+
+      - name: Execute ZEROVANT Security Scan
+        id: zerovant_scan
+        env:
+          ZEROVANT_FAIL_ON_CRITICAL: "true"
+        run: |
+          echo "Starting ZEROVANT static analysis on .github/workflows/*.yml..."
+          python -c "
+          from app.pipeline import run_scan
+          from app.storage.repository import ScanRepository
+          import sys
+
+          repo_mgr = ScanRepository(':memory:')
+          scan_id = run_scan(source='.github/workflows', source_type='local', repository=repo_mgr)
+          scan = repo_mgr.get_scan(scan_id)
+
+          print(f'ZEROVANT Audit Complete! Scan ID: {scan_id}')
+          print(f'Risk Score: {scan.get(\"repo_score\", 0)}/100 | Findings: {scan.get(\"finding_count\", 0)} | Attack Chains: {len(scan.get(\"chains\", []))}')
+
+          critical_findings = [f for f in scan.get('findings', []) if f.get('severity', '').upper() == 'CRITICAL']
+          if critical_findings:
+              print(f'CRITICAL FAILURE: {len(critical_findings)} Critical vulnerabilities detected!')
+              for cf in critical_findings:
+                  print(f'  - [{cf.get(\"rule_id\")}] {cf.get(\"title\")}: line {cf.get(\"line_number\")}')
+              sys.exit(1)
+          "
+
+      - name: Summary & Security Feedback
+        if: always()
+        run: |
+          echo "### ZEROVANT Security Assessment" >> $GITHUB_STEP_SUMMARY
+          echo "Pipeline scan finished with status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY

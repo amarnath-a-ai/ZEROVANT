@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ZEROVANT — CI/CD Pipeline Security Auditor</title>
-  <meta name="description" content="Enterprise CI/CD pipeline security analysis, misconfiguration detection, attack-chain correlation, and explainable remediation.">
+  <meta name="description" content="CI/CD Pipeline Security Auditor for Misconfiguration Detection and Explainable Supply-Chain Risk Remediation.">
 
-  <!-- Core Design Tokens & Stylesheets -->
+  <!-- Core Obsidian Liquid Glass Design Tokens & Stylesheets -->
   <link rel="stylesheet" href="/static/css/tokens.css">
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/glass.css">
@@ -17,10 +17,11 @@
   <link rel="stylesheet" href="/static/css/responsive.css">
 </head>
 <body>
-  <!-- Ambient Liquid Lighting -->
+  <!-- Ambient Liquid Glow Spheres -->
   <div class="liquid-glow-container" aria-hidden="true">
     <div class="liquid-orb-1"></div>
     <div class="liquid-orb-2"></div>
+    <div class="liquid-orb-3"></div>
   </div>
 
   <!-- Toast Notification Container -->
@@ -30,9 +31,10 @@
   <!-- 1. PUBLIC LANDING VIEW                                                    -->
   <!-- ========================================================================= -->
   <div id="view-landing" class="landing-page">
+    <!-- Floating Translucent Navigation Bar -->
     <header class="landing-nav">
       <a href="#landing" class="brand-logo">
-        <div class="brand-icon">Z</div>
+        <span data-brand-mark="true" data-size="28"></span>
         <span>ZEROVANT</span>
       </a>
 
@@ -44,10 +46,12 @@
       </ul>
 
       <div class="nav-actions">
-        <button class="btn btn-icon theme-toggle-btn" aria-label="Toggle Theme">
-          <span class="theme-icon">☀️</span>
+        <button class="btn-icon theme-toggle-btn" aria-label="Toggle Theme">
+          <span class="theme-icon-container"><i data-lucide="sun" data-size="18"></i></span>
         </button>
-        <button class="btn btn-primary btn-sm" data-route="overview">Launch App &rarr;</button>
+        <button class="btn btn-primary btn-sm" data-route="overview">
+          Launch App <i data-lucide="arrow-right" data-size="14"></i>
+        </button>
       </div>
     </header>
 
@@ -56,98 +60,99 @@
       <section class="landing-hero">
         <div class="hero-content">
           <div class="hero-badge">
-            <span>🛡️</span> CI/CD Security Auditor
+            <i data-lucide="shield" data-size="14"></i>
+            <span>CI/CD Security Auditor</span>
           </div>
           <h1 class="hero-title">Defend Your<br><span>Software Pipeline.</span></h1>
           <p class="hero-desc">
             Discover hidden workflow vulnerabilities, correlate multi-step attack paths, and remediate supply-chain risks before malicious code reaches production.
           </p>
           <div class="hero-ctas">
-            <button class="btn btn-primary" data-route="scanner">Scan Repository &rarr;</button>
+            <button class="btn btn-primary" data-route="scanner">
+              Scan Repository <i data-lucide="arrow-right" data-size="16"></i>
+            </button>
             <button class="btn btn-secondary" data-route="overview">Explore Platform</button>
           </div>
         </div>
 
+        <!-- 3D Liquid-Glass Hero Centerpiece -->
         <div class="hero-visual">
-          <div class="glass-hero-shield">
-            <div class="glass-hero-icon">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#A8E6C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-                <polyline points="9 12 11 14 15 10"/>
-              </svg>
+          <div class="hero-emblem-container">
+            <div class="hero-emblem-glow"></div>
+            <div class="hero-emblem-ring"></div>
+            <div class="hero-glass-slab">
+              <div class="glass-slab-depth"></div>
+              <div class="glass-slab-face">
+                <div class="emblem-mark" data-brand-mark="true" data-size="84"></div>
+                <div style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent-primary); margin-top: 1rem; letter-spacing: 0.04em;">
+                  30 RULES &bull; 10 ATTACK CHAINS
+                </div>
+              </div>
             </div>
-            <div class="brand-logo">ZEROVANT</div>
-            <p class="mono" style="font-size: 0.78rem; color: #79BD99; margin-top: 0.3rem;">30 Rules &bull; 10 Attack Chains</p>
           </div>
-          <div class="glass-hero-ring"></div>
         </div>
       </section>
 
-      <!-- Capabilities Section -->
-      <section class="landing-capabilities">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2>Core Security Capabilities</h2>
-            <p>Engineered for static analysis of GitHub Actions workflows.</p>
+      <!-- Bottom Floating Capabilities Dock (matching reference) -->
+      <div class="landing-capabilities-dock-container">
+        <div class="capabilities-dock">
+          <div class="dock-item">
+            <i data-lucide="code-2" data-size="18"></i>
+            <span>Workflow Analysis</span>
           </div>
+          <div class="dock-item">
+            <i data-lucide="shield-alert" data-size="18"></i>
+            <span>Vulnerability Detection</span>
+          </div>
+          <div class="dock-item">
+            <i data-lucide="network" data-size="18"></i>
+            <span>Attack-Chain Correlation</span>
+          </div>
+          <div class="dock-item">
+            <i data-lucide="terminal" data-size="18"></i>
+            <span>Explainable Remediation</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Capabilities Detailed Section -->
+      <section class="landing-capabilities-detailed">
+        <div class="section-header">
+          <h2>Core Security Capabilities</h2>
+          <p>Engineered for deterministic static analysis of GitHub Actions workflows.</p>
         </div>
 
         <div class="capabilities-grid">
           <div class="glass-card capability-card glass-card-hover">
-            <div class="icon-box">⚡</div>
+            <div class="capability-icon-wrap">
+              <i data-lucide="code-2" data-size="22"></i>
+            </div>
             <h4>Workflow Analysis</h4>
             <p>AST line-preserving parser that inspects jobs, triggers, permissions, steps, and expressions without code execution.</p>
           </div>
 
           <div class="glass-card capability-card glass-card-hover">
-            <div class="icon-box">🔍</div>
+            <div class="capability-icon-wrap">
+              <i data-lucide="shield-alert" data-size="22"></i>
+            </div>
             <h4>Vulnerability Detection</h4>
             <p>Comprehensive rule engine scanning for 30 static misconfigurations across credentials, injections, and excessive scopes.</p>
           </div>
 
           <div class="glass-card capability-card glass-card-hover">
-            <div class="icon-box">🔗</div>
+            <div class="capability-icon-wrap">
+              <i data-lucide="network" data-size="22"></i>
+            </div>
             <h4>Attack-Chain Correlation</h4>
             <p>Contextual graph correlation matching isolated findings into 10 composite attack paths like Pwn-Request and OIDC Abuse.</p>
           </div>
 
           <div class="glass-card capability-card glass-card-hover">
-            <div class="icon-box">💡</div>
+            <div class="capability-icon-wrap">
+              <i data-lucide="terminal" data-size="22"></i>
+            </div>
             <h4>Explainable Remediation</h4>
             <p>Deterministic What / Why / How guidance accompanied by unified-diff YAML patches for immediate developer remediation.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Workflow Process Section -->
-      <section class="landing-workflow">
-        <h2>How ZEROVANT Works</h2>
-        <p>A deterministic, viva-defensible static security analysis data pipeline.</p>
-        <div class="workflow-steps-grid">
-          <div class="glass-card workflow-step-card">
-            <span class="step-num">Step 01</span>
-            <h4>Ingestion</h4>
-            <p>GitHub API client with strict SSRF controls or direct YAML paste.</p>
-          </div>
-          <div class="glass-card workflow-step-card">
-            <span class="step-num">Step 02</span>
-            <h4>YAML Parser</h4>
-            <p>Constructs line-accurate Workflow object model hierarchy.</p>
-          </div>
-          <div class="glass-card workflow-step-card">
-            <span class="step-num">Step 03</span>
-            <h4>Rule Engine</h4>
-            <p>Evaluates 25 Core and 5 Extension rules yielding tagged findings.</p>
-          </div>
-          <div class="glass-card workflow-step-card">
-            <span class="step-num">Step 04</span>
-            <h4>Correlation &amp; Score</h4>
-            <p>Correlates multi-rule attack chains and calculates risk scores.</p>
-          </div>
-          <div class="glass-card workflow-step-card">
-            <span class="step-num">Step 05</span>
-            <h4>Remediation</h4>
-            <p>Generates unified diff patches and stores history in SQLite.</p>
           </div>
         </div>
       </section>
@@ -157,7 +162,7 @@
       <div class="footer-inner">
         <div>&copy; 2026 ZEROVANT. Final-year CSE Capstone Project.</div>
         <div class="flex gap-4">
-          <a href="/api/health" target="_blank">API Health</a>
+          <a href="/api/health" target="_blank" rel="noopener">API Health</a>
           <a href="#overview" data-route="overview">Dashboard</a>
           <a href="#policies" data-route="policies">Security Policies</a>
         </div>
@@ -169,11 +174,11 @@
   <!-- 2. AUTHENTICATED WORKSPACE SHELL                                         -->
   <!-- ========================================================================= -->
   <div id="view-workspace" class="app-workspace hidden">
-    <!-- Left Sidebar -->
+    <!-- Left Translucent Sidebar -->
     <aside class="app-sidebar">
       <div class="sidebar-header">
         <a href="#landing" class="brand-logo" data-route="landing">
-          <div class="brand-icon">Z</div>
+          <span data-brand-mark="true" data-size="26"></span>
           <span>ZEROVANT</span>
         </a>
       </div>
@@ -181,40 +186,40 @@
       <nav class="sidebar-nav">
         <div class="nav-section-title">Navigation</div>
         <a class="sidebar-link active" data-route="overview">
-          <span class="sidebar-icon">📊</span> Overview
+          <span class="sidebar-icon"><i data-lucide="layout-dashboard"></i></span> Overview
         </a>
         <a class="sidebar-link" data-route="scanner">
-          <span class="sidebar-icon">🚀</span> Scan Repository
+          <span class="sidebar-icon"><i data-lucide="radar"></i></span> Scan Repository
         </a>
         <a class="sidebar-link" data-route="repositories">
-          <span class="sidebar-icon">📁</span> Repositories
+          <span class="sidebar-icon"><i data-lucide="folder-git-2"></i></span> Repositories
         </a>
         <a class="sidebar-link" data-route="findings">
-          <span class="sidebar-icon">🛡️</span> Findings
+          <span class="sidebar-icon"><i data-lucide="shield-alert"></i></span> Findings
           <span class="sidebar-badge" id="sidebar-findings-count">0</span>
         </a>
         <a class="sidebar-link" data-route="attack-graph">
-          <span class="sidebar-icon">🕸️</span> Attack Graph
+          <span class="sidebar-icon"><i data-lucide="network"></i></span> Attack Graph
         </a>
         <a class="sidebar-link" data-route="analytics">
-          <span class="sidebar-icon">📈</span> Risk Analytics
+          <span class="sidebar-icon"><i data-lucide="trending-up"></i></span> Risk Analytics
         </a>
         <a class="sidebar-link" data-route="remediation">
-          <span class="sidebar-icon">💡</span> Remediation
+          <span class="sidebar-icon"><i data-lucide="wrench"></i></span> Remediation
         </a>
 
         <div class="nav-section-title">Governance</div>
         <a class="sidebar-link" data-route="policies">
-          <span class="sidebar-icon">📜</span> Security Policies
+          <span class="sidebar-icon"><i data-lucide="file-check-2"></i></span> Security Policies
         </a>
         <a class="sidebar-link" data-route="comparison">
-          <span class="sidebar-icon">⚖️</span> Scan Comparison
+          <span class="sidebar-icon"><i data-lucide="git-compare-arrows"></i></span> Scan Comparison
         </a>
       </nav>
 
       <div class="sidebar-footer">
         <a class="sidebar-link" data-route="settings">
-          <span class="sidebar-icon">⚙️</span> Settings
+          <span class="sidebar-icon"><i data-lucide="settings"></i></span> Settings
         </a>
       </div>
     </aside>
@@ -224,557 +229,733 @@
       <!-- Topbar -->
       <header class="app-topbar">
         <div class="topbar-left">
-          <button id="btn-mobile-menu" class="btn btn-icon hidden mobile-menu-btn" aria-label="Toggle menu">☰</button>
+          <button id="btn-mobile-menu" class="btn btn-icon hidden mobile-menu-btn" aria-label="Toggle menu">
+            <i data-lucide="sliders" data-size="18"></i>
+          </button>
           <div class="global-search-container">
-            <span class="global-search-icon">🔍</span>
+            <span class="global-search-icon"><i data-lucide="search" data-size="16"></i></span>
             <input type="text" id="global-search-input" class="global-search-input" placeholder="Search repositories, findings, rules...">
           </div>
         </div>
 
         <div class="topbar-right">
-          <button class="btn btn-icon theme-toggle-btn" aria-label="Toggle Theme">
-            <span class="theme-icon">☀️</span>
+          <button class="btn btn-icon" id="topbar-notifications-btn" aria-label="Notifications" title="Notifications">
+            <i data-lucide="bell" data-size="18"></i>
           </button>
-          <div class="user-avatar" title="Auditor Session">A</div>
+          <button class="btn btn-icon theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
+            <span class="theme-icon-container"><i data-lucide="sun" data-size="18"></i></span>
+          </button>
+          <div class="user-avatar" title="Security Auditor Session">Z</div>
         </div>
       </header>
 
       <!-- Viewport / Screens -->
       <main class="app-content">
 
-        <!-- SCREEN 01 — COMMAND OVERVIEW -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 01 — COMMAND OVERVIEW                                      -->
+        <!-- ================================================================= -->
         <section id="screen-overview" class="app-screen">
           <div class="page-header">
             <div>
               <h2 class="page-title">Command Overview</h2>
-              <p class="page-desc">Security posture, vulnerability breakdown, and recent audit activity.</p>
+              <p class="page-desc">Security posture across your CI/CD pipelines</p>
             </div>
-            <button class="btn btn-primary btn-sm" data-route="scanner">+ New Scan</button>
+            <div class="flex items-center gap-3">
+              <span class="glass-pill"><i data-lucide="calendar" data-size="14"></i> Last 30 days <i data-lucide="chevron-down" data-size="14"></i></span>
+              <button class="btn btn-primary btn-sm" data-route="scanner">
+                <i data-lucide="play" data-size="14"></i> Run Scan
+              </button>
+            </div>
           </div>
 
-          <div class="overview-metrics-grid">
-            <!-- Circular Score Gauge Card -->
+          <!-- Top Row: Security Score Arc Gauge & 5-Metric Strip -->
+          <div class="overview-top-grid">
+            <!-- Score Card with Radial Arc Gauge -->
             <div class="glass-card score-card">
-              <div class="input-label" style="margin-bottom: 0.8rem;">Posture Score</div>
-              <div class="score-gauge" id="overview-score-gauge">
-                <div class="score-gauge-content">
-                  <div class="score-gauge-val" id="overview-score-val">100</div>
-                  <div class="score-gauge-max">/ 100</div>
+              <div class="metric-strip-header w-full">
+                <span>Security Score</span>
+                <i data-lucide="shield-check" data-size="16"></i>
+              </div>
+              <div class="radial-gauge-container">
+                <svg class="radial-gauge-svg" viewBox="0 0 200 110">
+                  <path class="radial-gauge-track" d="M 20 100 A 80 80 0 0 1 180 100"/>
+                  <path id="overview-radial-fill" class="radial-gauge-fill" d="M 20 100 A 80 80 0 0 1 180 100" stroke-dasharray="251.2" stroke-dashoffset="32.6"/>
+                </svg>
+                <div class="score-value-wrap">
+                  <div class="score-big-num" id="overview-score-value">87</div>
+                  <div class="score-max-num">/100</div>
                 </div>
               </div>
-              <div class="score-delta-tag score-delta-good">&uarr; Posture Rating</div>
+              <div class="score-delta-badge">
+                <i data-lucide="trending-up" data-size="14"></i>
+                <span id="overview-score-status">+12 pts &bull; Healthy</span>
+              </div>
             </div>
 
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Total Findings</div>
-              <div class="metric-card-value" id="stat-total-findings">0</div>
-              <div class="metric-card-footer">Across all repositories</div>
-            </div>
+            <!-- 5-Metric Strip -->
+            <div class="overview-metrics-strip">
+              <div class="glass-card metric-strip-card">
+                <div class="metric-strip-header">
+                  <span>Total Findings</span>
+                  <i data-lucide="layers" data-size="16"></i>
+                </div>
+                <div class="metric-strip-value" id="overview-stat-total">0</div>
+                <div class="metric-strip-footer" style="color: var(--accent-primary);">&darr; 36% vs last week</div>
+              </div>
 
-            <div class="glass-card metric-card">
-              <div class="metric-card-header" style="color: var(--severity-critical);">Critical Risk</div>
-              <div class="metric-card-value" style="color: var(--severity-critical);" id="stat-critical-count">0</div>
-              <div class="metric-card-footer">Immediate action required</div>
-            </div>
+              <div class="glass-card metric-strip-card" style="border-top: 2px solid var(--severity-critical);">
+                <div class="metric-strip-header">
+                  <span>Critical</span>
+                  <i data-lucide="shield-alert" data-size="16" style="color: var(--severity-critical);"></i>
+                </div>
+                <div class="metric-strip-value" id="overview-stat-critical" style="color: var(--severity-critical);">0</div>
+                <div class="metric-strip-footer">Requires immediate action</div>
+              </div>
 
-            <div class="glass-card metric-card">
-              <div class="metric-card-header" style="color: var(--severity-high);">High Risk</div>
-              <div class="metric-card-value" style="color: var(--severity-high);" id="stat-high-count">0</div>
-              <div class="metric-card-footer">Privilege / Exfil risks</div>
-            </div>
+              <div class="glass-card metric-strip-card" style="border-top: 2px solid var(--severity-high);">
+                <div class="metric-strip-header">
+                  <span>High</span>
+                  <i data-lucide="alert-triangle" data-size="16" style="color: var(--severity-high);"></i>
+                </div>
+                <div class="metric-strip-value" id="overview-stat-high" style="color: var(--severity-high);">0</div>
+                <div class="metric-strip-footer">Priority remediation</div>
+              </div>
 
-            <div class="glass-card metric-card">
-              <div class="metric-card-header" style="color: var(--severity-medium);">Medium / Low</div>
-              <div class="metric-card-value" id="stat-medium-count">0</div>
-              <div class="metric-card-footer">Hygiene &amp; Pinning issues</div>
+              <div class="glass-card metric-strip-card" style="border-top: 2px solid var(--severity-medium);">
+                <div class="metric-strip-header">
+                  <span>Medium</span>
+                  <i data-lucide="info" data-size="16" style="color: var(--severity-medium);"></i>
+                </div>
+                <div class="metric-strip-value" id="overview-stat-medium" style="color: var(--severity-medium);">0</div>
+                <div class="metric-strip-footer">Policy compliance</div>
+              </div>
+
+              <div class="glass-card metric-strip-card" style="border-top: 2px solid var(--severity-low);">
+                <div class="metric-strip-header">
+                  <span>Low</span>
+                  <i data-lucide="check" data-size="16" style="color: var(--severity-low);"></i>
+                </div>
+                <div class="metric-strip-value" id="overview-stat-low" style="color: var(--severity-low);">0</div>
+                <div class="metric-strip-footer">Informational &amp; hygiene</div>
+              </div>
             </div>
           </div>
 
+          <!-- Bottom Row: Risk Trend Area Chart & Findings Donut -->
           <div class="overview-charts-grid">
             <div class="glass-card chart-card">
               <div class="chart-card-header">
-                <h4>Historical Risk Trajectory</h4>
-                <span class="text-muted" style="font-size: 0.8rem;">Recent Scans</span>
+                <div>
+                  <h3 class="chart-card-title">Risk Trend</h3>
+                  <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">Aggregate pipeline risk exposure</p>
+                </div>
+                <span class="glass-pill" style="color: var(--accent-primary);"><i data-lucide="trending-up" data-size="14"></i> +12.4%</span>
               </div>
-              <div class="chart-container">
-                <canvas id="chart-risk-trend"></canvas>
+              <div class="chart-canvas-container">
+                <canvas id="overview-trend-chart"></canvas>
               </div>
             </div>
 
             <div class="glass-card chart-card">
               <div class="chart-card-header">
-                <h4>Findings by Severity</h4>
-                <span class="text-muted" style="font-size: 0.8rem;">Distribution</span>
+                <h3 class="chart-card-title">Findings by Severity</h3>
               </div>
-              <div class="chart-container">
-                <canvas id="chart-severity-donut"></canvas>
+              <div class="donut-legend-wrap">
+                <div class="donut-canvas-wrap">
+                  <canvas id="overview-donut-chart"></canvas>
+                  <div class="donut-center-text">
+                    <span class="donut-center-num" id="donut-center-total">0</span>
+                    <span class="donut-center-label">Total</span>
+                  </div>
+                </div>
+                <div class="donut-legend-list">
+                  <div class="donut-legend-item">
+                    <div class="legend-label-group">
+                      <span class="legend-color-dot" style="background: var(--severity-critical);"></span>
+                      <span>Critical</span>
+                    </div>
+                    <span class="mono" id="legend-count-critical">0</span>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-label-group">
+                      <span class="legend-color-dot" style="background: var(--severity-high);"></span>
+                      <span>High</span>
+                    </div>
+                    <span class="mono" id="legend-count-high">0</span>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-label-group">
+                      <span class="legend-color-dot" style="background: var(--severity-medium);"></span>
+                      <span>Medium</span>
+                    </div>
+                    <span class="mono" id="legend-count-medium">0</span>
+                  </div>
+                  <div class="donut-legend-item">
+                    <div class="legend-label-group">
+                      <span class="legend-color-dot" style="background: var(--severity-low);"></span>
+                      <span>Low</span>
+                    </div>
+                    <span class="mono" id="legend-count-low">0</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          <div class="glass-panel" style="padding: 1.5rem;">
-            <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
-              <h4>Recent Audit Activity</h4>
-              <button class="btn btn-outline btn-sm" data-route="repositories">View All Repos</button>
+          <!-- Recent Scans Table -->
+          <div class="glass-card" style="padding: 1.5rem;">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="chart-card-title">Recent Pipeline Audits</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Latest static security assessments</p>
+              </div>
+              <button class="btn btn-outline btn-sm" data-route="repositories">View Repositories</button>
             </div>
-            <div class="data-table-container">
-              <table class="data-table">
+            <div class="table-responsive">
+              <table class="glass-table">
                 <thead>
                   <tr>
                     <th>Repository / Source</th>
-                    <th>Risk Score</th>
-                    <th>Level</th>
+                    <th>Branch / Ref</th>
+                    <th>Security Score</th>
                     <th>Findings</th>
-                    <th>Attack Chains</th>
+                    <th>Chains</th>
+                    <th>Audited At</th>
                     <th>Action</th>
                   </tr>
                 </thead>
-                <tbody id="recent-scans-tbody">
-                  <tr><td colspan="6" class="text-muted">Loading scan activity...</td></tr>
+                <tbody id="overview-recent-scans-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                      No scans executed yet. Launch your first pipeline audit from the Scanner.
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- SCREEN 02 — REPOSITORY SCANNER -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 02 — SCAN REPOSITORY                                       -->
+        <!-- ================================================================= -->
         <section id="screen-scanner" class="app-screen hidden">
           <div class="page-header">
             <div>
-              <h2 class="page-title">Repository Scanner</h2>
-              <p class="page-desc">Analyze a GitHub repository or paste inline workflow YAML for static security auditing.</p>
+              <h2 class="page-title">Scan Repository</h2>
+              <p class="page-desc">Analyze a GitHub repository or CI/CD workflow</p>
             </div>
           </div>
 
           <div class="scanner-container">
             <div class="glass-card scanner-card">
-              <!-- Source Selection Tabs -->
-              <div class="source-tabs">
-                <button class="source-tab-btn active" data-source="github">GitHub Ingestion</button>
-                <button class="source-tab-btn" data-source="yaml">Pasted YAML</button>
+              <!-- Provider Ingestion Tabs -->
+              <div class="provider-tabs-bar">
+                <button class="provider-tab-btn active" data-source-type="github">
+                  <i data-lucide="github" data-size="16"></i> GitHub
+                </button>
+                <button class="provider-tab-btn" data-source-type="gitlab">
+                  <i data-lucide="gitlab" data-size="16"></i> GitLab
+                </button>
+                <button class="provider-tab-btn" data-source-type="bitbucket">
+                  <i data-lucide="bitbucket" data-size="16"></i> Bitbucket
+                </button>
+                <button class="provider-tab-btn" data-source-type="local">
+                  <i data-lucide="folder" data-size="16"></i> Local Directory
+                </button>
               </div>
 
-              <!-- GitHub Input -->
-              <div id="scan-input-github">
-                <div class="input-group">
-                  <label class="input-label" for="scan-repo-url">GitHub Repository URL</label>
-                  <input type="url" id="scan-repo-url" class="input-field" placeholder="https://github.com/owner/repository">
-                  <p class="text-muted" style="font-size: 0.8rem; margin-top: 0.2rem;">Enforces strict HTTPS and server-side request forgery (SSRF) controls.</p>
-                </div>
-
-                <div class="input-group">
-                  <label class="input-label" for="scan-repo-ref">Branch / Commit Ref</label>
-                  <input type="text" id="scan-repo-ref" class="input-field" placeholder="main" value="main">
-                </div>
-              </div>
-
-              <!-- Pasted YAML Input -->
-              <div id="scan-input-yaml" class="hidden">
-                <div class="input-group">
-                  <label class="input-label" for="scan-yaml-textarea">GitHub Actions Workflow YAML</label>
-                  <textarea id="scan-yaml-textarea" class="textarea-field" rows="12" placeholder="name: CI&#10;on: push&#10;jobs:&#10;  build:&#10;    runs-on: ubuntu-latest&#10;    steps:&#10;      - uses: actions/checkout@v2"></textarea>
+              <!-- Main Repository URL Input -->
+              <div class="input-group">
+                <label class="input-label" for="scan-repo-url">Repository URL</label>
+                <div class="input-with-icon">
+                  <i data-lucide="github" data-size="18"></i>
+                  <input type="text" id="scan-repo-url" class="input-field" placeholder="https://github.com/owner/repository" value="https://github.com/amarnath-e-ai/fnflow">
                 </div>
               </div>
 
-              <!-- Inline Error Box -->
-              <div id="scan-error-msg" class="hidden" style="color: var(--severity-critical); margin-bottom: 1rem; font-weight: 500;"></div>
+              <!-- Options Row: Branch, Depth, Includes -->
+              <div class="scan-options-row">
+                <div class="input-group" style="margin-bottom: 0;">
+                  <label class="input-label" for="scan-branch-select">Branch</label>
+                  <select id="scan-branch-select" class="select-field">
+                    <option value="main" selected>main</option>
+                    <option value="master">master</option>
+                    <option value="develop">develop</option>
+                    <option value="staging">staging</option>
+                  </select>
+                </div>
 
-              <button id="btn-start-scan" class="btn btn-primary w-full" style="padding: 0.85rem; font-size: 1rem;">
-                Execute Security Audit &rarr;
+                <div class="input-group" style="margin-bottom: 0;">
+                  <label class="input-label" for="scan-depth-select">Scan Depth</label>
+                  <select id="scan-depth-select" class="select-field">
+                    <option value="standard" selected>Standard (Workflows)</option>
+                    <option value="deep">Deep (+ Actions &amp; OIDC)</option>
+                    <option value="full">Full Supply-Chain Audit</option>
+                  </select>
+                </div>
+
+                <div class="checkboxes-group">
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="check-include-yaml" checked>
+                    <span>Workflows (YAML)</span>
+                  </label>
+                  <label class="custom-checkbox">
+                    <input type="checkbox" id="check-include-actions">
+                    <span>Actions</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Start Scan CTA Button -->
+              <button id="btn-trigger-scan" class="btn btn-primary btn-start-scan">
+                <i data-lucide="radar" data-size="18"></i> Start Scan &rarr;
               </button>
 
-              <!-- Progress Stages Pipeline -->
+              <!-- Live Scan Progress Box -->
               <div id="scan-progress-box" class="scan-progress-box hidden">
-                <div class="flex items-center gap-2">
-                  <span class="spinner"></span>
-                  <strong>Running Deterministic Analysis Pipeline...</strong>
+                <div class="flex items-center justify-between">
+                  <span class="font-semibold" style="color: var(--accent-primary);">Scanning in Progress</span>
+                  <span id="scan-progress-pct" class="mono text-xs">0%</span>
                 </div>
                 <div class="progress-stages-list">
-                  <div class="stage-step" id="step-1">
-                    <div class="stage-dot">1</div>
-                    <span>Ingestion</span>
+                  <div class="progress-stage-item" id="stage-ingest">
+                    <span class="stage-spinner"></span>
+                    <span>1. Ingesting workflows &amp; validating SSRF boundaries...</span>
                   </div>
-                  <div class="stage-step" id="step-2">
-                    <div class="stage-dot">2</div>
-                    <span>Parsing</span>
+                  <div class="progress-stage-item" id="stage-parse">
+                    <i data-lucide="check" data-size="14" class="hidden text-emerald-400"></i>
+                    <span>2. AST line-accurate YAML model parsing...</span>
                   </div>
-                  <div class="stage-step" id="step-3">
-                    <div class="stage-dot">3</div>
-                    <span>Rules</span>
+                  <div class="progress-stage-item" id="stage-rules">
+                    <i data-lucide="check" data-size="14" class="hidden text-emerald-400"></i>
+                    <span>3. Evaluating 30 static rules across security domains...</span>
                   </div>
-                  <div class="stage-step" id="step-4">
-                    <div class="stage-dot">4</div>
-                    <span>Chains</span>
+                  <div class="progress-stage-item" id="stage-chains">
+                    <i data-lucide="check" data-size="14" class="hidden text-emerald-400"></i>
+                    <span>4. Correlating attack chains &amp; computing risk scores...</span>
                   </div>
-                  <div class="stage-step" id="step-5">
-                    <div class="stage-dot">5</div>
-                    <span>Scoring</span>
+                </div>
+              </div>
+
+              <!-- Direct YAML Paste Section -->
+              <div class="yaml-editor-wrap">
+                <div class="flex items-center justify-between mb-2">
+                  <label class="input-label" for="scan-yaml-textarea">Direct YAML Workflow Inspection</label>
+                  <div class="flex gap-2">
+                    <button id="btn-load-vulnerable-demo" class="btn btn-outline btn-sm">Load Vulnerable Demo</button>
+                    <button id="btn-load-safe-demo" class="btn btn-outline btn-sm">Load Hardened Demo</button>
                   </div>
-                  <div class="stage-step" id="step-6">
-                    <div class="stage-dot">6</div>
-                    <span>Report</span>
-                  </div>
+                </div>
+                <div class="yaml-line-editor">
+                  <div id="yaml-line-numbers" class="yaml-line-numbers">1</div>
+                  <textarea id="scan-yaml-textarea" class="yaml-textarea" placeholder="# Paste GitHub Actions workflow YAML here..."></textarea>
+                </div>
+                <div class="flex justify-between items-center mt-3">
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">AST parser supports .github/workflows/*.yml definitions</span>
+                  <button id="btn-scan-pasted-yaml" class="btn btn-secondary btn-sm">
+                    <i data-lucide="play" data-size="14"></i> Audit Pasted YAML
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- SCREEN 03 — REPOSITORIES -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 03 — REPOSITORIES                                          -->
+        <!-- ================================================================= -->
         <section id="screen-repositories" class="app-screen hidden">
           <div class="page-header">
             <div>
-              <h2 class="page-title">Repositories</h2>
-              <p class="page-desc">All registered repositories with scan counts, historical tracking, and risk ratings.</p>
+              <h2 class="page-title">Monitored Repositories</h2>
+              <p class="page-desc">Tracked CI/CD workflows and historical audit records.</p>
             </div>
-            <input type="text" id="repos-search-input" class="input-field" style="width: 260px;" placeholder="Filter repositories...">
+            <button class="btn btn-primary btn-sm" data-route="scanner">
+              <i data-lucide="plus" data-size="14"></i> Connect Repository
+            </button>
           </div>
 
-          <div class="glass-panel" style="padding: 1.5rem;">
-            <div class="data-table-container">
-              <table class="data-table">
+          <div class="glass-card" style="padding: 1.5rem;">
+            <div class="table-responsive">
+              <table class="glass-table">
                 <thead>
                   <tr>
-                    <th>Repository Name</th>
-                    <th>Source URL</th>
-                    <th>Scans</th>
+                    <th>Repository</th>
+                    <th>Target URL</th>
+                    <th>Total Scans</th>
                     <th>Latest Score</th>
-                    <th>Posture</th>
+                    <th>First Added</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
-                <tbody id="repos-table-tbody">
-                  <tr><td colspan="6" class="text-muted">Loading repositories...</td></tr>
+                <tbody id="repositories-tbody">
+                  <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                      No repositories connected yet.
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </section>
 
-        <!-- SCREEN 04 — FINDINGS EXPLORER -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 04 — FINDINGS EXPLORER                                     -->
+        <!-- ================================================================= -->
         <section id="screen-findings" class="app-screen hidden">
           <div class="page-header">
             <div>
-              <h2 class="page-title">Findings Explorer</h2>
-              <p class="page-desc" id="findings-banner-desc">
-                Repository: <strong id="findings-banner-repo" class="mono">--</strong> |
-                Score: <strong id="findings-banner-score">--</strong> |
-                Total: <strong id="findings-banner-count">0</strong>
-              </p>
+              <h2 class="page-title">Findings</h2>
+              <p class="page-desc">Detected security issues in your workflows and configurations</p>
             </div>
-            <button id="findings-view-graph-btn" class="btn btn-secondary btn-sm">View Attack Graph 🕸️</button>
           </div>
 
-          <div class="findings-filter-bar">
-            <div class="severity-filter-pills">
-              <button class="glass-pill severity-filter-pill active" data-severity="all">All Findings</button>
-              <button class="glass-pill severity-filter-pill" data-severity="critical" style="color: var(--severity-critical);">Critical</button>
-              <button class="glass-pill severity-filter-pill" data-severity="high" style="color: var(--severity-high);">High</button>
-              <button class="glass-pill severity-filter-pill" data-severity="medium" style="color: var(--severity-medium);">Medium</button>
-              <button class="glass-pill severity-filter-pill" data-severity="low" style="color: var(--severity-low);">Low</button>
+          <!-- Filter Pills & Search Bar -->
+          <div class="findings-filter-header">
+            <div class="filter-tabs-bar" id="findings-severity-filters">
+              <button class="filter-tab active" data-severity="all">All (<span id="findings-count-all">0</span>)</button>
+              <button class="filter-tab" data-severity="critical">Critical (<span id="findings-count-critical">0</span>)</button>
+              <button class="filter-tab" data-severity="high">High (<span id="findings-count-high">0</span>)</button>
+              <button class="filter-tab" data-severity="medium">Medium (<span id="findings-count-medium">0</span>)</button>
+              <button class="filter-tab" data-severity="low">Low (<span id="findings-count-low">0</span>)</button>
             </div>
 
-            <input type="text" id="findings-search-input" class="input-field" style="width: 280px;" placeholder="Filter by rule or title...">
+            <div class="findings-search-wrap">
+              <input type="text" id="findings-search-input" class="input-field" placeholder="Search by rule, title, or file...">
+            </div>
           </div>
 
-          <div class="glass-panel" style="padding: 1.5rem;">
-            <div class="data-table-container">
-              <table class="data-table">
+          <!-- Findings Table -->
+          <div class="glass-card" style="padding: 1rem;">
+            <div class="table-responsive">
+              <table class="glass-table">
                 <thead>
                   <tr>
+                    <th style="width: 40px;"><input type="checkbox" id="check-select-all-findings"></th>
                     <th>ID</th>
-                    <th>Rule</th>
-                    <th>Title</th>
+                    <th>Finding</th>
                     <th>Severity</th>
                     <th>Location</th>
-                    <th>Remediation</th>
+                    <th>Risk Weight</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
-                <tbody id="findings-table-tbody">
-                  <tr><td colspan="6" class="text-muted">Loading findings...</td></tr>
+                <tbody id="findings-tbody">
+                  <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                      No scan findings to display. Execute a scan to populate results.
+                    </td>
+                  </tr>
                 </tbody>
               </table>
             </div>
           </div>
+
+          <!-- Finding Details Slide-out Drawer -->
+          <div id="finding-detail-drawer" class="drawer-slide hidden">
+            <div class="flex items-center justify-between pb-3 border-b border-glass-subtle mb-4">
+              <span id="drawer-finding-id" class="mono font-semibold" style="color: var(--accent-primary);">FINDING</span>
+              <button id="btn-close-drawer" class="btn-icon"><i data-lucide="x" data-size="16"></i></button>
+            </div>
+            <div id="drawer-finding-content"></div>
+          </div>
         </section>
 
-        <!-- SCREEN 05 — ATTACK GRAPH -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 05 — ATTACK GRAPH                                          -->
+        <!-- ================================================================= -->
         <section id="screen-attack-graph" class="app-screen hidden">
           <div class="page-header">
             <div>
               <h2 class="page-title">Attack Graph</h2>
-              <p class="page-desc">Interactive Cytoscape correlation showing attack paths from entry triggers to impact.</p>
+              <p class="page-desc">Correlated attack path from detected vulnerabilities</p>
             </div>
-            <div class="flex items-center gap-2">
-              <select id="graph-chain-selector" class="select-field" style="width: 240px;"></select>
+            <div class="flex items-center gap-3">
+              <div class="filter-tabs-bar">
+                <button class="filter-tab active" id="graph-view-btn"><i data-lucide="network" data-size="14"></i> Graph</button>
+                <button class="filter-tab" id="list-view-btn"><i data-lucide="layers" data-size="14"></i> List</button>
+              </div>
             </div>
           </div>
 
-          <div class="attack-graph-wrapper">
-            <div class="graph-canvas-container">
-              <div class="graph-controls-toolbar">
-                <button id="graph-btn-zoom-in" class="btn btn-icon btn-sm" title="Zoom in">+</button>
-                <button id="graph-btn-zoom-out" class="btn btn-icon btn-sm" title="Zoom out">-</button>
-                <button id="graph-btn-fit" class="btn btn-icon btn-sm" title="Fit to view">⛶</button>
-              </div>
-
-              <div id="cy"></div>
-
-              <div class="graph-legend-overlay">
-                <div class="legend-item"><div class="legend-color" style="background: #2ECC71;"></div> Trigger</div>
-                <div class="legend-item"><div class="legend-color" style="background: #FFA94D;"></div> Misconfiguration</div>
-                <div class="legend-item"><div class="legend-color" style="background: #FF5C5C;"></div> Secret / Credential</div>
-                <div class="legend-item"><div class="legend-color" style="background: #A8E6C0;"></div> Impact</div>
+          <div class="attack-graph-container">
+            <!-- Graph Top Controls -->
+            <div class="graph-top-controls">
+              <select id="chain-filter-select" class="select-field" style="width: 280px; background: rgba(17, 24, 21, 0.85); backdrop-filter: blur(16px);">
+                <option value="all">All Correlated Attack Chains</option>
+              </select>
+              <div class="flex gap-2">
+                <button id="btn-fit-graph" class="btn btn-secondary btn-sm"><i data-lucide="refresh-cw" data-size="14"></i> Reset View</button>
               </div>
             </div>
 
-            <aside class="glass-card graph-details-sidebar" id="graph-details-sidebar">
-              <h3>Attack Path Details</h3>
-              <p class="text-muted">Click a node or edge in the graph canvas to inspect contextual risk narrative.</p>
-            </aside>
+            <!-- Cytoscape Canvas -->
+            <div id="cy-attack-graph"></div>
+
+            <!-- Graph Bottom Legend -->
+            <div class="graph-bottom-legend">
+              <div class="graph-legend-item">
+                <span class="legend-color-dot" style="background: #2ECC71;"></span>
+                <span>Entry Point (Trigger / Untrusted)</span>
+              </div>
+              <div class="graph-legend-item">
+                <span class="legend-color-dot" style="background: #FFA94D;"></span>
+                <span>Privilege Escalation</span>
+              </div>
+              <div class="graph-legend-item">
+                <span class="legend-color-dot" style="background: #FF5C5C;"></span>
+                <span>Secret Exfiltration / Sink</span>
+              </div>
+              <div class="graph-legend-item">
+                <span class="legend-color-dot" style="background: #9BE5B5;"></span>
+                <span>Compromise Target</span>
+              </div>
+            </div>
           </div>
         </section>
 
-        <!-- SCREEN 06 — RISK ANALYTICS -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 06 — RISK ANALYTICS                                        -->
+        <!-- ================================================================= -->
         <section id="screen-analytics" class="app-screen hidden">
           <div class="page-header">
             <div>
               <h2 class="page-title">Risk Analytics</h2>
-              <p class="page-desc">Comprehensive historical trajectory, score trends, and vulnerability distribution.</p>
+              <p class="page-desc">Security trends, exposure and actionable insights</p>
+            </div>
+            <span class="glass-pill"><i data-lucide="calendar" data-size="14"></i> Last 30 days <i data-lucide="chevron-down" data-size="14"></i></span>
+          </div>
+
+          <!-- Top 4 KPI Metrics -->
+          <div class="overview-metrics-strip mb-6">
+            <div class="glass-card metric-strip-card">
+              <div class="metric-strip-header">Avg. Risk Score</div>
+              <div class="metric-strip-value" id="analytics-avg-score">81<span style="font-size: 1rem; color: var(--text-muted);">/100</span></div>
+              <div class="metric-strip-footer" style="color: var(--accent-primary);">&uarr; 9% improvement</div>
+            </div>
+            <div class="glass-card metric-strip-card">
+              <div class="metric-strip-header">Total Scans</div>
+              <div class="metric-strip-value" id="analytics-total-scans">14</div>
+              <div class="metric-strip-footer">Across monitored repositories</div>
+            </div>
+            <div class="glass-card metric-strip-card">
+              <div class="metric-strip-header">Issues Fixed</div>
+              <div class="metric-strip-value" style="color: var(--accent-primary);" id="analytics-issues-fixed">28</div>
+              <div class="metric-strip-footer" style="color: var(--accent-primary);">&uarr; +56% remediation rate</div>
+            </div>
+            <div class="glass-card metric-strip-card">
+              <div class="metric-strip-header">Open Issues</div>
+              <div class="metric-strip-value" style="color: var(--severity-high);" id="analytics-open-issues">24</div>
+              <div class="metric-strip-footer">Active vulnerability backlog</div>
             </div>
           </div>
 
-          <div class="overview-metrics-grid" style="grid-template-columns: repeat(4, 1fr);">
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Average Risk Score</div>
-              <div class="metric-card-value" id="analytics-avg-score">--</div>
-              <div class="metric-card-footer">System-wide average</div>
-            </div>
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Total Audits</div>
-              <div class="metric-card-value" id="analytics-total-scans">0</div>
-              <div class="metric-card-footer">Completed scans</div>
-            </div>
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Critical Vulnerabilities</div>
-              <div class="metric-card-value" style="color: var(--severity-critical);" id="analytics-critical-count">0</div>
-              <div class="metric-card-footer">Identified across pipeline</div>
-            </div>
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Monitored Repositories</div>
-              <div class="metric-card-value" id="analytics-total-repos">0</div>
-              <div class="metric-card-footer">In SQLite database</div>
-            </div>
-          </div>
-
-          <div class="overview-charts-grid" style="grid-template-columns: 1fr 1fr; margin-top: 1.5rem;">
+          <!-- Charts Grid -->
+          <div class="overview-charts-grid">
             <div class="glass-card chart-card">
               <div class="chart-card-header">
-                <h4>Vulnerabilities by Category</h4>
+                <h3 class="chart-card-title">Risk Trend Over Time</h3>
               </div>
-              <div class="chart-container">
-                <canvas id="chart-analytics-categories"></canvas>
+              <div class="chart-canvas-container">
+                <canvas id="analytics-trend-chart"></canvas>
               </div>
             </div>
 
             <div class="glass-card chart-card">
               <div class="chart-card-header">
-                <h4>Score Progression Trajectory</h4>
+                <h3 class="chart-card-title">Findings Distribution</h3>
               </div>
-              <div class="chart-container">
-                <canvas id="chart-analytics-trajectory"></canvas>
+              <div class="chart-canvas-container">
+                <canvas id="analytics-dist-chart"></canvas>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- SCREEN 07 — REMEDIATION CENTRE -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 07 — REMEDIATION CENTRE                                    -->
+        <!-- ================================================================= -->
         <section id="screen-remediation" class="app-screen hidden">
           <div class="page-header">
             <div>
               <h2 class="page-title">Remediation Centre</h2>
-              <p class="page-desc">Explainable What / Why / How guidance and suggested YAML corrections.</p>
+              <p class="page-desc">Contextual fixes and secure workflow recommendations</p>
             </div>
-            <button id="btn-copy-fix" class="btn btn-primary btn-sm">Copy Unified Fix 📋</button>
           </div>
 
-          <div class="remediation-container">
-            <div class="glass-card remediation-card">
-              <div class="flex items-center justify-between" style="margin-bottom: 1rem;">
-                <div class="flex items-center gap-2">
-                  <span id="rem-banner-rule" class="mono" style="font-size: 1.1rem; color: #A8E6C0;">RULE</span>
-                  <h3 id="rem-banner-title">Select a finding</h3>
-                </div>
-                <div class="flex items-center gap-2">
-                  <span id="rem-banner-severity" class="badge badge-high">HIGH</span>
-                  <span id="rem-banner-source" class="badge badge-info">Template Engine</span>
-                </div>
-              </div>
+          <!-- Active Finding Context Header -->
+          <div class="glass-card remediation-header-card">
+            <div>
+              <span id="remediation-rule-badge" class="badge badge-critical mb-2">CRITICAL</span>
+              <h3 id="remediation-finding-title" class="font-bold text-lg mb-1">CICD-001: Hardcoded secret in workflow</h3>
+              <p id="remediation-finding-desc" style="font-size: 0.88rem; color: var(--text-secondary); margin: 0;">
+                Plaintext API keys, passwords, or cloud tokens detected in workflow YAML definition.
+              </p>
+            </div>
+            <div class="flex gap-2">
+              <button id="btn-copy-fix" class="btn btn-secondary btn-sm">
+                <i data-lucide="copy" data-size="14"></i> Copy Fix
+              </button>
+              <button id="btn-apply-suggestion" class="btn btn-primary btn-sm">
+                <i data-lucide="check" data-size="14"></i> Apply Suggestion
+              </button>
+            </div>
+          </div>
 
-              <!-- What, Why, How Explanation Grid -->
-              <div class="remediation-expl-grid">
-                <div class="expl-box">
-                  <h4>What: Detected Misconfiguration</h4>
-                  <p id="rem-expl-what">Detailed description of the static pipeline flaw.</p>
-                </div>
-                <div class="expl-box">
-                  <h4>Why: Architectural Threat Rationale</h4>
-                  <p id="rem-expl-why">Explanation of how attackers exploit this misconfiguration in CI/CD.</p>
-                </div>
-              </div>
+          <!-- Remediation Tabs: Overview, Fix, Why Risky, References -->
+          <div class="glass-card" style="padding: 1.75rem;">
+            <div class="remediation-tabs-bar">
+              <button class="remediation-tab active" data-tab="overview">Overview</button>
+              <button class="remediation-tab" data-tab="fix">Fix (YAML)</button>
+              <button class="remediation-tab" data-tab="why">Why It's Risky</button>
+              <button class="remediation-tab" data-tab="references">References</button>
+            </div>
 
-              <div class="expl-box" style="margin-top: 1rem;">
-                <h4>How: Recommended Engineering Fix</h4>
-                <p id="rem-expl-how">Step-by-step developer remediation instructions.</p>
-              </div>
-
-              <!-- Side-by-side YAML Diff Preview -->
-              <h4 style="margin-top: 1.5rem; margin-bottom: 0.5rem;">Suggested YAML Unified Correction</h4>
-              <div class="diff-view">
-                <div class="diff-panel before">
-                  <div class="diff-panel-header">&minus; Current Misconfigured State</div>
-                  <div id="diff-code-before"></div>
+            <div id="remediation-tab-content">
+              <!-- Split Side-by-Side Diff Display -->
+              <div class="diff-split-container">
+                <div class="diff-panel">
+                  <div class="diff-panel-header diff-before-header">
+                    <i data-lucide="x-circle" data-size="14"></i> &times; Before
+                  </div>
+                  <pre id="remediation-diff-before" class="diff-code-body"># Vulnerable workflow snippet
+env:
+  API_KEY: "sk_live_abc123"
+steps:
+  - run: echo $API_KEY</pre>
                 </div>
-                <div class="diff-panel after">
-                  <div class="diff-panel-header">&plus; Remediated Configuration (Recommended)</div>
-                  <div id="diff-code-after"></div>
+
+                <div class="diff-panel">
+                  <div class="diff-panel-header diff-after-header">
+                    <i data-lucide="check-circle-2" data-size="14"></i> &#10003; After (Recommended)
+                  </div>
+                  <pre id="remediation-diff-after" class="diff-code-body"># Remediated secure workflow
+env:
+  {% raw %}API_KEY: ${{ secrets.PROD_API_KEY }}{% endraw %}
+steps:
+  - run: echo $API_KEY</pre>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- SCREEN 08 — SECURITY POLICIES & RULE CATALOGUE -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 08 — SECURITY POLICIES                                     -->
+        <!-- ================================================================= -->
         <section id="screen-policies" class="app-screen hidden">
           <div class="page-header">
             <div>
-              <h2 class="page-title">Security Policies &amp; Rule Catalogue</h2>
-              <p class="page-desc">Enforce detection policies and browse the full catalog of 30 rules and 10 attack chains.</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <select id="rules-tier-filter" class="select-field" style="width: 140px;">
-                <option value="all">All Tiers</option>
-                <option value="core">Core (25)</option>
-                <option value="extension">Extension (5)</option>
-              </select>
-              <input type="text" id="rules-search-input" class="input-field" style="width: 220px;" placeholder="Search rules...">
+              <h2 class="page-title">Security Policies</h2>
+              <p class="page-desc">Rules and controls for secure CI/CD workflows</p>
             </div>
           </div>
 
-          <div class="tab-list">
-            <button class="tab-btn active" id="tab-rules-list">Static Detection Rules (30)</button>
-            <button class="tab-btn" id="tab-chains-list">Correlated Attack Chains (10)</button>
-          </div>
-
-          <div id="rules-catalogue-container" class="policies-list">
-            <p class="text-muted">Loading rules catalogue...</p>
-          </div>
-
-          <div id="chains-catalogue-container" class="policies-list hidden">
-            <p class="text-muted">Loading attack chains...</p>
+          <div class="policies-list" id="policies-catalog-list">
+            <!-- Dynamically populated 30 rules and 10 attack chains -->
           </div>
         </section>
 
-        <!-- SCREEN 09 — SCAN COMPARISON -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 09 — SCAN COMPARISON                                       -->
+        <!-- ================================================================= -->
         <section id="screen-comparison" class="app-screen hidden">
           <div class="page-header">
             <div>
               <h2 class="page-title">Scan Comparison</h2>
-              <p class="page-desc">Differential analysis between two audit scans to verify security remediation.</p>
+              <p class="page-desc">Compare two pipeline scans to evaluate vulnerability remediation delta.</p>
             </div>
           </div>
 
-          <div class="glass-card" style="padding: 1.5rem; margin-bottom: 1.5rem;">
-            <div class="comparison-selectors-bar">
-              <div class="input-group" style="margin-bottom: 0;">
-                <label class="input-label" for="comp-repo-select">Target Repository</label>
-                <select id="comp-repo-select" class="select-field"></select>
+          <div class="glass-card mb-6" style="padding: 1.5rem;">
+            <div class="flex items-center gap-4 flex-wrap">
+              <div class="flex-1 min-w-[240px]">
+                <label class="input-label" for="compare-repo-select">Repository</label>
+                <select id="compare-repo-select" class="select-field"></select>
               </div>
-
-              <div class="input-group" style="margin-bottom: 0;">
-                <label class="input-label" for="comp-scan-a">Baseline Scan A (Older)</label>
-                <select id="comp-scan-a" class="select-field"></select>
+              <div class="flex-1 min-w-[200px]">
+                <label class="input-label" for="compare-scan-a-select">Baseline Scan (A)</label>
+                <select id="compare-scan-a-select" class="select-field"></select>
               </div>
-
-              <div class="input-group" style="margin-bottom: 0;">
-                <label class="input-label" for="comp-scan-b">Target Scan B (Newer)</label>
-                <select id="comp-scan-b" class="select-field"></select>
+              <div class="flex-1 min-w-[200px]">
+                <label class="input-label" for="compare-scan-b-select">Target Scan (B)</label>
+                <select id="compare-scan-b-select" class="select-field"></select>
               </div>
-
-              <button id="btn-run-comparison" class="btn btn-primary">Compare Scans</button>
+              <div class="pt-5">
+                <button id="btn-run-comparison" class="btn btn-primary">
+                  <i data-lucide="git-compare-arrows" data-size="16"></i> Compare Scans
+                </button>
+              </div>
             </div>
           </div>
 
-          <!-- Delta Summary Cards -->
-          <div class="delta-summary-grid">
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Baseline Score</div>
-              <div class="metric-card-value" id="comp-prev-score">--</div>
-            </div>
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Target Score</div>
-              <div class="metric-card-value" id="comp-curr-score">--</div>
-            </div>
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Risk Delta</div>
-              <div style="margin-top: 0.5rem;"><span id="comp-score-delta" class="badge badge-low">0 pts</span></div>
-            </div>
-            <div class="glass-card metric-card">
-              <div class="metric-card-header">Remediated Findings</div>
-              <div class="metric-card-value" style="color: var(--severity-low);" id="comp-fixed-count">0</div>
-            </div>
-          </div>
-
-          <!-- Findings Breakdown Lists -->
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;">
-            <div class="glass-panel" style="padding: 1.25rem;">
-              <h4 style="color: var(--severity-low); margin-bottom: 0.75rem;">Fixed Findings</h4>
-              <div id="comp-fixed-list"><p class="text-muted">No comparison performed.</p></div>
-            </div>
-
-            <div class="glass-panel" style="padding: 1.25rem;">
-              <h4 style="color: var(--severity-critical); margin-bottom: 0.75rem;">New Findings</h4>
-              <div id="comp-new-list"><p class="text-muted">No comparison performed.</p></div>
-            </div>
-
-            <div class="glass-panel" style="padding: 1.25rem;">
-              <h4 style="color: var(--severity-high); margin-bottom: 0.75rem;">Persisting Findings</h4>
-              <div id="comp-persisting-list"><p class="text-muted">No comparison performed.</p></div>
-            </div>
-          </div>
+          <div id="comparison-results-container"></div>
         </section>
 
-        <!-- SCREEN 10 — SETTINGS -->
+        <!-- ================================================================= -->
+        <!-- SCREEN 10 — SETTINGS                                              -->
+        <!-- ================================================================= -->
         <section id="screen-settings" class="app-screen hidden">
           <div class="page-header">
             <div>
-              <h2 class="page-title">Settings &amp; Platform Configuration</h2>
-              <p class="page-desc">Runtime parameters, security boundaries, and environment metadata.</p>
+              <h2 class="page-title">Settings</h2>
+              <p class="page-desc">System configuration, integrations, and preferences.</p>
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- GitHub Integration Card (Section 9) -->
             <div class="glass-card" style="padding: 1.75rem;">
-              <h3>Engine Architecture</h3>
-              <p class="text-muted" style="margin-top: 0.4rem; margin-bottom: 1.2rem;">Core static analysis and parsing configurations.</p>
-              <div style="display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.92rem;">
-                <div class="flex justify-between"><span>Product Version</span><strong class="mono">ZEROVANT v1.0.0</strong></div>
-                <div class="flex justify-between"><span>Python Runtime</span><strong class="mono">Python 3.11+</strong></div>
-                <div class="flex justify-between"><span>Database Engine</span><strong class="mono">SQLite 3 (WAL mode)</strong></div>
-                <div class="flex justify-between"><span>API Health Status</span><span id="settings-api-status" class="badge badge-low">Checking...</span></div>
-                <div class="flex justify-between"><span>Active UI Theme</span><strong id="settings-current-theme" class="mono">DARK</strong></div>
+              <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="github" data-size="24" style="color: var(--accent-primary);"></i>
+                <div>
+                  <h3 class="font-bold text-base">GitHub Integration</h3>
+                  <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Fine-grained PAT / GitHub App</p>
+                </div>
+              </div>
+              <div class="input-group">
+                <label class="input-label" for="settings-github-token">Personal Access Token (PAT)</label>
+                <input type="password" id="settings-github-token" class="input-field" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">Stored securely server-side; used to authenticate repository access and branch discovery.</span>
+              </div>
+              <div class="flex justify-between items-center mt-4">
+                <span id="github-connection-status" class="mono text-xs text-muted">Status: Unconfigured</span>
+                <button id="btn-save-github-token" class="btn btn-primary btn-sm">Save &amp; Test Connection</button>
               </div>
             </div>
 
+            <!-- AI Explainer Integration Card -->
             <div class="glass-card" style="padding: 1.75rem;">
-              <h3>Security Hardening</h3>
-              <p class="text-muted" style="margin-top: 0.4rem; margin-bottom: 1.2rem;">Enforced defensive controls and boundaries.</p>
-              <div style="display: flex; flex-direction: column; gap: 0.8rem; font-size: 0.92rem;">
-                <div class="flex justify-between"><span>Local Path Ingestion</span><span class="badge badge-low">Disabled (Web Safe)</span></div>
-                <div class="flex justify-between"><span>SSRF Boundary Protection</span><span class="badge badge-low">HTTPS github.com Only</span></div>
-                <div class="flex justify-between"><span>Rate Limiter</span><strong class="mono">60 req / min (Sliding Window)</strong></div>
-                <div class="flex justify-between"><span>Max HTTP Payload</span><strong class="mono">2 MB</strong></div>
-                <div class="flex justify-between"><span>Max YAML Content</span><strong class="mono">1 MB</strong></div>
+              <div class="flex items-center gap-3 mb-4">
+                <i data-lucide="sparkles" data-size="24" style="color: var(--accent-primary);"></i>
+                <div>
+                  <h3 class="font-bold text-base">AI Remediation Explainer</h3>
+                  <p style="font-size: 0.82rem; color: var(--text-muted); margin: 0;">Anthropic Claude API Key</p>
+                </div>
+              </div>
+              <div class="input-group">
+                <label class="input-label" for="settings-anthropic-key">Anthropic API Key (Optional)</label>
+                <input type="password" id="settings-anthropic-key" class="input-field" placeholder="sk-ant-api03-...">
+                <span style="font-size: 0.78rem; color: var(--text-muted);">When omitted, ZEROVANT falls back seamlessly to deterministic security templates.</span>
+              </div>
+              <div class="flex justify-between items-center mt-4">
+                <span class="mono text-xs" style="color: var(--accent-primary);">Deterministic templates: Active</span>
+                <button id="btn-save-anthropic-key" class="btn btn-secondary btn-sm">Save Key</button>
+              </div>
+            </div>
+
+            <!-- Appearance & Theme Card -->
+            <div class="glass-card" style="padding: 1.75rem;">
+              <h3 class="font-bold text-base mb-2">Appearance &amp; Theme</h3>
+              <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 1.25rem;">
+                Select between Obsidian Dark Glass and Frosted Light Glass.
+              </p>
+              <div class="flex gap-3">
+                <button class="filter-tab active" id="btn-theme-dark"><i data-lucide="moon" data-size="14"></i> Obsidian Dark</button>
+                <button class="filter-tab" id="btn-theme-light"><i data-lucide="sun" data-size="14"></i> Frosted Light</button>
               </div>
             </div>
           </div>
@@ -784,24 +965,12 @@
     </div>
   </div>
 
-  <!-- Vendored Core Visualization Libraries (Self-hosted, CSP Compliant) -->
+  <!-- Vendored Core Client Libraries -->
   <script src="/static/js/vendor/chart.min.js"></script>
   <script src="/static/js/vendor/cytoscape.min.js"></script>
 
-  <!-- ZEROVANT Application JS Modules -->
-  <script src="/static/js/api.js"></script>
-  <script src="/static/js/theme.js"></script>
-  <script src="/static/js/router.js"></script>
-  <script src="/static/js/overview.js"></script>
-  <script src="/static/js/scanner.js"></script>
-  <script src="/static/js/repositories.js"></script>
-  <script src="/static/js/findings.js"></script>
-  <script src="/static/js/graph.js"></script>
-  <script src="/static/js/analytics.js"></script>
-  <script src="/static/js/remediation.js"></script>
-  <script src="/static/js/policies.js"></script>
-  <script src="/static/js/comparison.js"></script>
-  <script src="/static/js/settings.js"></script>
-  <script src="/static/js/app.js"></script>
+  <!-- Application Modular Scripts -->
+  <script type="module" src="/static/js/icons.js"></script>
+  <script type="module" src="/static/js/app.js"></script>
 </body>
 </html>

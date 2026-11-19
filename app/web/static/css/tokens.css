@@ -1,31 +1,37 @@
-/* ZEROVANT Design Tokens — Obsidian Liquid Glass */
+/* ZEROVANT Design Tokens — Obsidian Liquid Glass Design System */
 
 :root {
   /* Color Palette — Dark Theme (Default) */
-  --bg-primary: #101513;
-  --bg-secondary: #151C19;
-  --surface: #1B2420;
-  --surface-elevated: #222D28;
-  --surface-glass: rgba(27, 36, 32, 0.68);
-  --surface-glass-card: rgba(22, 30, 26, 0.78);
-  --surface-glass-strong: rgba(16, 21, 19, 0.88);
-  --border-glass: rgba(220, 235, 225, 0.12);
-  --border-glass-subtle: rgba(220, 235, 225, 0.06);
-  --border-glass-hover: rgba(168, 230, 192, 0.35);
-  --border-glass-focus: rgba(168, 230, 192, 0.65);
+  --bg-primary: #0B100E;
+  --bg-secondary: #111815;
+  --surface-elevated: #18211D;
+  --surface-solid: #151D19;
+  --surface-card: #141B18;
+  --surface-glass: rgba(210, 230, 218, 0.075);
+  --surface-glass-card: rgba(24, 33, 29, 0.65);
+  --surface-glass-hover: rgba(210, 230, 218, 0.12);
+  --surface-glass-strong: rgba(17, 24, 21, 0.88);
+  
+  /* Glass Borders */
+  --border-glass: rgba(225, 240, 230, 0.18);
+  --border-glass-subtle: rgba(225, 240, 230, 0.08);
+  --border-glass-hover: rgba(155, 229, 181, 0.38);
+  --border-glass-focus: rgba(155, 229, 181, 0.65);
+  --border-solid: #222E28;
   
   /* Typography Colors */
-  --text-primary: #EDF2EE;
-  --text-secondary: #9BAAA1;
-  --text-muted: #64756B;
-  --text-inverse: #101513;
+  --text-primary: #F0F4F1;
+  --text-secondary: #A0ADA5;
+  --text-muted: #6B7B72;
+  --text-inverse: #0B100E;
 
-  /* Accents */
-  --accent-primary: #A8E6C0;
-  --accent-secondary: #79BD99;
-  --accent-glow: rgba(168, 230, 192, 0.22);
-  --accent-glow-strong: rgba(168, 230, 192, 0.45);
-  --accent-glass: rgba(168, 230, 192, 0.10);
+  /* Brand & Accents */
+  --accent-primary: #9BE5B5;       /* Glowing Emerald */
+  --accent-secondary: #326B4C;     /* Deep Emerald */
+  --accent-glow: rgba(155, 229, 181, 0.22);
+  --accent-glow-strong: rgba(155, 229, 181, 0.45);
+  --accent-glass: rgba(155, 229, 181, 0.10);
+  --accent-glass-hover: rgba(155, 229, 181, 0.18);
 
   /* Security Severity Colors */
   --severity-critical: #FF5C5C;
@@ -40,28 +46,31 @@
   --severity-low: #2ECC71;
   --severity-low-bg: rgba(46, 204, 113, 0.14);
   --severity-low-border: rgba(46, 204, 113, 0.38);
-  --severity-info: #BDC3C7;
-  --severity-info-bg: rgba(189, 195, 199, 0.14);
-  --severity-info-border: rgba(189, 195, 199, 0.38);
+  --severity-info: #A0ADA5;
+  --severity-info-bg: rgba(160, 173, 165, 0.12);
+  --severity-info-border: rgba(160, 173, 165, 0.30);
 
   /* Elevation Shadows & Blurs */
-  --blur-glass: 16px;
-  --blur-strong: 24px;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.55);
+  --blur-glass: 20px;
+  --blur-strong: 32px;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.65);
   --shadow-glow: 0 0 24px var(--accent-glow);
-  --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  --shadow-glow-strong: 0 0 40px var(--accent-glow-strong);
+  --shadow-card: 0 12px 36px -8px rgba(0, 0, 0, 0.60);
+  --shadow-inner-bevel: inset 0 1px 1px rgba(255, 255, 255, 0.12);
 
   /* Spacing & Radii */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-pill: 9999px;
 
   /* Typography */
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 
   /* Transitions */
@@ -72,20 +81,24 @@
 
 /* Light Theme Variables */
 [data-theme="light"] {
-  --bg-primary: #F3F5F3;
-  --bg-secondary: #E9EEEA;
-  --surface: #FFFFFF;
-  --surface-elevated: #F8FAF8;
-  --surface-glass: rgba(255, 255, 255, 0.78);
-  --surface-glass-card: rgba(255, 255, 255, 0.88);
-  --surface-glass-strong: rgba(248, 250, 248, 0.94);
-  --border-glass: rgba(35, 55, 43, 0.12);
-  --border-glass-subtle: rgba(35, 55, 43, 0.06);
-  --border-glass-hover: rgba(57, 123, 88, 0.35);
+  --bg-primary: #F1F3F1;
+  --bg-secondary: #E7ECE8;
+  --surface-elevated: #FFFFFF;
+  --surface-solid: #FFFFFF;
+  --surface-card: #F8FAF8;
+  --surface-glass: rgba(255, 255, 255, 0.68);
+  --surface-glass-card: rgba(255, 255, 255, 0.85);
+  --surface-glass-hover: rgba(255, 255, 255, 0.92);
+  --surface-glass-strong: rgba(248, 250, 248, 0.95);
+  
+  --border-glass: rgba(40, 60, 48, 0.14);
+  --border-glass-subtle: rgba(40, 60, 48, 0.08);
+  --border-glass-hover: rgba(57, 123, 88, 0.38);
   --border-glass-focus: rgba(57, 123, 88, 0.65);
+  --border-solid: #D5DED7;
 
-  --text-primary: #18231D;
-  --text-secondary: #69766E;
+  --text-primary: #19231D;
+  --text-secondary: #6B776F;
   --text-muted: #8E9B93;
   --text-inverse: #FFFFFF;
 
@@ -94,6 +107,7 @@
   --accent-glow: rgba(57, 123, 88, 0.18);
   --accent-glow-strong: rgba(57, 123, 88, 0.35);
   --accent-glass: rgba(57, 123, 88, 0.08);
+  --accent-glass-hover: rgba(57, 123, 88, 0.14);
 
   --severity-critical: #D32F2F;
   --severity-critical-bg: rgba(211, 47, 47, 0.12);
@@ -108,12 +122,12 @@
   --severity-low-bg: rgba(46, 125, 50, 0.12);
   --severity-low-border: rgba(46, 125, 50, 0.35);
   --severity-info: #546E7A;
-  --severity-info-bg: rgba(84, 110, 122, 0.12);
-  --severity-info-border: rgba(84, 110, 122, 0.35);
+  --severity-info-bg: rgba(84, 110, 122, 0.10);
+  --severity-info-border: rgba(84, 110, 122, 0.30);
 
-  --shadow-sm: 0 2px 6px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 6px 18px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 16px var(--accent-glow);
-  --shadow-card: 0 10px 25px -8px rgba(0, 0, 0, 0.07);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.09);
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.12);
+  --shadow-card: 0 10px 30px -8px rgba(0, 0, 0, 0.08);
+  --shadow-inner-bevel: inset 0 1px 1px rgba(255, 255, 255, 0.85);
 }

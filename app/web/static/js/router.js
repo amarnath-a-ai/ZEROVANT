@@ -2,6 +2,8 @@
  * ZEROVANT — Client-Side Hash Router
  */
 
+import { hydrateIcons } from './icons.js';
+
 class Router {
   constructor() {
     this.routes = {};
@@ -23,7 +25,7 @@ class Router {
     let hash = window.location.hash.replace(/^#\/?/, '').trim();
     if (!hash) hash = this.defaultRoute;
 
-    // Parse query params if any (e.g. #findings?scanId=...)
+    // Parse query params if any (e.g. #findings?scan_id=...)
     const [path, queryString] = hash.split('?');
     const params = new URLSearchParams(queryString || '');
 
@@ -40,6 +42,7 @@ class Router {
       if (landingEl) landingEl.classList.remove('hidden');
       if (workspaceEl) workspaceEl.classList.add('hidden');
       window.scrollTo(0, 0);
+      hydrateIcons();
       return;
     }
 
@@ -73,6 +76,7 @@ class Router {
       this.routes[path](params);
     }
 
+    hydrateIcons();
     window.scrollTo(0, 0);
   }
 
@@ -81,4 +85,5 @@ class Router {
   }
 }
 
-window.router = new Router();
+export const router = new Router();
+window.router = router;

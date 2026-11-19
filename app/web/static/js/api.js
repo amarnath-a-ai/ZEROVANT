@@ -3,7 +3,7 @@
  */
 
 // Global audited HTML escape helper for XSS protection
-function escapeHTML(str) {
+export function escapeHTML(str) {
   if (str === null || str === undefined) return '';
   return String(str)
     .replace(/&/g, '&amp;')
@@ -13,7 +13,7 @@ function escapeHTML(str) {
     .replace(/'/g, '&#39;');
 }
 
-class ApiClient {
+export class ApiClient {
   constructor(baseUrl = '/api') {
     this.baseUrl = baseUrl;
   }
@@ -96,5 +96,6 @@ class ApiClient {
 }
 
 // Export singleton instance
-window.api = new ApiClient();
+export const api = new ApiClient();
+window.api = api;
 window.escapeHTML = escapeHTML;

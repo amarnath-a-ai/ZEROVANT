@@ -1,6 +1,21 @@
 /**
  * ZEROVANT — Master Application Controller
+ * Obsidian Liquid Glass single-page architecture with Lucide iconography.
  */
+
+import { hydrateIcons } from './icons.js';
+import './theme.js';
+import './router.js';
+import './overview.js';
+import './scanner.js';
+import './repositories.js';
+import './findings.js';
+import './graph.js';
+import './analytics.js';
+import './remediation.js';
+import './policies.js';
+import './comparison.js';
+import './settings.js';
 
 // Global Toast Notification Helper
 window.showToast = function (message, type = 'info') {
@@ -24,52 +39,65 @@ window.showToast = function (message, type = 'info') {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 1. Register Router Routes
+  // 1. Initial Icon Hydration
+  hydrateIcons();
+
+  // 2. Register Router Routes
   window.router.register('landing', () => {
-    // Landing page active
+    hydrateIcons();
   });
 
   window.router.register('overview', () => {
     if (window.OverviewModule) window.OverviewModule.init();
+    hydrateIcons();
   });
 
   window.router.register('scanner', () => {
     if (window.ScannerModule) window.ScannerModule.init();
+    hydrateIcons();
   });
 
   window.router.register('repositories', () => {
     if (window.RepositoriesModule) window.RepositoriesModule.init();
+    hydrateIcons();
   });
 
   window.router.register('findings', (params) => {
     if (window.FindingsModule) window.FindingsModule.init(params);
+    hydrateIcons();
   });
 
   window.router.register('attack-graph', (params) => {
     if (window.AttackGraphModule) window.AttackGraphModule.init(params);
+    hydrateIcons();
   });
 
   window.router.register('analytics', () => {
     if (window.AnalyticsModule) window.AnalyticsModule.init();
+    hydrateIcons();
   });
 
   window.router.register('remediation', (params) => {
     if (window.RemediationModule) window.RemediationModule.init(params);
+    hydrateIcons();
   });
 
   window.router.register('policies', () => {
     if (window.PoliciesModule) window.PoliciesModule.init();
+    hydrateIcons();
   });
 
   window.router.register('comparison', (params) => {
     if (window.ComparisonModule) window.ComparisonModule.init(params);
+    hydrateIcons();
   });
 
   window.router.register('settings', () => {
     if (window.SettingsModule) window.SettingsModule.init();
+    hydrateIcons();
   });
 
-  // 2. Wire Navigation Clicks
+  // 3. Wire Navigation Links
   document.querySelectorAll('[data-route]').forEach((el) => {
     el.addEventListener('click', (e) => {
       e.preventDefault();
@@ -78,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // 3. Mobile Sidebar Toggle
+  // 4. Mobile Menu Drawer Toggle
   const mobileToggle = document.getElementById('btn-mobile-menu');
   const sidebar = document.querySelector('.app-sidebar');
   if (mobileToggle && sidebar) {
@@ -87,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 4. Global Topbar Search
+  // 5. Global Topbar Search
   const topbarSearch = document.getElementById('global-search-input');
   if (topbarSearch) {
     topbarSearch.addEventListener('keydown', (e) => {
@@ -100,6 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 5. Initialize Router
+  // 6. Initialize Router
   window.router.init();
 });

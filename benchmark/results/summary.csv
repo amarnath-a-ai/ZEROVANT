@@ -1,0 +1,10 @@
+Tool,Dataset_Slice,Total_Workflows,TP,FP,FN,Precision,Recall,F1_Score,Total_Findings,Median_Time_Sec,Per_Workflow_Ms
+ZEROVANT,Synthetic (Hand-written),80,64,53,0,0.547,1.0,0.7072,117,0.2868,3.59
+Zizmor,Synthetic (Hand-written),80,41,340,23,0.1076,0.6406,0.1843,381,0.2736,3.42
+Poutine,Synthetic (Hand-written),80,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A (Linux/Docker documented)
+ZEROVANT,Real-World Open-Source,10,6,169,4,0.0343,0.6,0.0649,175,0.0359,3.59
+Zizmor,Real-World Open-Source,10,6,929,4,0.0064,0.6,0.0127,935,0.0342,3.42
+Poutine,Real-World Open-Source,10,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A (Linux/Docker documented)
+ZEROVANT,Overall Corpus (Combined),90,70,222,4,0.2397,0.9459,0.3825,292,0.3227,3.59
+Zizmor,Overall Corpus (Combined),90,47,1269,27,0.0357,0.6351,0.0676,1316,0.3078,3.42
+Poutine,Overall Corpus (Combined),90,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A,N/A (Linux/Docker documented)

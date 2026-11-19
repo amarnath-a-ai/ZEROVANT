@@ -1,4 +1,4 @@
-/* ZEROVANT Base & Reset Styles */
+/* ZEROVANT Base & Reset Styles — Obsidian Liquid Glass */
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -24,17 +24,27 @@ body {
   transition: background-color var(--transition-normal), color var(--transition-normal);
 }
 
+::selection {
+  background: rgba(155, 229, 181, 0.28);
+  color: var(--text-primary);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 /* Typography Defaults */
 h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   line-height: 1.25;
 }
 
-h1 { font-size: 2.2rem; }
-h2 { font-size: 1.7rem; }
-h3 { font-size: 1.3rem; }
+h1 { font-size: 2.3rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.35rem; }
 h4 { font-size: 1.1rem; }
 
 p {
@@ -52,9 +62,9 @@ a:hover {
   color: var(--accent-secondary);
 }
 
-code, pre {
+code, pre, .mono {
   font-family: var(--font-mono);
-  font-size: 0.9em;
+  font-size: 0.88em;
 }
 
 button, input, textarea, select {
@@ -76,6 +86,7 @@ button, input, textarea, select {
 ::-webkit-scrollbar-thumb {
   background: var(--surface-elevated);
   border-radius: var(--radius-pill);
+  border: 1px solid var(--border-glass-subtle);
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -100,4 +111,3 @@ button, input, textarea, select {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.mono { font-family: var(--font-mono); }

@@ -1,0 +1,31 @@
+ZEROVANT_Rule_ID,Rule_Name,Category,Tier,Zizmor_Equivalent,Poutine_Equivalent,Notes
+R001,unpinned-action,supply-chain,core,unpinned-uses,unpinnable_action,Detects third-party actions referenced by mutable tags or branch names instead of full 40-char commit SHAs.
+R002,excessive-permissions,permissions,core,excessive-permissions,default_permissions_on_risky_events,Detects explicit write-all permissions or missing permissions block defaulting to broad read/write scopes.
+R003,pr-target-checkout,injection,core,dangerous-triggers,arbitrary_code_exec,Detects pull_request_target trigger combined with explicit checkout of untrusted PR head reference.
+R004,script-injection,injection,core,template-injection,injection_with_external_input,Detects direct interpolation of untrusted GitHub event expressions into run: shell scripts.
+R005,plaintext-secret,credentials,core,secrets,job_uses_all_secrets,"Detects hardcoded high-entropy API tokens, private keys, or credentials embedded directly in YAML."
+R006,secret-in-log,credentials,core,secrets,unverified_script_exec,Detects commands that echo or dump secrets and environment variables to standard output/logs.
+R007,long-lived-credentials,credentials,core,no equivalent,no equivalent,"Detects static cloud access keys (AWS_ACCESS_KEY_ID, GCP_SA_KEY) instead of OIDC federation."
+R008,deploy-environment,hygiene,core,no equivalent,no equivalent,Detects production deployment commands executing without an explicit GitHub Environment protection rule.
+R009,self-hosted-runner,execution,core,self-hosted-runner,pr_runs_on_self_hosted,Detects self-hosted runners executing on public/untrusted pull request events.
+R010,third-party-action,supply-chain,core,unpinned-uses,github_action_from_unverified_creator,Detects third-party actions from unverified publishers outside GitHub/Docker official namespaces.
+persist-credentials,persist-credentials,credentials,extension,artipacked,no equivalent,Detects actions/checkout without persist-credentials: false leaving GitHub tokens on disk.
+secret-to-unpinned-action,secret-to-unpinned-action,supply-chain,extension,unpinned-uses,no equivalent,Detects sensitive repository secrets passed directly into an unpinned third-party action step.
+overprovisioned-secrets,overprovisioned-secrets,credentials,extension,overprovisioned-secrets,job_uses_all_secrets,Detects jobs referencing more than three distinct repository secrets.
+artifact-leak,artifact-leak,credentials,extension,artipacked,no equivalent,"Detects upload-artifact storing sensitive files (.env, id_rsa, credentials, keys)."
+secrets-inherit,secrets-inherit,credentials,extension,secrets-inherit,job_uses_all_secrets,Detects reusable workflow call passing secrets: inherit without fine-grained scoping.
+github-env-injection,github-env-injection,injection,extension,env-injection,injection_with_external_input,Detects writing untrusted attacker input into GITHUB_ENV or GITHUB_PATH files.
+workflow-run-untrusted-artifact,workflow-run-untrusted-artifact,supply-chain,extension,dangerous-triggers,arbitrary_code_exec,Detects privileged workflow_run trigger downloading artifacts from untrusted workflow execution.
+comment-trigger-no-auth,comment-trigger-no-auth,execution,extension,dangerous-triggers,default_permissions_on_risky_events,Detects issue_comment workflows executing commands without verifying commenter membership/privilege.
+dispatch-input-injection,dispatch-input-injection,injection,extension,template-injection,injection_with_external_input,Detects workflow_dispatch inputs evaluated directly inside run: shell scripts.
+bot-actor-spoofing,bot-actor-spoofing,injection,extension,bot-conditions,confused_deputy_automerge,Detects spoofable bot actor checks (e.g. github.actor == 'dependabot[bot]') without trigger checks.
+unpinned-reusable-workflow,unpinned-reusable-workflow,supply-chain,extension,unpinned-uses,unpinnable_action,Detects external reusable workflow called with mutable branch or tag instead of immutable commit SHA.
+unpinned-docker-image,unpinned-docker-image,supply-chain,extension,unpinned-uses,no equivalent,Detects container action or job container using mutable Docker tag (e.g. :latest) without SHA256 digest.
+curl-pipe-shell,curl-pipe-shell,execution,extension,no equivalent,unverified_script_exec,Detects downloading and executing remote scripts in a single command (curl | bash).
+insecure-commands-enabled,insecure-commands-enabled,execution,extension,insecure-commands,no equivalent,Detects ACTIONS_ALLOW_UNSECURE_COMMANDS environment variable enabling legacy set-env commands.
+cache-poisoning-risk,cache-poisoning-risk,supply-chain,extension,cache-poisoning,no equivalent,Detects actions/cache saving cache keys with untrusted user expressions or PR refs.
+oidc-write-untrusted,oidc-write-untrusted,permissions,extension,excessive-permissions,default_permissions_on_risky_events,Detects id-token: write permission granted on untrusted fork triggers (pull_request_target).
+permissions-overbroad-job,permissions-overbroad-job,permissions,extension,excessive-permissions,default_permissions_on_risky_events,Detects job requesting more than four distinct write permission scopes.
+continue-on-error-security-step,continue-on-error-security-step,hygiene,extension,no equivalent,no equivalent,"Detects continue-on-error: true set on security scanning, linting, or verification steps."
+missing-timeout,missing-timeout,hygiene,extension,no equivalent,no equivalent,"Detects jobs without timeout-minutes configured, exposing runners to 6-hour execution hang attacks."
+known-vulnerable-action,known-vulnerable-action,supply-chain,extension,known-vulnerable-actions,build_component_with_known_vulnerability,Detects usage of action versions with known published GitHub Security Advisories.

@@ -1,68 +1,6 @@
-/* ZEROVANT Liquid Glass Effects & Obsidian Surfaces */
+/* ZEROVANT Liquid Glass Primitives — Obsidian Liquid Glass */
 
-/* Glass Panels & Surfaces */
-.glass-panel {
-  background: var(--surface-glass);
-  backdrop-filter: blur(var(--blur-glass));
-  -webkit-backdrop-filter: blur(var(--blur-glass));
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  position: relative;
-  overflow: hidden;
-}
-
-.glass-card {
-  background: var(--surface-glass-card);
-  backdrop-filter: blur(var(--blur-glass));
-  -webkit-backdrop-filter: blur(var(--blur-glass));
-  border: 1px solid var(--border-glass);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
-  position: relative;
-}
-
-.glass-card::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12), transparent);
-  pointer-events: none;
-}
-
-.glass-card-hover:hover {
-  transform: translateY(-2px);
-  border-color: var(--border-glass-hover);
-  box-shadow: var(--shadow-lg), var(--shadow-glow);
-}
-
-.glass-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-pill);
-  background: var(--surface-glass);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid var(--border-glass);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--text-secondary);
-  transition: all var(--transition-fast);
-}
-
-.glass-pill.active, .glass-pill:hover {
-  color: var(--text-primary);
-  border-color: var(--accent-primary);
-  background: var(--accent-glass);
-}
-
-/* Background Liquid Glow Spheres (Ambient Lighting) */
+/* Ambient Diffuse Glow Spheres */
 .liquid-glow-container {
   position: fixed;
   inset: 0;
@@ -73,70 +11,281 @@
 
 .liquid-orb-1 {
   position: absolute;
-  top: -10%;
-  left: 30%;
-  width: 500px;
-  height: 500px;
-  background: radial-gradient(circle, rgba(168, 230, 192, 0.07) 0%, transparent 70%);
-  filter: blur(70px);
+  top: -15%;
+  left: 20%;
+  width: 650px;
+  height: 650px;
+  background: radial-gradient(circle, rgba(155, 229, 181, 0.08) 0%, rgba(50, 107, 76, 0.03) 45%, transparent 70%);
+  filter: blur(90px);
+  border-radius: 50%;
+  animation: floatOrb 22s ease-in-out infinite alternate;
 }
 
 .liquid-orb-2 {
   position: absolute;
-  bottom: 10%;
-  right: 15%;
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(121, 189, 153, 0.05) 0%, transparent 75%);
-  filter: blur(90px);
+  top: 40%;
+  right: -5%;
+  width: 700px;
+  height: 700px;
+  background: radial-gradient(circle, rgba(155, 229, 181, 0.06) 0%, rgba(30, 70, 50, 0.02) 50%, transparent 75%);
+  filter: blur(100px);
+  border-radius: 50%;
+  animation: floatOrb 28s ease-in-out infinite alternate-reverse;
 }
 
-/* Liquid Glass Hero 3D Card */
-.glass-hero-shield {
+.liquid-orb-3 {
+  position: absolute;
+  bottom: -10%;
+  left: 10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(155, 229, 181, 0.04) 0%, transparent 70%);
+  filter: blur(80px);
+  border-radius: 50%;
+}
+
+@keyframes floatOrb {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, 40px) scale(1.05); }
+  100% { transform: translate(-20px, 20px) scale(0.98); }
+}
+
+/* Glass Panels & Surfaces */
+.glass-panel {
+  background: var(--surface-glass);
+  backdrop-filter: blur(var(--blur-glass)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(160%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md), var(--shadow-inner-bevel);
   position: relative;
+  overflow: hidden;
+}
+
+.glass-card {
+  background: var(--surface-glass-card);
+  backdrop-filter: blur(var(--blur-glass)) saturate(160%);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(160%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card), var(--shadow-inner-bevel);
+  transition: transform var(--transition-normal), border-color var(--transition-normal), box-shadow var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Fine specular edge reflection along top border */
+.glass-card::before,
+.glass-panel::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(255, 255, 255, 0.22) 50%, transparent 95%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-glass-hover);
+  box-shadow: var(--shadow-lg), 0 0 28px var(--accent-glow);
+}
+
+/* Glass Pill Buttons & Badges */
+.glass-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.glass-pill:hover {
+  color: var(--text-primary);
+  border-color: var(--border-glass-hover);
+  background: var(--surface-glass-hover);
+}
+
+.glass-pill.active {
+  color: var(--text-inverse);
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  font-weight: 600;
+  box-shadow: 0 0 16px var(--accent-glow);
+}
+
+[data-theme="light"] .glass-pill.active {
+  color: #FFFFFF;
+  background: var(--accent-primary);
+}
+
+/* Solid high-contrast surface for dense technical content (Diff, Code, Tables) */
+.solid-surface {
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-solid);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+/* Floating Dock Container (for Landing Capabilities & Sub-actions) */
+.glass-dock {
+  background: rgba(17, 24, 21, 0.72);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-glass);
+  border-radius: var(--radius-pill);
+  padding: 0.5rem 1.25rem;
+  box-shadow: var(--shadow-lg), var(--shadow-inner-bevel);
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+[data-theme="light"] .glass-dock {
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: var(--shadow-md), var(--shadow-inner-bevel);
+}
+
+/* ========================================================================= */
+/* 3D LIQUID-GLASS HERO EMBLEM (Centerpiece matching VIGILYX reference)       */
+/* ========================================================================= */
+.hero-emblem-container {
+  position: relative;
+  width: 440px;
+  height: 380px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
+
+.hero-emblem-glow {
+  position: absolute;
   width: 320px;
-  height: 240px;
-  background: linear-gradient(135deg, rgba(34, 45, 40, 0.75), rgba(16, 21, 19, 0.85));
-  backdrop-filter: blur(28px);
-  -webkit-backdrop-filter: blur(28px);
-  border: 1.5px solid rgba(168, 230, 192, 0.28);
-  border-radius: 28px;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8),
-              0 0 45px rgba(168, 230, 192, 0.18),
-              inset 0 1px 2px rgba(255, 255, 255, 0.25);
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(155, 229, 181, 0.28) 0%, rgba(50, 107, 76, 0.12) 45%, transparent 70%);
+  filter: blur(48px);
+  transform: translateZ(-50px);
+  animation: pulseGlow 4s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  0% { transform: scale(0.92) translateZ(-50px); opacity: 0.7; }
+  100% { transform: scale(1.08) translateZ(-50px); opacity: 1; }
+}
+
+.hero-glass-slab {
+  position: relative;
+  width: 280px;
+  height: 280px;
+  transform: rotateX(24deg) rotateY(-22deg) rotateZ(12deg);
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: floatSlab 8s ease-in-out infinite alternate;
+}
+
+.hero-glass-slab:hover {
+  transform: rotateX(18deg) rotateY(-14deg) rotateZ(8deg) scale(1.04);
+}
+
+@keyframes floatSlab {
+  0% { transform: rotateX(24deg) rotateY(-22deg) rotateZ(12deg) translateY(0px); }
+  100% { transform: rotateX(22deg) rotateY(-20deg) rotateZ(14deg) translateY(-14px); }
+}
+
+.glass-slab-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  background: linear-gradient(135deg, rgba(225, 240, 230, 0.18) 0%, rgba(155, 229, 181, 0.06) 40%, rgba(11, 16, 14, 0.45) 100%);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border: 1.5px solid rgba(225, 240, 230, 0.32);
+  box-shadow: 
+    inset 0 1px 3px rgba(255, 255, 255, 0.45),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.5),
+    0 30px 60px -15px rgba(0, 0, 0, 0.8),
+    0 0 50px rgba(155, 229, 181, 0.28);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  transform: perspective(1000px) rotateX(8deg) rotateY(-10deg) rotateZ(2deg);
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  overflow: hidden;
 }
 
-.glass-hero-shield:hover {
-  transform: perspective(1000px) rotateX(2deg) rotateY(-4deg) rotateZ(0deg) scale(1.02);
-  border-color: rgba(168, 230, 192, 0.45);
-}
-
-.glass-hero-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
-  background: linear-gradient(135deg, rgba(168, 230, 192, 0.2), rgba(121, 189, 153, 0.05));
-  border: 1px solid rgba(168, 230, 192, 0.35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 0 30px rgba(168, 230, 192, 0.3);
-  margin-bottom: 1rem;
-}
-
-.glass-hero-ring {
+/* Glass slab internal ambient refraction lines */
+.glass-slab-face::before {
+  content: "";
   position: absolute;
-  width: 380px;
-  height: 140px;
-  border: 1.5px solid rgba(168, 230, 192, 0.22);
-  border-radius: 50%;
+  inset: -100%;
+  background: linear-gradient(
+    45deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.14) 48%,
+    rgba(155, 229, 181, 0.25) 50%,
+    rgba(255, 255, 255, 0.14) 52%,
+    transparent 58%
+  );
   transform: rotate(-15deg);
   pointer-events: none;
-  box-shadow: 0 0 35px rgba(168, 230, 192, 0.12);
+  animation: shineReflect 9s ease-in-out infinite;
+}
+
+@keyframes shineReflect {
+  0%, 15% { transform: translateY(-80%) rotate(-15deg); }
+  50%, 100% { transform: translateY(80%) rotate(-15deg); }
+}
+
+/* 3D Depth backplate simulating thickness of the crystal */
+.glass-slab-depth {
+  position: absolute;
+  inset: 0;
+  border-radius: 36px;
+  background: linear-gradient(135deg, rgba(50, 107, 76, 0.35) 0%, rgba(11, 16, 14, 0.9) 100%);
+  transform: translateZ(-28px);
+  border: 1px solid rgba(155, 229, 181, 0.2);
+  box-shadow: 0 40px 70px rgba(0, 0, 0, 0.9);
+}
+
+/* Floating ZEROVANT mark inside crystal slab */
+.emblem-mark {
+  position: relative;
+  z-index: 2;
+  filter: drop-shadow(0 0 16px rgba(155, 229, 181, 0.65)) drop-shadow(0 0 32px rgba(155, 229, 181, 0.35));
+  animation: floatMark 4s ease-in-out infinite alternate;
+}
+
+@keyframes floatMark {
+  0% { transform: translateZ(10px) translateY(0); }
+  100% { transform: translateZ(18px) translateY(-4px); }
+}
+
+/* Outer orbit ring around 3D crystal slab */
+.hero-emblem-ring {
+  position: absolute;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  border: 1px dashed rgba(155, 229, 181, 0.28);
+  transform: rotateX(65deg) rotateY(-18deg) translateZ(-40px);
+  pointer-events: none;
+  animation: spinRing 40s linear infinite;
+}
+
+@keyframes spinRing {
+  from { transform: rotateX(65deg) rotateY(-18deg) translateZ(-40px) rotate(0deg); }
+  to { transform: rotateX(65deg) rotateY(-18deg) translateZ(-40px) rotate(360deg); }
 }

@@ -1,177 +1,95 @@
 /**
  * ZEROVANT — Screen 08: Security Policies & Rule Catalogue
+ * 30 detection rules & 10 attack chains with cyber toggle switches.
  */
 
-window.PoliciesModule = (function () {
-  let allRules = [];
-  let allChains = [];
+import { escapeHTML } from './api.js';
+import { renderIcon } from './icons.js';
 
-  async function init() {
-    const rulesRes = await window.api.getRules();
-    const chainsRes = await window.api.getChains();
+let allRules = [];
+let allChains = [];
 
-    if (rulesRes.ok) {
-      allRules = rulesRes.data.rules || [];
-      renderRulesList(allRules);
-    }
-
-    if (chainsRes.ok) {
-      allChains = chainsRes.data.chains || [];
-      renderChainsList(allChains);
-    }
-
-    setupCatalogueFilters();
+async function init() {
+  const container = document.getElementById('policies-catalog-list');
+  if (container) {
+    container.innerHTML = `
+      <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+        Loading rule registry and policy catalog...
+      </div>
+    `;
   }
 
-  function setupCatalogueFilters() {
-    const searchInput = document.getElementById('rules-search-input');
-    const tierSelect = document.getElementById('rules-tier-filter');
+  const [rulesRes, chainsRes] = await Promise.all([
+    window.api.getRules(),
+    window.api.getChains(),
+  ]);
 
-    const filterHandler = () => {
-      const q = searchInput ? searchInput.value.toLowerCase().trim() : '';
-      const tier = tierSelect ? tierSelect.value : 'all';
+  if (rulesRes.ok) allRules = rulesRes.data.rules || [];
+  if (chainsRes.ok) allChains = chainsRes.data.chains || [];
 
-      const filtered = allRules.filter((r) => {
-        const matchesQuery =
-          !q ||
-          (r.id && r.id.toLowerCase().includes(q)) ||
-          (r.title && r.title.toLowerCase().includes(q)) ||
-          (r.description && r.description.toLowerCase().includes(q));
+  renderCatalog();
+}
 
-        const matchesTier = tier === 'all' || (r.tier && r.tier.toLowerCase() === tier.toLowerCase());
+function renderCatalog() {
+  const container = document.getElementById('policies-catalog-list');
+  if (!container) return;
 
-        return matchesQuery && matchesTier;
-      });
-
-      renderRulesList(filtered);
-    };
-
-    if (searchInput) searchInput.oninput = filterHandler;
-    if (tierSelect) tierSelect.onchange = filterHandler;
+  if (allRules.length === 0) {
+    container.innerHTML = `
+      <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+        No security policies found in the rule registry.
+      </div>
+    `;
+    return;
   }
 
-  function renderRulesList(rules) {
-    const container = document.getElementById('rules-catalogue-container');
-    if (!container) return;
+  container.innerHTML = allRules.map((rule, idx) => {
+    const sev = (rule.severity || 'medium').toLowerCase();
+    const isChecked = true; // All 30 rules enabled by default
 
-    while (container.firstChild) container.removeChild(container.firstChild);
+    let iconName = 'shield-alert';
+    if (rule.id.includes('UNPINNED')) iconName = 'git-commit';
+    else if (rule.id.includes('SECRET') || rule.id.includes('CREDENTIAL')) iconName = 'key';
+    else if (rule.id.includes('PERMISSION')) iconName = 'lock';
+    else if (rule.id.includes('SCRIPT_INJECTION')) iconName = 'terminal';
+    else if (rule.id.includes('RUNNER')) iconName = 'cpu';
 
-    if (rules.length === 0) {
-      const p = document.createElement('p');
-      p.className = 'text-muted';
-      p.textContent = 'No static security rules matching search criteria.';
-      container.appendChild(p);
-      return;
-    }
+    return `
+      <div class="glass-card policy-item-card">
+        <div class="policy-item-info">
+          <div class="policy-icon-wrap">
+            ${renderIcon(iconName, { size: 18 })}
+          </div>
+          <div class="policy-text-group">
+            <div class="flex items-center gap-2 mb-1">
+              <span class="mono font-semibold" style="color: var(--accent-primary); font-size: 0.85rem;">${escapeHTML(rule.id)}</span>
+              <h4 style="margin: 0;">${escapeHTML(rule.title || rule.name)}</h4>
+              <span class="badge badge-${sev}">
+                <span class="badge-dot"></span> ${(rule.severity || 'MEDIUM').toUpperCase()}
+              </span>
+            </div>
+            <p>${escapeHTML(rule.description || 'Static analysis detection rule for GitHub Actions CI/CD workflows.')}</p>
+          </div>
+        </div>
 
-    rules.forEach((r) => {
-      const card = document.createElement('div');
-      card.className = 'glass-card policy-item-card';
+        <label class="toggle-switch">
+          <input type="checkbox" ${isChecked ? 'checked' : ''} data-rule-id="${escapeHTML(rule.id)}">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    `;
+  }).join('');
 
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'policy-info';
-
-      const headerDiv = document.createElement('div');
-      headerDiv.className = 'flex items-center gap-2';
-
-      const codeSpan = document.createElement('span');
-      codeSpan.className = 'mono';
-      codeSpan.style.color = '#A8E6C0';
-      codeSpan.textContent = r.id;
-
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'policy-title';
-      titleSpan.textContent = r.title || r.name;
-
-      const tierBadge = document.createElement('span');
-      tierBadge.className = 'badge badge-info';
-      tierBadge.textContent = r.tier ? r.tier.toUpperCase() : 'CORE';
-
-      const sevBadge = document.createElement('span');
-      const s = (r.severity || 'MEDIUM').toUpperCase();
-      sevBadge.className = `badge badge-${s.toLowerCase()}`;
-      sevBadge.textContent = s;
-
-      headerDiv.appendChild(codeSpan);
-      headerDiv.appendChild(titleSpan);
-      headerDiv.appendChild(tierBadge);
-      headerDiv.appendChild(sevBadge);
-
-      const descP = document.createElement('p');
-      descP.className = 'policy-desc';
-      descP.textContent = r.description;
-
-      infoDiv.appendChild(headerDiv);
-      infoDiv.appendChild(descP);
-
-      // Policy Enforcement Switch
-      const toggleLabel = document.createElement('label');
-      toggleLabel.className = 'toggle-switch';
-      const input = document.createElement('input');
-      input.type = 'checkbox';
-      input.checked = true; // Enabled by default
-      const slider = document.createElement('span');
-      slider.className = 'slider';
-      toggleLabel.appendChild(input);
-      toggleLabel.appendChild(slider);
-
-      input.onchange = () => {
-        window.showToast(`Policy for ${r.id} ${input.checked ? 'enabled' : 'disabled'}.`, 'success');
-      };
-
-      card.appendChild(infoDiv);
-      card.appendChild(toggleLabel);
-
-      container.appendChild(card);
+  container.querySelectorAll('.toggle-switch input').forEach((toggle) => {
+    toggle.addEventListener('change', () => {
+      const ruleId = toggle.getAttribute('data-rule-id');
+      const state = toggle.checked ? 'enabled' : 'disabled';
+      window.showToast(`Policy '${ruleId}' ${state}.`, 'info');
     });
-  }
+  });
+}
 
-  function renderChainsList(chains) {
-    const container = document.getElementById('chains-catalogue-container');
-    if (!container) return;
-
-    while (container.firstChild) container.removeChild(container.firstChild);
-
-    chains.forEach((c) => {
-      const card = document.createElement('div');
-      card.className = 'glass-card policy-item-card';
-
-      const infoDiv = document.createElement('div');
-      infoDiv.className = 'policy-info';
-
-      const titleSpan = document.createElement('span');
-      titleSpan.className = 'policy-title';
-      titleSpan.textContent = c.name;
-
-      const typeBadge = document.createElement('span');
-      typeBadge.className = 'badge badge-high';
-      typeBadge.textContent = c.chain_type.toUpperCase();
-
-      const headerDiv = document.createElement('div');
-      headerDiv.className = 'flex items-center gap-2';
-      headerDiv.appendChild(typeBadge);
-      headerDiv.appendChild(titleSpan);
-
-      const descP = document.createElement('p');
-      descP.className = 'policy-desc';
-      descP.textContent = c.narrative_template || '';
-
-      const reqP = document.createElement('p');
-      reqP.className = 'mono';
-      reqP.style.fontSize = '0.78rem';
-      reqP.style.color = '#79BD99';
-      reqP.textContent = `Required Rules: [${(c.required_rules || []).join(', ')}] | Scope: ${c.scope || 'same_job'}`;
-
-      infoDiv.appendChild(headerDiv);
-      infoDiv.appendChild(descP);
-      infoDiv.appendChild(reqP);
-
-      card.appendChild(infoDiv);
-      container.appendChild(card);
-    });
-  }
-
-  return {
-    init: init,
-  };
-})();
+export const PoliciesModule = {
+  init,
+};
+window.PoliciesModule = PoliciesModule;

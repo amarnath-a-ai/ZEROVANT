@@ -6,9 +6,22 @@ from app.api.limiter import limiter
 from app.api.schemas import ValidationError, validate_scan_request
 from app.correlation.chains import CHAIN_DEFINITIONS
 from app.ingest.github_client import (
+    GitHubAuthError,
+    GitHubClientError,
     GitHubNetworkError,
     GitHubRateLimitError,
     GitHubResourceNotFoundError,
+    GitHubSSRFError,
+)
+from app.integrations.github import (
+    get_active_token,
+    get_active_user,
+    get_webhook_secret,
+    list_repository_branches,
+    list_user_repositories,
+    process_webhook_event,
+    verify_github_token,
+    verify_webhook_signature,
 )
 from app.pipeline import run_scan
 from app.rules import default_registry
@@ -352,3 +365,103 @@ def compare_repo_scans(repo_id: str):
 
     diff = repo_mgr.compare_scans(scan_a_id, scan_b_id)
     return jsonify(diff), 200
+
+
+# =============================================================================
+# GitHub Integration Endpoints (Stage 1 & Stage 3)
+# =============================================================================
+
+@api_bp.route("/integrations/github/status", methods=["GET"])
+def github_integration_status():
+    """Check current GitHub authentication and token readiness status."""
+    token = get_active_token()
+    user = get_active_user()
+    return jsonify({
+        "configured": bool(token),
+        "authenticated": user is not None,
+        "user": user,
+    }), 200
+
+
+@api_bp.route("/integrations/github/connect", methods=["POST"])
+def github_connect_token():
+    """Verify and store a GitHub Personal Access Token or App installation token."""
+    if not request.is_json:
+        return jsonify({"error": {"code": "BAD_REQUEST", "message": "Expected JSON payload."}}), 400
+
+    data = request.get_json(silent=True) or {}
+    token = data.get("token", "").strip()
+    if not token:
+        return jsonify({"error": {"code": "MISSING_TOKEN", "message": "Field 'token' is required."}}), 400
+
+    try:
+        user_profile = verify_github_token(token)
+        return jsonify({
+            "status": "connected",
+            "user": user_profile,
+            "message": f"Successfully connected as @{user_profile['login']}.",
+        }), 200
+    except GitHubAuthError as exc:
+        return jsonify({"error": {"code": "AUTH_FAILED", "message": str(exc)}}), 401
+    except (GitHubRateLimitError, GitHubNetworkError, GitHubClientError) as exc:
+        return jsonify({"error": {"code": "UPSTREAM_ERROR", "message": str(exc)}}), 502
+
+
+@api_bp.route("/integrations/github/repos", methods=["GET"])
+def github_list_repos():
+    """List repositories accessible to the configured GitHub token."""
+    try:
+        limit = min(int(request.args.get("limit", 30)), 100)
+    except ValueError:
+        limit = 30
+
+    try:
+        repos = list_user_repositories(limit=limit)
+        return jsonify({"repos": repos, "total": len(repos)}), 200
+    except GitHubAuthError as exc:
+        return jsonify({"error": {"code": "AUTH_REQUIRED", "message": str(exc)}}), 401
+    except Exception as exc:
+        return jsonify({"error": {"code": "UPSTREAM_ERROR", "message": str(exc)}}), 502
+
+
+@api_bp.route("/integrations/github/repos/<owner>/<repo>/branches", methods=["GET"])
+def github_repo_branches(owner: str, repo: str):
+    """List git branches for a specific repository."""
+    try:
+        branches = list_repository_branches(owner=owner, repo=repo)
+        return jsonify({"owner": owner, "repo": repo, "branches": branches, "total": len(branches)}), 200
+    except GitHubSSRFError as exc:
+        return jsonify({"error": {"code": "INVALID_IDENTIFIER", "message": str(exc)}}), 400
+    except GitHubResourceNotFoundError as exc:
+        return jsonify({"error": {"code": "NOT_FOUND", "message": str(exc)}}), 404
+    except Exception as exc:
+        return jsonify({"error": {"code": "UPSTREAM_ERROR", "message": str(exc)}}), 502
+
+
+@api_bp.route("/integrations/github/webhook", methods=["POST"])
+def github_webhook_receiver():
+    """Receive and verify GitHub webhooks (X-Hub-Signature-256) for automated scans."""
+    signature = request.headers.get("X-Hub-Signature-256")
+    event_type = request.headers.get("X-GitHub-Event", "ping")
+
+    # Handle GitHub webhook ping verification
+    if event_type == "ping":
+        return jsonify({"status": "pong", "message": "ZEROVANT Webhook receiver active."}), 200
+
+    secret = get_webhook_secret()
+    if secret:
+        if not signature or not verify_webhook_signature(request.get_data(), signature, secret):
+            return jsonify({"error": {"code": "INVALID_SIGNATURE", "message": "HMAC signature mismatch."}}), 401
+
+    payload = request.get_json(silent=True)
+    if not payload:
+        return jsonify({"error": {"code": "BAD_REQUEST", "message": "Missing JSON webhook payload."}}), 400
+
+    repo_mgr = get_repository()
+    try:
+        result = process_webhook_event(event_type=event_type, payload=payload, repository_storage=repo_mgr)
+        return jsonify(result), 200
+    except Exception as exc:
+        current_app.logger.error("Webhook processing error: %s", exc)
+        return jsonify({"error": {"code": "WEBHOOK_PROCESSING_FAILED", "message": str(exc)}}), 500
+
