@@ -3,7 +3,7 @@
 import os
 from typing import Any
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, render_template, request
 
 from app.config import config_by_name
 
@@ -129,14 +129,16 @@ def create_app(config_name: str | None = None, test_config: dict[str, Any] | Non
             }
         }), 500
 
-    # Web UI placeholder route (Phase 8 will render full dashboard)
+    # Web UI Dashboard & Landing Page (Phase 8)
     @app.route("/")
     def index():
-        return jsonify({
-            "app": "CI/CD Pipeline Security Auditor",
-            "status": "online",
-            "api_documentation": "/api/health",
-        }), 200
+        if request.headers.get("Accept") == "application/json":
+            return jsonify({
+                "app": "CI/CD Pipeline Security Auditor",
+                "status": "online",
+                "api_documentation": "/api/health",
+            }), 200
+        return render_template("index.html")
 
     @app.route("/health")
     def health():

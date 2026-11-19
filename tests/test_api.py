@@ -27,10 +27,19 @@ def test_health_endpoints_and_security_headers(client):
 
 
 def test_root_index_endpoint(client):
-    """Verify root / returns 200 placeholder response."""
+    """Verify root / serves HTML dashboard and supports JSON API metadata."""
+    # 1. HTML Dashboard
     response = client.get("/")
     assert response.status_code == 200
-    data = response.get_json()
+    assert "text/html" in response.headers.get("Content-Type", "")
+    assert b"ZEROVANT" in response.data
+    assert b"Defend Your" in response.data
+    assert response.headers.get("Content-Security-Policy") == "default-src 'self'"
+
+    # 2. JSON API metadata
+    res_json = client.get("/", headers={"Accept": "application/json"})
+    assert res_json.status_code == 200
+    data = res_json.get_json()
     assert data["status"] == "online"
     assert "CI/CD Pipeline Security Auditor" in data["app"]
 
